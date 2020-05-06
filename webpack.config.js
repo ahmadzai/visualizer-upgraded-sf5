@@ -10,9 +10,9 @@ Encore
     // directory where compiled assets will be stored
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
-    .setPublicPath('/build')
+    .setPublicPath(Encore.isProduction() ? '/build' : '/visualizer5/public/build')
     // only needed for CDN's or sub-directory deploy
-    //.setManifestKeyPrefix('build/')
+    //.setManifestKeyPrefix('public/build/')
 
     /*
      * ENTRY CONFIG
@@ -23,7 +23,8 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
-    .addEntry('app', './assets/js/app.js')
+    //.createSharedEntry('layout', './assets/js/layout.js')
+    .addEntry('layout', './assets/js/layout.js')
     //.addEntry('page1', './assets/js/page1.js')
     //.addEntry('page2', './assets/js/page2.js')
 
@@ -64,11 +65,19 @@ Encore
     //.enableIntegrityHashes(Encore.isProduction())
 
     // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
+    .autoProvidejQuery()
 
     // uncomment if you use API Platform Admin (composer req api-admin)
     //.enableReactPreset()
     //.addEntry('admin', './assets/js/admin.js')
+    .copyFiles({
+        'from': './assets/static',
+        'to': 'static'
+    })
+    .enableBuildNotifications()
+    .cleanupOutputBeforeBuild()
 ;
+// var config = Encore.getWebpackConfig();
+// config.module.rules[3].options.publicPath = '../';
 
 module.exports = Encore.getWebpackConfig();

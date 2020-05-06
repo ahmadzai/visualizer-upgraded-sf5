@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>{% block title %}Welcome to Polio Dashboard{% endblock %}</title>
+
+    <!-- Font Awesome Icons -->
+    {% block css %}
+    {{ encore_entry_link_tags('layout') }}
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    {% endblock %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<div class="wrapper">
+    <!-- Navbar -->
+    {% block top_nav %}
+        {% include 'shared/top-nav.html.twig' %}
+    {% endblock %}
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    {% block main_nav %}
+        {% include 'shared/main-nav.html.twig' %}
+    {% endblock %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        {% block breadcrumb %}
+            {% include 'shared/breadcrumb.html.twig' %}
+        {% endblock %}
+        <!-- /.content-header -->
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                {% block content %}
+                {% endblock %}
+            </div><!--/. container-fluid -->
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Control Sidebar -->
+    {% block control_aside %}
+    {% endblock %}
+    <!-- /.control-sidebar -->
+
+    <!-- Main Footer -->
+    {% block footer %}
+        {% include 'shared/footer.html.twig' %}
+    {% endblock %}
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+{% block js %}
+    {{ encore_entry_script_tags('layout') }}
+{% endblock %}
+</body>
+</html>

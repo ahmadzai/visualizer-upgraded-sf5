@@ -2,6 +2,7 @@
     "devDependencies": {
         "@symfony/webpack-encore": "^0.29.0",
         "core-js": "^3.0.0",
+        "font-awesome": "^4.7.0",
         "regenerator-runtime": "^0.13.2",
         "webpack-notifier": "^1.6.0"
     },
@@ -16,6 +17,7 @@
     "dependencies": {
         "admin-lte": "3.0",
         "axios": "^0.19.2",
+        "bootstrap": "4.4",
         "bootstrap-multiselect": "https://github.com/davidstutz/bootstrap-multiselect",
         "datatables.net-bs": "^1.10.20",
         "datatables.net-buttons-dt": "^1.6.1",
