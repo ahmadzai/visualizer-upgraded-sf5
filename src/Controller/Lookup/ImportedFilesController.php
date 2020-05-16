@@ -13,6 +13,10 @@ use App\Datatables\AdminDataDatatable;
 use App\Datatables\ImportedFilesDatatable;
 use App\Entity\AdminData;
 use App\Entity\ImportedFiles;
+use Sg\DatatablesBundle\Datatable\DatatableFactory;
+use Sg\DatatablesBundle\Response\DatatableResponse;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -22,6 +26,7 @@ use App\Service\Importer;
 use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Class ImportedFilesController
@@ -30,32 +35,41 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class ImportedFilesController extends AbstractController
 {
+    /**
+     * @var DatatableFactory
+     */
+    private $factory;
+    /**
+     * @var DatatableResponse
+     */
+    private $responseService;
+
+    public function __construct(DatatableFactory $factory, DatatableResponse $responseService)
+    {
+        $this->factory = $factory;
+        $this->responseService = $responseService;
+    }
 
     /**
      * @Route("/uploaded/files/manage", name="manage_uploaded_files",
      *     options={"expose"=true}, methods={"GET"})
+     * @throws \Exception
      */
     public function indexAction(Request $request) {
 
         $isAjax = $request->isXmlHttpRequest();
 
-        // Get your Datatable ...
-        //$datatable = $this->get('app.datatable.post');
-        //$datatable->buildDatatable();
-
-        // or use the DatatableFactory
-        /** @var DatatableInterface $datatable */
-        $datatable = $this->get('sg_datatables.factory')->create(ImportedFilesDatatable::class);
+        $datatable = $this->factory->create(ImportedFilesDatatable::class);
         $datatable->buildDatatable();
 
         if ($isAjax) {
-            $responseService = $this->get('sg_datatables.response');
-            $responseService->setDatatable($datatable);
-            $dbQueryBuilder = $responseService->getDatatableQueryBuilder();
+
+            $this->responseService->setDatatable($datatable);
+            $dbQueryBuilder = $this->responseService->getDatatableQueryBuilder();
 
             $qb = $dbQueryBuilder->getQb();
             $qb->addOrderBy('importedfiles.id', 'DESC');
-            return $responseService->getResponse();
+            return $this->responseService->getResponse();
         }
 
 
@@ -106,7 +120,7 @@ class ImportedFilesController extends AbstractController
 
     /**
      * @param $id
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @return StreamedResponse
      * @internal param ImportedFiles $file
      * @Route("/uploaded/files/download/{id}", name="uploaded_files_download")
      */
