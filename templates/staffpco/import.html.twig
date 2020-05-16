@@ -1,0 +1,34 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-6">
+                                        <a href="{{ path('import_data', {'entity':'staff_pco'}) }}"
+                                           class="btn btn-lg btn-info pull-right">
+                                            Provincial Staff Upload
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a href="{{ path('import_data', {'entity':'staff_icn'}) }}"
+                                           class="btn btn-lg btn-info pull-left">
+                                            District Level Staff Upload
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

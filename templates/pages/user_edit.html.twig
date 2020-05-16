@@ -1,0 +1,153 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="box box-primary" xmlns="http://www.w3.org/1999/html">
+        <div class="box-header with-border">
+            <h3 class="box-title">Edit a user!</h3>
+        </div>
+        <!-- /.box-header -->
+        {{ form_start(edit_form)}}
+        <div class="box-body">
+            {% block form_errors %}
+                {% if not edit_form.vars.valid %}
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h4><i class="icon fa fa-ban"></i> Form Errors!</h4>
+
+                        <ul>
+                            {#Loop through every form item#}
+                            {% for child in edit_form.children %}
+                                {#Display the errors of the form item#}
+                                {%for error in child.vars.errors%}
+                                    <li>{{ child.vars.label }}: {{error.message}}</li>
+                                {%endfor%}
+                            {%endfor%}
+                        </ul>
+                        {#{{ form_errors(form) }}#}
+
+                    </div>
+                {% endif %}
+            {% endblock form_errors %}
+
+            <div class="row">
+                <div class="col-md-4">
+
+                    <div class="form-group {{ form_errors(edit_form.firstName)|length > 0 ? 'has-error' : '' }}">
+                        {{ form_label(edit_form.firstName) }}
+                        {{ form_widget(edit_form.firstName, {'attr':{'tabindex':1}}) }}
+                    </div>
+
+
+                    <div class="form-group {{ form_errors(edit_form.firstName)|length > 0 ? 'has-error' : '' }}">
+                        <label>Job Level</label>
+                        {{ form_widget(edit_form.level, {'attr':{'tabindex':4, 'style':'width:100%'}}) }}
+                    </div>
+
+
+                    <div class="form-group {{ form_errors(edit_form.mobileNumber)|length > 0 ? 'has-error' : '' }}">
+                        {{ form_label(edit_form.mobileNumber) }}
+                        {{ form_widget(edit_form.mobileNumber, {'attr':{'tabindex':7}}) }}
+                    </div>
+
+
+                    <div class="form-group {{ form_errors(edit_form.enabled)|length > 0 ? 'has-error' : '' }}">
+                        <label>Enable</label>
+                        {{ form_widget(edit_form.enabled, {'attr':{'class':'form-control', 'tabindex':9}}) }}
+                    </div>
+                    <!-- /.form-group -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-4">
+                    <div class="form-group {{ form_errors(edit_form.lastName)|length > 0 ? 'has-error' : '' }}">
+                        <label for="first_name">Last Name</label>
+                        {{ form_widget(edit_form.lastName, {'attr':{'tabindex':2}}) }}
+                    </div>
+                    <div class="form-group {{ form_errors(edit_form.region)|length > 0 ? 'has-error' : '' }}">
+                        <label>Region</label>
+                        {{ form_widget(edit_form.region,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                    </div>
+
+                    <div class="form-group {{ form_errors(edit_form.email)|length > 0 ? 'has-error' : '' }}">
+                        <label>Email Address</label>
+                        {{ form_widget(edit_form.email, {'attr':{'class':'form-control', 'tabindex':8}}) }}
+                    </div>
+
+                    <div class="form-group {{ form_errors(edit_form.allowApiAccess)|length > 0 ? 'has-error' : '' }}">
+                        <label>API Access</label>
+                        {{ form_widget(edit_form.allowApiAccess, {'attr':{'class':'form-control', 'tabindex':9}}) }}
+                    </div>
+
+                    <!-- /.form-group -->
+                </div>
+                <!-- /.col -->
+                <!-- /.col -->
+                <div class="col-md-4">
+                    <div class="form-group {{ form_errors(edit_form.position)|length > 0 ? 'has-error' : '' }}">
+                        <label for="first_name">Position</label>
+                        {{ form_widget(edit_form.position, {'attr':{'tabindex':3}}) }}
+                    </div>
+                    <div class="form-group {{ form_errors(edit_form.province)|length > 0 ? 'has-error' : '' }}">
+                        <label>Province</label>
+                        {{ form_widget(edit_form.province,{'attr':{'tabindex':6, 'style':'width:100%'}}) }}
+                    </div>
+
+                    <div class="form-group {{ form_errors(edit_form.roles)|length > 0 ? 'has-error' : '' }}">
+                        <label>Roles</label>
+                        {{ form_widget(edit_form.roles, {'attr':{'tabindex':10, 'style':'width:100%'}}) }}
+                    </div>
+
+
+                    <!-- /.form-group -->
+                </div>
+            </div>
+            {#{% endblock form_row %}#}
+            <div class="row">
+                <div class="col-md-4">
+                    <button type="submit" tabindex="13" class="btn btn-info">
+                        <i class="fa fa-edit"></i>
+                        Update
+                    </button>
+
+                    <a class="btn btn-default" href="{{ path('list_all_users') }}">
+                        <i class="fa fa-mail-reply"></i> Back to list
+                    </a>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        {{ form_end(edit_form) }}
+        <!-- /.box-body -->
+    </div>
+{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        Editing
+        <small>
+            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username }}
+            {% endif %}
+        </small>
+    </h1>
+    <ol class="breadcrumb">
+
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+            <li>
+                <a href="{{ path('fos_user_security_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('fos_user_security_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    {{ 'layout.login'|trans({}, 'FOSUserBundle') }}
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}

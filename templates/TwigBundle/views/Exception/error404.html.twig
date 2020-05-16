@@ -1,0 +1,20 @@
+{% extends 'template-error.html.twig' %}
+
+{% block content %}
+    <div class="error-page">
+        <h2 class="headline text-yellow">404</h2>
+
+        <div class="error-content">
+            <h3><i class="fa fa-exclamation text-yellow"></i> Sorry! This Page is not Available!</h3>
+
+            <p>
+                We could not find the page you were looking for. Meanwhile, you may return to dashboard by clicking below link
+                <a class="text-yellow" href="{{ path('home')}}">Dashboard</a>
+            </p>
+
+        </div>
+    </div>
+{% endblock %}
+{% block title %}
+Not found! 404
+{% endblock %}

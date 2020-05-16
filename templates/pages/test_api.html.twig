@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="row" id="odk_data">
+
+    </div>
+
+
+{% endblock %}
+
+{% block head_javascripts %}
+    <script src="{{ asset('template/bower_components/jquery/dist/jquery.min.js')}}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ asset('template/bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+    <!-- AdminLTE App -->
+
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
+
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('custom_js_css/charts-wrapper.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+
+
+            var api_key = "ab777ce3248651d18a0447ecc39fdb30def50a10";
+            $.ajax({
+                type: "GET",
+                url: 'https://api.ona.io/api/v1/data/230255?start=2',
+                dataType: 'json',
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: false
+                },
+                headers: {
+                    'Authorization': 'Token '+api_key,
+                },
+                success: function (data, status, jqXHR) {
+                    console.log(data);
+                    //const odk_data = data;
+                },
+                error: function (jqXHR, status, errorThrown) {
+                    console.log("Sorry request couldn't be made "+errorThrown);
+                }
+            });
+
+            //console.log(odk_data);
+            //$('#odk_data').html(odk_data);
+
+        });
+
+
+    </script>
+{% endblock %}

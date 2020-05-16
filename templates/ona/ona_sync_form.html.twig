@@ -1,0 +1,194 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Form Live Information (ONA.IO)</h3>
+                </div>
+                <div class="box-body">
+                    <table id="form-info-ona-tbl" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>No Entries</th>
+                            <th>Last Submission Time</th>
+                            <th>Web Form URL</th>
+                            {#<th>Action</th>#}
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+
+                                <td>{{ form_info.title}}</td>
+                                <td>{{ form_info.num_of_submissions }}</td>
+                                <td>{{ form_info.last_submission_time|date }}</td>
+                                <td>
+                                    <a href="{{ form_info.enketo_url }}" class="btn btn-sm btn-success" target="_blank">
+                                        Launch Web Form
+                                    </a>
+
+                                </td>
+                                {#<td>#}
+
+                                    {#<a class="btn btn-sm btn-info" title="Sync ONA data with Poliodb"#}
+                                       {#href="{{ path("ona_sync_form",#}
+                                                {#{#}
+                                                    {#"form":form_info.formid,#}
+                                                    {#"table":form_info.id_string,#}
+                                                    {#"sync":1#}
+                                                {#})#}
+                                             {#}}">#}
+                                        {#Sync Form Data#}
+                                    {#</a>#}
+
+                                {#</td>#}
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="box box-success">
+                <div class="box-header">
+                    <h3 class="box-title">Form Information from Polio DB</h3>
+                </div>
+                <div class="box-body">
+                    <table id="form-info-db-tbl" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Table Name</th>
+                            <th>No Entries</th>
+                            <th>Latest Row Date</th>
+                            <th>Last Updated</th>
+                            <th>Difference</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if db_info != 0 %}
+                        <tr>
+
+                            <td>{{ form_info.id_string}}</td>
+                            <td>{{ db_info[0]['total_rows'] }}</td>
+                            <td>{{ db_info[0]['last_submission_date']|date }}</td>
+                            <td>{{ db_info[0]['last_updated']|date }}</td>
+                            <td>
+                                {{ form_info.num_of_submissions-db_info[0]['total_rows'] }}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if db_info == 0 %}
+                        <tr>
+                            <td colspan="5" align="center">
+                                This form has not been mapped to Polio DB, Click
+                                <span class="btn btn-info btn-xs">Sync Form Data</span> button if you want to
+                                have its data in Polio Database.
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <form method="POST" name="download_chunk_control"
+                  class="form-horizontal" action="{{ path('ona_save_data') }}">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label for="download-chunk"
+                         class="col-md-4 control-label">Download Chunk</label>
+                        <div class="col-md-8">
+                            <select class="form-control"
+                                    id="download-chunk", name="download_chunk">
+                                <option value="100">100 Rows</option>
+                                <option value="500">500 Rows</option>
+                                <option value="1000">1000 Rows</option>
+                                <option value="{{ form_info.num_of_submissions }}">
+                                    All Rows
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="hidden" name="formid" value="{{ form_info.formid }}" >
+                        <input type="hidden" name="table_name" value="{{ form_info.id_string }}">
+                        <input type="submit" value="Sync Form Data" name="sync_form_data"
+                               class="btn btn-sm btn-info">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        {{ form_info.title }}
+        <small> Information</small>
+    </h1>
+    <ol class="breadcrumb">
+
+        <li>
+            <a href="{{ path("home") }}">
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </li>
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username} }} |
+            {#<li class="active"><i class="fa fa-user"></i>#}
+            {#<a href="{{ path('fos_user_security_logout') }}">#}
+            {#{{ 'layout.logout'|trans({}, 'FOSUserBundle') }}#}
+            {#</a>#}
+            {#</li>#}
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('app_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}
+{% block css %}
+
+    <link rel="stylesheet" href="{{ asset('template/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
+    {{ parent() }}
+{% endblock %}
+{% block js %}
+    {{ parent() }}
+    <script src="{{ asset('template/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('template/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('#form-info-ona-tbl, #form-info-db-tbl').dataTable({
+                "paging":   false,
+                "ordering": false,
+                "info":     false,
+                "searching": false,
+            });
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fieldbook{% endblock %}
+
+{% block body %}
+
+    <p>
+        Fieldbook Data Entry Page 2
+    </p>
+
+    {% form_theme form
+        ':pages/fieldbook:fbform.html.twig'
+    %}
+
+    {{ form(form) }}
+
+    <hr/>
+    {{ dump(data) }}
+    <hr/>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('template/bower_components/jquery/dist/jquery.min.js')}}"></script>
+    <script src="{{ asset('js/jquery.collection.js') }}"></script>
+    <script type="text/javascript">
+
+        $('.fieldbook-collection').collection({
+            allow_duplicate: false,
+            allow_up: false,
+            allow_down: false,
+            add: '<a href="#" class="btn btn-default" title="Add element"><span class="glyphicon glyphicon-plus-sign"></span></a>',
+
+            // here is the magic!
+            elements_selector: 'tr.item',
+            elements_parent_selector: '%id% tbody',
+            after_remove: function (collection, element) {
+                console.log(collection);
+                console.log(element);
+            }
+        });
+
+        // $(function () {
+        //     $('.collection-remove').on('click', function (e) {
+        //         alert($(this).data('url'));
+        //         console.log(e);
+        //     });
+        // });
+
+
+    </script>
+
+{% endblock %}

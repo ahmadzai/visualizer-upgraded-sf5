@@ -43,7 +43,7 @@ class User implements UserInterface, SetDateTimeInterface, SetAuthorInterface
     private $username;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="array")
      */
     private $roles = [];
 
@@ -386,8 +386,7 @@ class User implements UserInterface, SetDateTimeInterface, SetAuthorInterface
      */
     public function eraseCredentials()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->retypedPassword = null;
     }
 
     public function __construct()

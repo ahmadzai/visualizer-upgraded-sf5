@@ -1,0 +1,136 @@
+{% extends 'covid19/covid_template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+
+        <div class="col-md-5">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-yellow-gradient">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">Province: {{ covid19Case.province.provinceName }}</h3>
+                    <h5 class="widget-user-desc">Region: {{ covid19Case.province.provinceRegion }}</h5>
+                    <h5 class="widget-user-desc">Status Last Updated: {{ covid19Case.lastUpdated|date('d-M-Y H:i:s') }}</h5>
+                </div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+
+                        <li><a href="#">Confirmed Cases <span class="pull-right badge bg-red">{{ covid19Case.noOfConfirmedCases }}</span></a></li>
+                        <li><a href="#">Suspected Cases <span class="pull-right badge bg-gray">{{ covid19Case.noOfSuspectedCases }}</span></a></li>
+                        <li><a href="#">Recovered <span class="pull-right badge bg-green">{{ covid19Case.noOfRecoveredCases }}</span></a></li>
+                        <li><a href="#">Death <span class="pull-right badge bg-danger">{{ covid19Case.noOfDeaths }}</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+
+        <div class="col-md-7">
+            <input type="hidden" id="ajaxUrl" value="{{ url }}"
+                   data-source="{{ source }}"/>
+            <div class="box box-warning">
+                <div class="row no-padding no-margin">
+                    <div class="col-sm-3 col-xs-6 no-padding">
+                        <a href="#" data-type="Cases" class="filter-map" title="Click to see map for all cases">
+                            <div class="c-info-box">
+                                <span class="c-info-box-icon bg-orange"><i class="fa fa-users"></i></span>
+                                <div class="c-info-box-content">
+                                    <span class="c-info-box-text">Cases</span>
+                                    <span class="c-info-box-number info-missed-child">
+                                        {{ totalCases[0].totalCases|number_format(0, '.', ',')}}
+                                        </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-3 col-xs-6 no-padding">
+                        <a href="#" data-type="ActiveCases" class="filter-map" title="Click to see map for active cases">
+                            <div class="c-info-box">
+                                <span class="c-info-box-icon bg-red"><i class="fa fa-users"></i></span>
+                                <div class="c-info-box-content">
+                                    <span class="c-info-box-text">Active</span>
+                                    <span class="c-info-box-number info-missed-child">
+                                        {{ totalCases[0].activeCases|number_format(0, '.', ',')}}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-3 col-xs-6 no-padding">
+                        <a href="#" data-type="Recovered" class="filter-map" title="Click to see map for recovered cases">
+                            <div class="c-info-box">
+                                <span class="c-info-box-icon bg-green"><i class="fa fa-users"></i></span>
+                                <div class="c-info-box-content">
+                                    <span class="c-info-box-text">Recovered</span>
+                                    <span class="c-info-box-number info-missed-child">
+                                        {{ totalCases[0].totalRecovered|number_format(0, '.', ',')}}
+                                        </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-sm-3 col-xs-6 no-padding">
+                        <a href="#" data-type="Death" class="filter-map" title="Click to see map for death">
+                            <div class="c-info-box">
+                                <span class="c-info-box-icon bg-gray"><i class="fa fa-users"></i></span>
+                                <div class="c-info-box-content">
+                                    <span class="c-info-box-text">Death</span>
+                                    <span class="c-info-box-number info-missed-child">
+                                        {{ totalCases[0].totalDeath|number_format(0, '.', ',')}}
+                                        </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row no-padding no-margin">
+                    <input type="hidden" id="map_data" value=""/>
+                    {#                    <div class="btn-group dropdown-filter">#}
+                    {#                        <button type="button" class="btn btn-default btn-sm"><i class="fa fa-filter"></i></button>#}
+                    {#                        <button type="button" class="btn btn-default btn-sm dropdown-toggle"#}
+                    {#                                data-toggle="dropdown" aria-expanded="false">#}
+                    {#                            <span class="caret"></span>#}
+                    {#                            <span class="sr-only">Toggle Dropdown</span>#}
+                    {#                        </button>#}
+                    {#                        <ul class="dropdown-menu" role="menu">#}
+                    {#                            <li><a href="#" data-type="Cases" class="filter-map">Cases</a></li>#}
+                    {#                            <li><a href="#" data-type="Recovered" class="filter-map">Recovered</a></li>#}
+                    {#                            <li><a href="#" data-type="Death" class="filter-map">Death</a></li>#}
+
+                    {#                        </ul>#}
+                    {#                    </div>#}
+                    <span class="filter-loading loader-small map-loader"></span>
+                    <div class="box-body" style="padding: 1px">
+                        <div id="map_container_1" style="height: 350px; max-height: 350px;" data-province="{{ province }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+
+        <a href="{{ path('covid19_cases') }}" class="btn btn-default text-yellow"><i class="fa fa-reply"></i> Back</a>
+
+        {% if is_granted("ROLE_COVID19_EDITOR") %}
+        <a href="{{ path('covid19_cases_edit', { 'id': covid19Case.id }) }}" class="btn btn-info">Edit</a>
+        {% endif %}
+    </div>
+    <br>
+    {% if is_granted("ROLE_ADMIN") %}
+    <div>
+        {{ form_start(delete_form) }}
+        <button type="submit" value="Delete" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+        {{ form_end(delete_form) }}
+    </div>
+    {% endif %}
+{% endblock %}
+{% block js %}
+    {{ parent() }}
+
+    <script  src="{{ asset('build/covid19.js') }}"></script>
+{% endblock %}

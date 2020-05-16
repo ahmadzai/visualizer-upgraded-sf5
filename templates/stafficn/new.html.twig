@@ -1,0 +1,107 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Add New ICN/Other District Staff!</h3>
+                </div>
+
+                {{ form_start(form) }}
+                <div class="box-body">
+
+                    {% block form_errors %}
+                        {% if not form.vars.valid %}
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-ban"></i> Form Errors!</h4>
+
+                                <ul>
+                                    {#Loop through every form item#}
+                                    {% for child in form.children %}
+                                        {#Display the errors of the form item#}
+                                        {%for error in child.vars.errors%}
+                                            <li>{{ child.vars.label }}: {{error.message}}</li>
+                                        {%endfor%}
+                                    {%endfor%}
+                                </ul>
+                                {#{{ form_errors(form) }}#}
+
+                            </div>
+                        {% endif %}
+                    {% endblock form_errors %}
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row no-margin no-padding">
+                                <div class="col-md-2 form-group {{ form_errors(form.district)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.district) }}
+                                    {{ form_widget(form.district, {'attr':{'tabindex':1}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfDco)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfDco) }}
+                                    {{ form_widget(form.noOfDco, {'attr':{'tabindex':2}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfFemaleDco)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfFemaleDco) }}
+                                    {{ form_widget(form.noOfFemaleDco, {'attr':{'tabindex':3}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfCcs)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfCcs) }}
+                                    {{ form_widget(form.noOfCcs, {'attr':{'tabindex':4}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfFemaleCcs)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfFemaleCcs) }}
+                                    {{ form_widget(form.noOfFemaleCcs,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfSm)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfSm) }}
+                                    {{ form_widget(form.noOfSm,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                                </div>
+                            </div>
+                            <div class="row no-padding no-margin">
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfFemaleSm)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfFemaleSm) }}
+                                    {{ form_widget(form.noOfFemaleSm,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfFmv)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfFmv) }}
+                                    {{ form_widget(form.noOfFmv,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfExt)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfExt) }}
+                                    {{ form_widget(form.noOfExt,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.noOfFemaleExt)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.noOfFemaleExt) }}
+                                    {{ form_widget(form.noOfFemaleExt,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.asOfMonth)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.asOfMonth) }}
+                                    {{ form_widget(form.asOfMonth,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                                </div>
+                                <div class="col-md-2 form-group {{ form_errors(form.asOfYear)|length > 0 ? 'has-error' : '' }}">
+                                    {{ form_label(form.asOfYear) }}
+                                    {{ form_widget(form.asOfYear,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                                </div>
+                            </div>
+                            <div class="row no-margin no-padding">
+                                <div class="col-md-4">
+                                    <input type="submit" tabindex="13" class="btn btn-info" value="Create" />
+                                    <a href="{{ path('staff-icn_index') }}" class="btn btn-default">
+                                        <i class="fa fa-mail-reply"></i> Go Back!
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.row -->
+                </div>
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

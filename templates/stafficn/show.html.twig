@@ -1,0 +1,56 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+
+        <div class="col-md-6">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">Province: {{ staffIcn.district.province.provinceName }}</h3>
+                    <h5 class="widget-user-desc">District: {{ staffIcn.district.districtName }}</h5>
+                    <h5 class="widget-user-desc">As of: {{ staffIcn.asOfMonth }}-{{ staffIcn.asOfYear }}
+                     &nbsp;Total Staff:
+                        {%  set total = staffIcn.noOfDco+staffIcn.noOfCcs+staffIcn.noOfSm+staffIcn.noOfFmv+staffIcn.noOfExt %}
+                        {{ total }}
+                    </h5>
+                </div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+                        <li><a href="#">Total DCOs <span class="pull-right badge">{{ staffIcn.noOfDco }}</span></a></li>
+                        <li><a href="#">Female DCOs <span class="pull-right badge bg-red-active">{{ staffIcn.noOfFemaleDco }}</span></a></li>
+                        <li><a href="#">Total CCSs <span class="pull-right badge">{{ staffIcn.noOfCcs }}</span></a></li>
+                        <li><a href="#">Female CCSs <span class="pull-right badge bg-red-active">{{ staffIcn.noOfFemaleCcs }}</span></a></li>
+                        <li><a href="#">Total SMs <span class="pull-right badge">{{ staffIcn.noOfSm }}</span></a></li>
+                        <li><a href="#">Female SMs <span class="pull-right badge bg-red-active">{{ staffIcn.noOfFemaleSm }}</span></a></li>
+                        <li><a href="#">Total FMV <span class="pull-right badge">{{ staffIcn.noOfFmv }}</span></a></li>
+                        <li><a href="#">Total Extenders <span class="pull-right badge">{{ staffIcn.noOfExt }}</span></a></li>
+                        <li><a href="#">Female Extenders <span class="pull-right badge bg-red-active">{{ staffIcn.noOfFemaleExt }}</span></a></li>
+                        <li><a href="#">Updated At <span class="pull-right badge ">{{ staffIcn.updatedAt|date('d-M-Y') }}</span></a></li>
+
+                    </ul>
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+    </div>
+
+    <div>
+
+        <a href="{{ path('staff-icn_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
+
+
+        <a href="{{ path('staff-icn_edit', { 'id': staffIcn.id }) }}" class="btn btn-info">Edit</a>
+
+    </div>
+    <br>
+    <div>
+        {{ form_start(delete_form) }}
+        <button type="submit" value="Delete" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+        {{ form_end(delete_form) }}
+    </div>
+{% endblock %}

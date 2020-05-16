@@ -1,0 +1,57 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-header with-border">
+                    ICN Performance Indicators
+                    <span class="loading loader"></span>
+                    <a href="#" title="Click here for selected months' cumulative result"
+                       class="btn btn-sm btn-primary pull-right btn-cum-res">
+                        Cumulative Result
+                    </a>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box-warning box">
+                                        <!-- data-route is required for ajax URL -->
+                                        <div class="box-body route-url" data-route="{{ url }}">
+                                            <!-- data-source is required for the filter-->
+                                            <div id="icn_table" data-source="{{ source }}">
+                                                {{ table|raw }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block title %}ICN Performance Dashboard{% endblock %}
+{% block header %}
+    {% embed 'shared/header.html.twig' %}
+        {% block filter %}
+            {{ render(controller(
+            'App\\Controller\\Ajax\\AjaxFilterController:odkFilterAction',
+                { 'source': source }
+            ))
+            }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+
+    <script src="{{ asset('build/ccs-sm-filter.js') }}"></script>
+{% endblock %}

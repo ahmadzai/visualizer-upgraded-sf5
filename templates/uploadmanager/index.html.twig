@@ -1,0 +1,105 @@
+{% extends 'template.html.twig' %}
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">List of all tables with upload</h3>
+                    <a href="{{ path("uploadmanager_new") }}" class="btn btn-sm btn-info pull-right">
+                        <i class="fa fa-plus"></i> Attach Upload to Table
+                    </a>
+                </div>
+                <!-- /.box-header -->
+                {#{% for label, messages in app.flashes %}#}
+                {#{% for message in messages %}#}
+
+                {#{{ message }}#}
+
+                {#{% endfor %}#}
+                {#{% endfor %}#}
+                <div class="box-body">
+
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <i class="icon fa fa-check"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <table id="users" class="table table-bordered table-striped dash-dataTable"
+                           data-setting="{% if tableSetting is defined %}{{ tableSetting }}{% endif %}">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Table</th>
+                            <th>Excluded Cols</th>
+                            <th>FK Cols</th>
+                            <th>Enabled</th>
+                            <th>Temp</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for uploadManager in uploadManagers %}
+                            <tr>
+                                <td><a href="{{ path('uploadmanager_show', { 'id': uploadManager.id }) }}">{{ uploadManager.id }}</a></td>
+                                <td>{{ uploadManager.tableName }}</td>
+                                <td>{% if uploadManager.excludedColumns %}{{ uploadManager.excludedColumns|join(', ') }}{% endif %}</td>
+                                <td>{% if uploadManager.entityColumns %}{{ uploadManager.entityColumns|join(', ') }}{% endif %}</td>
+                                <td>{% if uploadManager.enabled %}Yes{% else %}No{% endif %}</td>
+                                <td>{% if uploadManager.hasTemp %}Yes{% else %}No{% endif %}</td>
+                                <td>{% if uploadManager.modifiedAt %}{{ uploadManager.modifiedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                                <td>
+
+                                    <a href="{{ path('uploadmanager_show', { 'id': uploadManager.id }) }}" class="btn btn-xs btn-info">
+                                        <i class="fa fa-eye"></i> show
+                                    </a>
+
+                                    <a href="{{ path('uploadmanager_edit', { 'id': uploadManager.id }) }}" class="btn btn-xs btn-warning">
+                                        <i class="fa fa-edit"></i> edit
+                                    </a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        Upload
+        <small> manager</small>
+    </h1>
+    <ol class="breadcrumb">
+
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username }} |
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('app_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}

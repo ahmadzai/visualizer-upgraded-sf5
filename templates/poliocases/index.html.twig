@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Poliocases list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Epid</th>
+                <th>Onsetdate</th>
+                <th>Sex</th>
+                <th>Ageinmonths</th>
+                <th>Noroutinedoses</th>
+                <th>Nosiadoses</th>
+                <th>Lastopvdate</th>
+                <th>Stooldate</th>
+                <th>Cluster</th>
+                <th>Linkage</th>
+                <th>Year</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for polioCase in polioCases %}
+            <tr>
+                <td><a href="{{ path('poliocases_show', { 'id': polioCase.id }) }}">{{ polioCase.id }}</a></td>
+                <td>{{ polioCase.epid }}</td>
+                <td>{% if polioCase.onsetDate %}{{ polioCase.onsetDate|date('Y-m-d') }}{% endif %}</td>
+                <td>{{ polioCase.sex }}</td>
+                <td>{{ polioCase.ageInMonths }}</td>
+                <td>{{ polioCase.noRoutineDoses }}</td>
+                <td>{{ polioCase.noSiaDoses }}</td>
+                <td>{% if polioCase.lastOpvDate %}{{ polioCase.lastOpvDate|date('Y-m-d') }}{% endif %}</td>
+                <td>{% if polioCase.stoolDate %}{{ polioCase.stoolDate|date('Y-m-d') }}{% endif %}</td>
+                <td>{{ polioCase.cluster }}</td>
+                <td>{{ polioCase.linkage }}</td>
+                <td>{{ polioCase.year }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('poliocases_show', { 'id': polioCase.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('poliocases_edit', { 'id': polioCase.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('poliocases_new') }}">Create a new polioCase</a>
+        </li>
+    </ul>
+{% endblock %}

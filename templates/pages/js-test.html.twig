@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {#<script src="{{ asset('build/manifest.json') }}"></script>#}
+    <script src="{{ asset('build/main-chart.js') }}"></script>
+    {#<script src="{{ asset('template/bower_components/jquery/dist/jquery.min.js')}}"></script>#}
+    {#<script src="{{ asset('charts/highcharts.js') }}"></script>#}
+    {#<script src="{{ asset('charts/modules/exporting.js') }}"></script>#}
+    {#<script>#}
+        {#$(document).ready(function () {#}
+            {#var firstChart = new Charts();#}
+            {#firstChart.lineChart('test_chart', '{{ data|raw }}', {'type':"line"});#}
+        {#})#}
+    {#</script>#}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <input type="hidden" value="{{ data }}" id="test_data">
+        <div class="col-md-6" id="test_chart">
+
+        </div>
+    </div>
+{% endblock %}

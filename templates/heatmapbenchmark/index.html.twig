@@ -1,0 +1,106 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Rules</h3>
+                    <a href="{{ path("heatmap_benchmark_new") }}" class="btn btn-sm btn-info pull-right">
+                        <i class="fa fa-plus"></i> New Rule
+                    </a>
+                </div>
+                <div class="box-body">
+
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <i class="icon fa fa-check"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <table id="provinces" class="table table-bordered table-striped dash-dataTable"
+                           data-setting="{% if tableSetting is defined %}{{ tableSetting }}{% endif %}">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Min Value</th>
+                            <th>Max Value</th>
+                            <th>Mid Stop (0-1)</th>
+                            <th>Min Color</th>
+                            <th>Max Color</th>
+                            <th>Mid Color</th>
+                            <th>Data Source</th>
+                            <th>Indicator</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for heatmapBenchmark in heatmapBenchmarks %}
+                            <tr>
+                                <td><a href="{{ path('heatmap_benchmark_edit', { 'id': heatmapBenchmark.id }) }}">{{ heatmapBenchmark.id }}</a></td>
+                                <td>{{ heatmapBenchmark.minValue }}</td>
+                                <td>{{ heatmapBenchmark.maxValue }}</td>
+                                <td>{{ heatmapBenchmark.midStop }}</td>
+                                <td><span style="background-color: {{ heatmapBenchmark.minColor }}; width: 100%; line-height: 100%; display: inline-block">&nbsp;&nbsp;&nbsp;</span></td>
+                                <td><span style="background-color: {{ heatmapBenchmark.maxColor }}; width: 100%; line-height: 100%; display: inline-block">&nbsp;&nbsp;&nbsp;</span></td>
+                                <td><span style="background-color: {{ heatmapBenchmark.midColor }}; width: 100%; line-height: 100%; display: inline-block">&nbsp;&nbsp;&nbsp;</span></td>
+                                <td>{{ heatmapBenchmark.dataSource }}</td>
+                                <td>{{ heatmapBenchmark.indicator }}</td>
+                                <td>
+
+                                    <a href="{{ path('heatmap_benchmark_edit', { 'id': heatmapBenchmark.id }) }}" class="btn btn-xs btn-warning">edit</a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        List
+        <small> of heatmap rules</small>
+    </h1>
+    <ol class="breadcrumb">
+
+        <li>
+            <a href="{{ path("home") }}">
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </li>
+
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username }} |
+
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('app_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}
+
+
+

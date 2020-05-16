@@ -1,0 +1,100 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">{{ title }}</h3>
+                {% if buttons is defined  %}
+                    {% for key, button in buttons %}
+                        {% if key=='a' and button %}
+                            <a href="{% if button['route']!="#" %}{{ path(button['route']) }}{% endif %}"
+                               class="btn btn-sm {{ button['class'] }} pull-right">
+                                <i class="fa fa-plus"></i> {{ button['title'] }}
+                            </a>
+                        {% elseif key == 'btn-group' and button %}
+
+                            <div class="btn-group pull-right" style="margin-right: 5px">
+                                <button type="button" class="btn {{ button['class'] }} btn-sm">{{ button['title'] }}</button>
+                                <button type="button" class="btn {{ button['class'] }} dropdown-toggle btn-sm" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    {% for btn in button['options'] %}
+                                        <li><a href="{{ path(btn['route'], btn['params']) }}">{{ btn['title'] }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                         {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-body">
+                {% if info is defined and info %}
+                    <div class="alert alert-info alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        {{ info }}
+                    </div>
+                {% endif %}
+                {{ sg_datatables_render(datatable) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block title %}Download Data{% endblock %}
+
+{% block js_head %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.25/daterangepicker.min.js" charset="UTF-8"></script>
+    <script src="https://cdn.datatables.net/v/bs/jszip-2.5.0/pdfmake-0.1.18/dt-1.10.12/b-1.2.2/b-colvis-1.2.2/b-flash-1.2.2/b-html5-1.2.2/b-print-1.2.2/fc-3.2.2/fh-3.1.2/r-2.1.0/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <script src="https://cdn.rawgit.com/noelboss/featherlight/1.7.1/release/featherlight.min.js"></script>
+    <script src="{{ asset('staticjs/select2.full.min.js') }}"></script>
+
+    <script src="{{ asset('bundles/sgdatatables/js/pipeline.js') }}"></script>
+
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ asset('staticjs/adminlte.min.js') }}"></script>
+    {#<script src="{{ asset('template/dist/js/app.min.js') }}"></script>#}
+    <!-- Optionally, you can add Slimscroll and FastClick plugins.
+         Both of these plugins are recommended to enhance the
+         user experience. -->
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            //console.log( "ready!" );
+            var checkElement = $('.menu-open .treeview-menu');
+            if ((checkElement.is('.treeview-menu')) && (!checkElement.is(':visible'))) {
+                //Get the parent menu
+                var parent = checkElement.parents('ul').first();
+                //Close all open menus within the parent
+                var ul = parent.find('ul:visible').slideUp(500);
+                //Remove the menu-open class from the parent
+                ul.removeClass('menu-open');
+                //Get the parent li
+                var parent_li = checkElement.parent("li");
+
+                //Open the target menu and add the menu-open class
+                checkElement.slideDown(500, function () {
+                    //Add the class active to the parent li
+                    checkElement.addClass('menu-open');
+                    //parent.find('li.active').removeClass('active');
+                    parent_li.addClass('active');
+                    //Fix the layout in case the sidebar stretches over the height of the window
+                    //_this.layout.fix();
+                });
+            }
+        });
+    </script>
+{% endblock %}
+

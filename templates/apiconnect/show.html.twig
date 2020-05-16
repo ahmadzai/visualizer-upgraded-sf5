@@ -1,0 +1,49 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+
+        <div class="col-md-6">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">Service Name: {{ apiConnect.apiServiceName }}</h3>
+                    <h5 class="widget-user-desc">Service URL: {{ apiConnect.apiServiceUrl }}</h5>
+                    <h5 class="widget-user-desc">Connect Date: {{ apiConnect.upDatedAt|date }}</h5>
+                </div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+                        <li><a href="#">API KEY <span class="pull-right badge">{{ apiConnect.apiKey }}</span></a></li>
+                        <li><a href="#">API User Name <span class="pull-right badge ">{{ apiConnect.apiUser }}</span></a></li>
+                        <li><a href="#">API Pass <span class="pull-right badge ">{{ apiConnect.apiPass }}</span></a></li>
+                        <li><a href="#">Connected By <span class="pull-right badge ">
+                                    {{ apiConnect.user.firstName }}
+                                </span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+    </div>
+
+    <div>
+
+        <a href="{{ path('apiconnect_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
+
+
+        <a href="{{ path('apiconnect_edit', { 'id': apiConnect.id }) }}" class="btn btn-info">Edit</a>
+
+    </div>
+    <br>
+    <div>
+        {{ form_start(delete_form) }}
+        <button type="submit" value="Delete" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+        {{ form_end(delete_form) }}
+    </div>
+{% endblock %}
+
+

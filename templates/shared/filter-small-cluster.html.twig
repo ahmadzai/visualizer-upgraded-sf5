@@ -1,0 +1,82 @@
+<li style="padding-top: 8px; padding-bottom: 8px;" data-source="{{ source }}" class="data-source">
+    <div class="dropdown">
+        {#<label class="col-md-1 control-label" style="color: #ffffff;">Campaigns:</label>#}
+        <div class="col-md-10">
+            <select multiple="multiple" class="multiselect" name="filterCampaign" id="filterCampaign">
+                {% if campaigns is defined %}
+                {% for campaign in campaigns %}
+
+                    <option value="{{ campaign.id }}"
+                            {% for camp in selectedCampaign %}
+                                {% if camp == campaign.id %} selected="selected" {% endif %}
+                            {% endfor %}
+                    >{{ campaign.campaignName }}</option>
+
+                {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+    </div>
+</li>
+
+<li style="padding: 8px 0px;">
+    <div class="dropdown">
+        {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
+        <div class="col-md-10">
+            <select class="multiselect" name="filterProvince" id="filterProvince" size="2">
+                {% if provinces is defined %}
+                {% for province in provinces %}
+
+                    <option value="{{ province.id }}"
+                            {% if selectedProvince is defined %}
+                            {#{% for prov in selectedProvince %}#}
+                                {% if selectedProvince == province.id %} selected="selected" {% endif %}
+                            {#{% endfor %}#}
+                            {% endif %}
+                    >{{ province.provinceName }}</option>
+
+                {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+    </div>
+</li>
+
+<li style="padding-top: 8px; padding-bottom: 8px;">
+    <div class="dropdown">
+        {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
+        <div class="col-md-10">
+            <select class="multiselect" name="filterDistrict" id="filterDistrict" size="2">
+                {% if districts is defined %}
+                {% for district in districts %}
+
+                    <option value="{{ district.id }}"
+                            {% if selectedDistrict is defined %}
+                            {#{% for dist in selectedDistrict %}#}
+                                {% if selectedDistrict == district.id %} selected="selected" {% endif %}
+                            {#{% endfor %}#}
+                            {% endif %}
+                    >{{ district.districtName }}</option>
+
+                {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+    </div>
+</li>
+
+<li style="padding-top: 8px; padding-bottom: 8px;">
+    <div class="dropdown">
+        {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
+        <div class="col-md-10">
+            <input type="hidden" value="{{ clusters is defined ? clusters : '-1' }}"
+                   id="pre-loaded-clusters">
+            <select multiple="multiple" class="multiselect" name="filterCluster" id="filterCluster">
+            </select>
+        </div>
+    </div>
+</li>
+
+<li style="padding:8px 0px;">
+    <button type="button" class="btn btn-warning" id="filterButton"><i class="fa fa-filter"></i> Filter</button>
+</li>

@@ -1,0 +1,182 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">{{ title }}</h3>
+                {% if buttons is defined  %}
+                    {% for key, button in buttons %}
+                        {% if key=='a' and button %}
+                            <a href="{% if button['route']!="#" %}{{ path(button['route']) }}{% endif %}"
+                               class="btn btn-sm {{ button['class'] }} pull-right">
+                                <i class="fa fa-plus"></i> {{ button['title'] }}
+                            </a>
+                        {% elseif key == 'btn-group' and button %}
+
+                            <div class="btn-group pull-right" style="margin-right: 5px">
+                                <button type="button" class="btn {{ button['class'] }} btn-sm">{{ button['title'] }}</button>
+                                <button type="button" class="btn {{ button['class'] }} dropdown-toggle btn-sm" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    {% for btn in button['options'] %}
+                                        <li><a href="{{ path(btn['route'], btn['params']) }}">{{ btn['title'] }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                         {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-body">
+                {% if info is defined and info %}
+                    <div class="alert alert-info alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        {{ info }}
+                    </div>
+                {% endif %}
+                <table id="users" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Region</th>
+                        <th>Province</th>
+                        <th>District</th>
+                        <th>Sub District</th>
+                        <th>Cluster</th>
+                        <th>Target</th>
+                        <th>Received Vials</th>
+                        <th>Used Vials</th>
+                        <th>Reg Absent</th>
+                        <th>Vac Absent</th>
+                        <th>Rem Absent</th>
+                        <th>Reg NSS</th>
+                        <th>Vac NSS</th>
+                        <th>Rem NSS</th>
+                        <th>Reg Refusal</th>
+                        <th>Vac Refusal</th>
+                        <th>Rem Refusal</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Region</th>
+                        <th>Province</th>
+                        <th>District</th>
+                        <th>Sub District</th>
+                        <th>Cluster</th>
+                        <th>Target</th>
+                        <th>Received Vials</th>
+                        <th>Used Vials</th>
+                        <th>Reg Absent</th>
+                        <th>Vac Absent</th>
+                        <th>Rem Absent</th>
+                        <th>Reg NSS</th>
+                        <th>Vac NSS</th>
+                        <th>Rem NSS</th>
+                        <th>Reg Refusal</th>
+                        <th>Vac Refusal</th>
+                        <th>Rem Refusal</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for row in datatable %}
+                        <tr>
+                            <td>{{ row['Region']}}</td>
+                            <td>{{ row['Province']}}</td>
+                            <td>{{ row['District'] }}</td>
+                            <td>{{ row['Subdistrict'] }}</td>
+                            <td>{{ row['Cluster'] }}</td>
+                            <td>{{ row['TargetPopulation'] }}</td>
+                            <td>{{ row['RVials'] }}</td>
+                            <td>{{ row['UVials'] }}</td>
+                            <td>{{ row['RegAbsent'] }}</td>
+                            <td>{{ row['VaccAbsent'] }}</td>
+                            <td>{{ row['RemainingAbsent'] }}</td>
+                            <td>{{ row['RegNSS'] }}</td>
+                            <td>{{ row['VaccNSS'] }}</td>
+                            <td>{{ row['RemainingNSS'] }}</td>
+                            <td>{{ row['RegRefusal'] }}</td>
+                            <td>{{ row['VaccRefusal'] }}</td>
+                            <td>{{ row['RemainingRefusal'] }}</td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block css %}
+
+    <link rel="stylesheet" href="{{ asset('template/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
+    {{ parent() }}
+{% endblock %}
+{% block js %}
+    {{ parent() }}
+    <script src="{{ asset('template/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('template/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script>
+        $(function () {
+
+            //Initialize Select2 Elements
+            $('#users tfoot th').each( function () {
+                var title = $(this).text();
+                $(this).html( '<input type="text" placeholder="Search" />' );
+            } );
+
+            // DataTable
+            var table = $('#users').DataTable(
+                {
+                    scrollX: true
+                }
+            );
+
+            // Apply the search
+            table.columns().every( function () {
+                var that = this;
+
+                $( 'input', this.footer() ).on( 'keyup change', function () {
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
+
+            $('#users tfoot tr').appendTo('#users thead');
+
+            /*
+
+            $('#users thead th').each(function() {
+                var title = $('#users thead th').eq($(this).index()).text();
+                $(this).html('<input type="text" placeholder="Search '+title+'" />');
+            });
+
+// DataTable
+            var table = $('#users').DataTable();
+
+// Apply the search
+            table.columns().eq(0).each(function(colIdx) {
+                $('input', table.column(colIdx).header()).on('keyup change', function() {
+                    table
+                        .column(colIdx)
+                        .search(this.value)
+                        .draw();
+                });
+
+                $('input', table.column(colIdx).header()).on('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+            */
+        })
+    </script>
+{% endblock %}

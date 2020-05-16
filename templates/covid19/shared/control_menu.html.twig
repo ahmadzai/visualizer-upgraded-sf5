@@ -1,0 +1,58 @@
+<div class="navbar-custom-menu">
+    <ul class="nav navbar-nav">
+        <!-- User Account Menu -->
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+        <li class="dropdown user user-menu">
+            <!-- Menu Toggle Button -->
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                <span class="hidden-xs">
+                    <i class="fa fa-user"></i>
+                    {{ app.user.username }}
+                </span>
+            </a>
+            <ul class="dropdown-menu">
+                <!-- The user image in the menu -->
+                <li class="user-header">
+{#                    <img src="../../dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">#}
+
+                    <p>
+                        {{ app.user.username }}
+
+                        <small>{{ app.user.jobTitle }}</small>
+                        <small>{{ app.user.email }}</small>
+                    </p>
+                </li>
+                <!-- Menu Body -->
+                {% if(is_granted("ROLE_EDITOR")) %}
+                <li class="user-body">
+                    <div class="row">
+                        <div class="col-xs-4 text-center">
+                            <a href="#">Update Cases</a>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <a href="#">Update Supplies</a>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <a href="#">Update C4D</a>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </li>
+                {% endif %}
+                <!-- Menu Footer-->
+                <li class="user-footer">
+                    {% if(is_granted("ROLE_NORMAL_USER") or is_granted("ROLE_PARTNER")) %}
+                    <div class="pull-left">
+                        <a href="{{ path('home') }}" class="btn btn-default btn-flat">Go to Polio DB</a>
+                    </div>
+                    {% endif %}
+                    <div class="pull-right">
+                        <a href="{{ path('app_logout') }}" class="btn btn-default btn-flat">Sign out</a>
+                    </div>
+                </li>
+            </ul>
+        </li>
+        {% endif %}
+    </ul>
+</div>

@@ -1,0 +1,76 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">District Wise ICN Staff</h3>
+                <a href="{{ path("staff-icn_new") }}" class="btn btn-sm btn-info pull-right">
+                    <i class="fa fa-plus"></i> Add New Staff
+                </a>
+            </div>
+
+            <div class="box-body">
+
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <i class="icon fa fa-check"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <table id="districts" class="table table-bordered table-striped dash-dataTable"
+                       data-setting="{% if tableSetting is defined %}{{ tableSetting }}{% endif %}">
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Province</th>
+                            <th>District</th>
+                            <th>DCOs</th>
+                            <th>F/DCOs</th>
+                            <th>CCSs</th>
+                            <th>F/CCSs</th>
+                            <th>SMs</th>
+                            <th>F/SMs</th>
+                            <th>FMV</th>
+                            <th>Ext</th>
+                            <th>F/Ext</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for icn in staffIcns %}
+                        <tr>
+
+                            <td>{{ icn.district.province.provinceRegion }}</td>
+                            <td>{{ icn.district.province.provinceName }}</td>
+                            <td>{{ icn.district.districtName }}</td>
+                            <td>{{ icn.noOfDco }}</td>
+                            <td>{{ icn.noOfFemaleDco }} </td>
+                            <td>{{ icn.noOfCcs}}</td>
+                            <td>{{ icn.noOfFemaleCcs}}</td>
+                            <td>{{ icn.noOfSm}}</td>
+                            <td>{{ icn.noOfFemaleSm}}</td>
+                            <td>{{ icn.noOfFmv}}</td>
+                            <td>{{ icn.noOfExt}}</td>
+                            <td>{{ icn.noOfFemaleExt}}</td>
+                            <td>
+
+                                <a class="btn btn-xs btn-info" href="{{ path('staff-icn_show', { 'id': icn.id }) }}">show</a>
+
+                                <a class="btn btn-xs btn-warning" href="{{ path('staff-icn_edit', { 'id': icn.id }) }}">edit</a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

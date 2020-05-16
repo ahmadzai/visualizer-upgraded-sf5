@@ -5,8 +5,11 @@
         "php": "^7.2.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "friendsofsymfony/jsrouting-bundle": "^2.5",
+        "knplabs/knp-menu-bundle": "^3.0",
         "laminas/laminas-code": "^3.4",
         "laminas/laminas-eventmanager": "^3.2",
+        "phpoffice/phpspreadsheet": "^1.12",
         "sensio/framework-extra-bundle": "^5.1",
         "stof/doctrine-extensions-bundle": "^1.4",
         "symfony/asset": "5.0.*",
@@ -31,7 +34,8 @@
         "symfony/validator": "5.0.*",
         "symfony/web-link": "5.0.*",
         "symfony/webpack-encore-bundle": "^1.7",
-        "symfony/yaml": "5.0.*"
+        "symfony/yaml": "5.0.*",
+        "symfonycasts/reset-password-bundle": "^1.1"
     },
     "require-dev": {
         "symfony/debug-pack": "*",

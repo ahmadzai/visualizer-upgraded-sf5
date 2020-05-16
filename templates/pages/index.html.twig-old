@@ -1,0 +1,386 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+
+    <script src="{{ asset('charts/highcharts.js') }}"></script>
+    <script src="{{ asset('charts/modules/heatmap.js') }}"></script>
+    <script src="{{ asset('charts/modules/exporting.js') }}"></script>
+    <script src="{{ asset('charts/modules/grouped-categories.js') }}"></script>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="c-info-box">
+                        <span class="c-info-box-icon bg-aqua"><i class="fa fa-child"></i></span>
+
+                        <div class="c-info-box-content">
+                            <span class="c-info-box-text">Child Vaccinated</span>
+                            <span class="c-info-box-number info-vaccinated-child">1,410</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="c-info-box">
+                        <span class="c-info-box-icon bg-green"><i class="fa fa-line-chart"></i></span>
+
+                        <div class="c-info-box-content">
+                            <span class="c-info-box-text">Coverage</span>
+                            <span class="c-info-box-number info-coverage">1,410</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="c-info-box">
+                        <span class="c-info-box-icon bg-yellow"><i class="fa fa-warning"></i></span>
+
+                        <div class="c-info-box-content">
+                            <span class="c-info-box-text">Missed</span>
+                            <span class="c-info-box-number info-missed-child">1,410</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="c-info-box">
+                        <span class="c-info-box-icon bg-purple"><i class="fa fa-eyedropper"></i></span>
+
+                        <div class="c-info-box-content">
+                            <span class="c-info-box-text">Used Vials</span>
+                            <span class="c-info-box-number info-used-vials">1,410</span>
+                        </div>
+                        <!-- /.info-box-content -->
+                    </div>
+                    <!-- /.info-box -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                         <div class="box-body">
+                             <table class="table table-bordered">
+                                 <tr>
+                                     <th style="width: 10px">#</th>
+                                     <th>Task</th>
+                                     <th>Progress</th>
+                                     <th style="width: 40px">Label</th>
+                                 </tr>
+                                 <tr>
+                                     <td>1.</td>
+                                     <td>Update software</td>
+                                     <td>
+                                         <div class="progress progress-xs">
+                                             <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+                                         </div>
+                                     </td>
+                                     <td><span class="badge bg-red">55%</span></td>
+                                 </tr>
+                                 <tr>
+                                     <td>2.</td>
+                                     <td>Clean database</td>
+                                     <td>
+                                         <div class="progress progress-xs">
+                                             <div class="progress-bar progress-bar-yellow" style="width: 70%"></div>
+                                         </div>
+                                     </td>
+                                     <td><span class="badge bg-yellow">70%</span></td>
+                                 </tr>
+                                 <tr>
+                                     <td>3.</td>
+                                     <td>Cron job running</td>
+                                     <td>
+                                         <div class="progress progress-xs progress-striped active">
+                                             <div class="progress-bar progress-bar-primary" style="width: 30%"></div>
+                                         </div>
+                                     </td>
+                                     <td><span class="badge bg-light-blue">30%</span></td>
+                                 </tr>
+                                 <tr>
+                                     <td>4.</td>
+                                     <td>Fix and squish bugs</td>
+                                     <td>
+                                         <div class="progress progress-xs progress-striped active">
+                                             <div class="progress-bar progress-bar-success" style="width: 90%"></div>
+                                         </div>
+                                     </td>
+                                     <td><span class="badge bg-green">90%</span></td>
+                                 </tr>
+                             </table>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="chart-pie_chart_1camp" ></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="chart-column_chart_1camp"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="box box-primary">
+                <div class="chart-filter">
+                    <span><a href="#"><i class="fa fa-filter"></i></a></span>
+                    <div class="filter-content">
+                        <a class="campaign-type" href="#" title="NID" data-url="vac_child_10camp">NID</a>
+                        <a class="campaign-type" href="#" title="SNID" data-url="vac_child_10camp">SNID</a>
+                        <a class="campaign-type" href="#" title="LPD" data-url="vac_child_10camp">LPD</a>
+                        <a class="campaign-type" href="#" title="LPD" data-url="vac_child_10camp">Reset</a>
+                    </div>
+                </div>
+                <span class="filter-loading loading vac_child_10camp" title="Applying filter"><img src='{{ asset('ajax-loader-arrow.gif')}}' /></span>
+                <div class="box-body">
+                    <div id="chart-vac_child_10camp" style="min-width: 310px; height: 400px; max-width:inherit"></div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="box box-primary">
+                <div class="chart-filter">
+                    <span><a href="#"><i class="fa fa-filter"></i></a></span>
+                    <div class="filter-content">
+                        <a class="campaign-type" href="#" title="NID" data-url="missed_10camp">NID</a>
+                        <a class="campaign-type" href="#" title="SNID" data-url="missed_10camp">SNID</a>
+                        <a class="campaign-type" href="#" title="LPD" data-url="missed_10camp">LPD</a>
+                        <a class="campaign-type" href="#" title="LPD" data-url="missed_10camp">Reset</a>
+                    </div>
+                </div>
+                <span class="filter-loading loading missed_10camp" title="Applying filter"><img src='{{ asset('ajax-loader-arrow.gif')}}' /></span>
+                <div class="box-body">
+                    <div id="chart-missed_10camp" style="min-width: 310px; height: 400px; max-width:inherit"></div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="box box-primary">
+                <div class="chart-filter">
+                    <span><a href="#"><i class="fa fa-filter"></i></a></span>
+                    <div class="filter-content">
+                        <a class="campaign-type" href="#" title="NID" data-url="missed_type_10camp">NID</a>
+                        <a class="campaign-type" href="#" title="SNID" data-url="missed_type_10camp">SNID</a>
+                        <a class="campaign-type" href="#" title="LPD" data-url="missed_type_10camp">LPD</a>
+                        <a class="campaign-type" href="#" title="LPD" data-url="missed_type_10camp">Reset</a>
+                    </div>
+                </div>
+                <span class="filter-loading loading missed_type_10camp" title="Applying filter"><img src='{{ asset('ajax-loader-arrow.gif')}}' /></span>
+                <div class="box-body">
+                    <div id="chart-missed_type_10camp" style="min-width: 310px; height: 400px; max-width:inherit"></div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+
+                <div class="box-body">
+                    <div id="chart-absent_3camp" style="min-width: 310px; height: 400px; max-width:inherit"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box-warning box">
+                <div class="box-body">
+                    <div id="chart-nss_3camp" style="min-width: 310px; height: 400px; max-width:inherit"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box-default box">
+                <div class="box-body">
+                    <div id="chart-refusal_3camp" style="min-width: 310px; height: 400px; max-width:inherit"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box-danger box">
+
+                <div class="box-body">
+                    <div id="chart-vac_usage" style="min-width: 310px; height: 400px; max-width:inherit"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block css %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('custom_js_css/custom-style.css') }}">
+{% endblock %}
+{% block js_head %}
+    <script src="{{ asset('template/bower_components/jquery/dist/jquery.min.js')}}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ asset('template/bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+    <script  src="{{ asset('template/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ asset('template/dist/js/adminlte.min.js') }}"></script>
+
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
+
+{% endblock %}
+{% block js %}
+    <script src="{{ asset('custom_js_css/charts.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+
+            // ========================= General Configuration for charts =================
+            const config = new Array();
+            config['vac_child_10camp'] = {'title':'No of vaccinated children', 'color':['#43AB0D']};
+            config['missed_10camp'] = {'title':'No of missed children', 'color':['#C99900']};
+            config['missed_type_10camp'] = {'title':'No of missed by reason', 'color':['#FFFF00', '#C99900', '#FF0000']};
+            config['absent_3camp'] = {'title':'No of absent children', 'color':['#FFFF00', '#43AB0D']};
+            config['nss_3camp'] = {'title':'No of NSS children', 'color':['#C99900', '#43AB0D']};
+            config['refusal_3camp'] = {'title':'No of refusal children', 'color':['#FF0000', '#43AB0D']};
+
+            // =========================== Filter Menu Item Clicked For Campaign Type =========================
+            $(".campaign-type").click(function (){
+                var target = $(this).data('url');
+                var targetCont = "chart-"+ target;
+                var ajaxUrl = "ajax_camp_statistics";
+                $('.'+target).show();
+                var postData = {'campType': $(this).text(), 'entity': 'CoverageData', 'chartType': target}
+                $.ajax({
+                    url: Routing.generate(ajaxUrl),
+                    data: postData,
+                    type: 'POST',
+                    success: function (data) {
+                        //console.log(data);
+                        var jsonData = JSON.parse(data);
+
+                        //Temporary
+                        colChart(targetCont, JSON.stringify(jsonData[target]), config[target].title, config[target].color);
+                        $('.'+target).hide();
+                    },
+                    cache: false
+                });
+
+                //alert($(this).text()+" and "+$(this).data('url') + " and " + target);
+            })
+
+            //============================== Tree Menu ========================================
+            var checkElement = $('.menu-open .treeview-menu');
+            if ((checkElement.is('.treeview-menu')) && (!checkElement.is(':visible'))) {
+                //Get the parent menu
+                var parent = checkElement.parents('ul').first();
+                //Close all open menus within the parent
+                var ul = parent.find('ul:visible').slideUp(500);
+                //Remove the menu-open class from the parent
+                ul.removeClass('menu-open');
+                //Get the parent li
+                var parent_li = checkElement.parent("li");
+
+                //Open the target menu and add the menu-open class
+                checkElement.slideDown(500, function () {
+                    //Add the class active to the parent li
+                    checkElement.addClass('menu-open');
+                    //parent.find('li.active').removeClass('active');
+                    parent_li.addClass('active');
+                    //Fix the layout in case the sidebar stretches over the height of the window
+                    //_this.layout.fix();
+                });
+            }
+
+            // =============================== End of Tree Menu ==================================
+
+            $('.loading, .loading-top').hide();
+
+            // =============================== Load the charts for the first time ================
+            colChart('chart-vac_child_10camp', '{{ chartVacChild10Camp|raw }}', config['vac_child_10camp'].title, config['vac_child_10camp'].color);
+            colChart('chart-missed_10camp', '{{ chartMissed10Camp|raw }}', config['missed_10camp'].title, config['missed_10camp'].color);
+            colChart('chart-missed_type_10camp', '{{ chartMissedType10camp|raw }}', config['missed_type_10camp'].title, config['missed_type_10camp'].color);
+            colChart('chart-absent_3camp', '{{ chartDataAbsent|raw }}', config['absent_3camp'].title, config['absent_3camp'].color);
+            colChart('chart-nss_3camp', '{{ chartDataNss|raw }}', config['nss_3camp'].title, config['nss_3camp'].color);
+            colChart('chart-refusal_3camp', '{{ chartDataRefusal|raw }}', config['refusal_3camp'].title,config['refusal_3camp'].color);
+            threeAxisChart('chart-vac_usage', '{{ chartVaccineUsage|raw }}', ['Received vials', 'Used vials', 'Wastage'],
+                ['ReceivedVials', 'UsedVials', 'Wastage']);
+
+            // ============================== End loading of the charts ==========================
+
+            $('#filterButton').click(function () {
+                var campaigns = $('#filterCampaign option:selected');
+                var selectedCampaigns = [];
+                $(campaigns).each(function (index, campaigns) {
+                    selectedCampaigns.push([$(this).val()]);
+                });
+
+                var region = $('#filterRegion option:selected');
+                var selectedRegions = [];
+                $(region).each(function (index, region) {
+                    selectedRegions.push([$(this).val()]);
+                });
+
+                var provinces = $('#filterProvince option:selected');
+                var selectedProvinces = [];
+                $(provinces).each(function (index, provinces) {
+                    selectedProvinces.push([$(this).val()]);
+                });
+
+                var districts = $('#filterDistrict option:selected');
+                var selectedDistricts = [];
+                $(districts).each(function (index, districts) {
+                    selectedDistricts.push([$(this).val()]);
+                });
+
+                var data = {'campaign':selectedCampaigns, 'region':selectedRegions, 'province': selectedProvinces, 'district': selectedDistricts};
+
+                $('.loading, .loading-top').show();
+
+
+                $.ajax({
+                    url: Routing.generate('ajax_admin_data'),
+                    data: data,
+                    type: 'POST',
+                    success: function (data) {
+                        //console.log(data);
+                        var jsonData = JSON.parse(data);
+                        /*
+                         this is how the data is comming
+                         'allMissedChildren'
+                         'absentChildren'
+                         'nssChildren'
+                         'refusalChildren
+                         'vaccineUsage'
+
+                         */
+                        colChart('chart1', JSON.stringify(jsonData.allMissedChildren), 'No of missed children');
+                        colChart('chart-absent', JSON.stringify(jsonData.absentChildren), 'No of absent children', ['#FFFF00', '#43AB0D']);
+                        colChart('chart-nss', JSON.stringify(jsonData.nssChildren), 'No of NSS children', ['#C99900', '#43AB0D']);
+                        colChart('chart-refusal', JSON.stringify(jsonData.refusalChildren), 'No of refusal children', ['#FF0000', '#43AB0D']);
+                        threeAxisChart('vaccine-usage', JSON.stringify(jsonData.vaccineUsage), ['Received vials', 'Used vials', 'Wastage'],
+                            ['ReceivedVials', 'UsedVials', 'Wastage']);
+
+                        $('.loading, .loading-top').hide();
+                    },
+                    cache: false
+                });
+
+            })
+        });
+
+
+    </script>
+{% endblock %}

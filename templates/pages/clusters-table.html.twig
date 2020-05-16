@@ -1,0 +1,178 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <!-- Current Row -->
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-header with-border">
+                    {{ pageTitle }}
+
+                    <!-- Help Icon -->
+                    <a data-toggle="popover" data-container="body" class="pull-right btn-sm btn-info"
+                       data-placement="left" type="button" data-html="true"
+                       href="#" id="help">
+                        <i class="fa fa-question-circle"></i>
+                    </a>
+                    <!-- Popover Help Contents -->
+                    <div id="popover-content-help" class="hide">
+                        <div>
+                            <h5>Indicators and calculations descriptions:</h5>
+                            <p> By Default the cluster level trends table shows total missed children in absolute numbers.
+                                The benchmark for the color coding is defined in the bottom of the table. To see percentage
+                                of the missed children out of the target, filter it in the filter menu in the top-left corner of the table.
+                                For percentage calculation the target is <b style="color:dodgerblue">"vaccinated children + missed children"</b> in a cluster. And you can
+                                see the color coding benchmark for the percentages in the bottom of the table as well. <br>
+                                In the left chart, Discrepancy <span style="color:gray">(gray color)</span>
+                                is the difference of tallysheet data and ICN register book data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box-warning box">
+                                        <div class="box-body">
+                                            <span class="filter-loading loader-small info-loader"></span>
+                                            <div id="missed_recovery_chart_1" style="min-height: 400px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box-warning box">
+                                        <div class="box-body">
+                                            <div class="btn-group dropdown-filter">
+                                                <button type="button" class="btn btn-default btn-sm"><i class="fa fa-filter"></i></button>
+                                                <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                                        data-toggle="dropdown" aria-expanded="false">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li><a href="#" data-type="RemainingAbsent" class="filter-heatmap">Absent</a></li>
+                                                    <li><a href="#" data-type="RemainingNSS" class="filter-heatmap">NSS</a></li>
+                                                    <li><a href="#" data-type="FinalRemainingRefusal" class="filter-heatmap">Refusal</a></li>
+                                                    <li><a href="#" data-type="FinalRemaining" class="filter-heatmap">All Type</a></li>
+                                                    <li class="divider"></li>
+                                                    <li><a href="#" data-type="PerAbsent" class="filter-heatmap">Percentage Absent</a></li>
+                                                    <li><a href="#" data-type="PerNSS" class="filter-heatmap">Percentage NSS</a></li>
+                                                    <li><a href="#" data-type="PerRefusal" class="filter-heatmap">Percentage Refusal</a></li>
+                                                    <li><a href="#" data-type="PerRemaining" class="filter-heatmap">Percentage All Type</a></li>
+                                                </ul>
+                                                <a href="#benchmark" data-toggle="tooltip" title="click here to know about benchmark"
+                                                   class="badge bg-blue"
+                                                   style="top:4px; left:4px; display: inline-block; position: relative">
+                                                    <i class="fa fa-info"></i>&nbsp;
+                                                </a>
+                                            </div>
+                                            <span class="filter-loading loader-small trend-loader"></span>
+                                            <div id="cluster_trend" style="min-height: 400px;">
+                                            </div>
+                                            <input type="hidden" id="ajaxUrl"
+                                                   data-district="{{ district }}"
+                                                   value="{{ ajaxUrl }}"
+                                                   data-source="{{ source }}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end of the first row-->
+                    <!-- start of the next row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box-warning box">
+                                        <div class="box-body">
+                                            <span class="filter-loading loader-small trend-loader"></span>
+                                            <div id="loc_trend_all_type" style="height: 350px; max-height: 400px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- start of the next row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box-default box">
+                                        <div class="box-body">
+                                            <span class="filter-loading loader-small trend-loader"></span>
+                                            <div id="loc_trend_absent" style="height: 350px; max-height: 400px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- start of the next row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box-solid box">
+                                        <div class="box-body">
+                                            <span class="filter-loading loader-small trend-loader"></span>
+                                            <div id="loc_trend_nss" style="height: 350px; max-height: 400px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- start of the next row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box-danger box">
+                                        <div class="box-body">
+                                            <span class="filter-loading loader-small trend-loader"></span>
+                                            <div id="loc_trend_refusal" style="height: 350px; max-height: 400px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+{% block header %}
+    {% embed 'shared/header.html.twig' %}
+        {% block filter %}
+            {{ render(controller(
+            'App\\Controller\\Ajax\\AjaxFilterController:clusterFilterAction',
+                { 'source': source, 'district': district }
+            ))
+            }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script src="{{ asset('build/cluster-filter.js') }}"></script>
+{% endblock %}

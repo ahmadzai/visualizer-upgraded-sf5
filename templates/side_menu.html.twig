@@ -1,0 +1,22 @@
+{% extends 'knp_menu.html.twig' %}
+
+{% block label %}
+    {% if item.attributes('icon') %}
+        {# the item has the 'icon' extra set, display the FA icon #}
+        <i class="fa {{ item.getAttribute('icon') }}"></i>
+    {% endif %}
+
+    {# render the span/link element #}
+    {#{% if item.attributes('span') %}#}
+
+        <span>{{ parent() }}</span>
+        {% if item.attributes('sub_menu_icon') %}
+            <span class="pull-right-container">
+                <i class="fa {{ item.getAttribute('sub_menu_icon') }} pull-right"></i>
+            </span>
+        {% endif %}
+
+    {#{% else %}#}
+    {#{{ parent() }}#}
+    {#{% endif %}#}
+{% endblock %}

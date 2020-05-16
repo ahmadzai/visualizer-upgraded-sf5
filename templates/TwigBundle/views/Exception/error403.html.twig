@@ -1,0 +1,20 @@
+{% extends 'template-error.html.twig' %}
+
+{% block content %}
+    <div class="error-page">
+        <h2 class="headline text-yellow">403</h2>
+
+        <div class="error-content">
+            <h3><i class="fa fa-hand-stop-o text-yellow"></i> Sorry! You might not have rights to access this page.</h3>
+
+            <p>
+                If you may have access to COVID-19 page, you can visit that by clicking this link
+                <a class="text-yellow" href="{{ path('covid19_cases')}}">COVID-19 Cases</a>
+            </p>
+
+        </div>
+    </div>
+{% endblock %}
+{% block title %}
+Access Issue: 403
+{% endblock %}

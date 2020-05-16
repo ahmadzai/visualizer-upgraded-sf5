@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Bphshfindicator</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ bphsHfIndicator.id }}</td>
+            </tr>
+            <tr>
+                <th>Annualtarget</th>
+                <td>{{ bphsHfIndicator.annualTarget }}</td>
+            </tr>
+            <tr>
+                <th>Monthlytarget</th>
+                <td>{{ bphsHfIndicator.monthlyTarget }}</td>
+            </tr>
+            <tr>
+                <th>Targetyear</th>
+                <td>{{ bphsHfIndicator.targetYear }}</td>
+            </tr>
+            <tr>
+                <th>Createdat</th>
+                <td>{% if bphsHfIndicator.createdAt %}{{ bphsHfIndicator.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('bphs_hf_indicator_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('bphs_hf_indicator_edit', { 'id': bphsHfIndicator.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

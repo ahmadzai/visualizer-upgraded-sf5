@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+
+        {{ select|raw }}
+
+    </div>
+
+
+{% endblock %}
+
+{% block head_javascripts %}
+    <script src="{{ asset('template/bower_components/jquery/dist/jquery.min.js')}}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ asset('template/bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+    <!-- AdminLTE App -->
+
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {'callback': 'fos.Router.setData'}) }}"></script>
+
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('custom_js_css/charts-wrapper.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+
+            // ========================= General Configuration for charts =================
+            {#const config = new Array();#}
+            {#config['vac_child_10camp'] = {'title':'No of vaccinated children', 'color':['#43AB0D']};#}
+            {#config['missed_10camp'] = {'title':'No of missed children', 'color':['#C99900']};#}
+            {#config['missed_type_10camp'] = {'title':'No of missed by reason', 'color':['#FFFF00', '#C99900', '#FF0000']};#}
+            {#config['absent_3camp'] = {'title':'No of absent children', 'color':['#FFFF00', '#43AB0D']};#}
+            {#config['nss_3camp'] = {'title':'No of NSS children', 'color':['#C99900', '#43AB0D']};#}
+            {#config['refusal_3camp'] = {'title':'No of refusal children', 'color':['#FF0000', '#43AB0D']};#}
+
+
+            {#// =============================== Load the charts for the first time ================#}
+            {#myPieChartWrapper('chart-vac_child_10camp', '{{ testData|raw }}')#}
+            //myHeatMap('', 'chart-vac_child_10camp');
+            //myChartWrapper({type:'column', stacking:'percent'},'chart-vac_child_10camp', '');
+            //colChart('chart-vac_child_10camp', '', config['vac_child_10camp'].title, config['vac_child_10camp'].color);
+
+            // Prepare random data
+            var data = [
+//                    {code: 1, pop:6},
+//                    {code: 2, pop:3},
+//                    {code:3, pop:2.3},
+//                    {code:4, pop:1},
+//                    {code:5, pop:4},
+                [101, 'Kabul'],
+                [102, 'Kapisa'],
+                [103, 'Logar']
+
+            ];
+
+            $.getJSON('http://localhost/visualizer/web/maps//districts.json', function (geojson) {
+
+                // Initiate the chart
+                Highcharts.mapChart('chart-vac_child_10camp', {
+                    chart: {
+                        map: geojson,
+                        mapZoom: 10,
+                    },
+
+                    title: {
+                        text: 'GeoJSON in Highmaps'
+                    },
+
+                    mapNavigation: {
+                        enabled: true,
+                        buttonOptions: {
+                            verticalAlign: 'bottom'
+                        }
+                    },
+
+                    colorAxis: {
+                        min: 1,
+                        max: 6,
+                        type: 'logarithmic',
+                        minColor: '#EEEEFF',
+                        maxColor: '#000022',
+                        stops: [
+                            [0, '#EFEFFF'],
+                            [0.67, '#4444FF'],
+                            [1, '#000022']
+                        ]
+                    },
+
+                    xAxis: {
+                        minRange: 1
+                    },
+                    yAxis: {
+                        minRange: 1
+                    },
+
+                    series: [{
+                        allArea: false,
+                        animation: {
+                            duration: 1000
+                        },
+                        data: data,
+//                        keys:['PROV_CODE', 'value'],
+                        joinBy: ['DIST_CODE', 'value'],
+                        dataLabels: {
+                            enabled: true,
+                            color: '#FFFFFF',
+                            format: '{point.properties.DIST_NA_EN}'
+                        },
+                        name: 'Population density',
+                        tooltip: {
+                            pointFormat: '{point.properties.DIST_NA_EN}:{point.properties.DIST_CODE}'
+                        }
+                    }]
+                });
+            });
+
+
+
+        });
+
+
+    </script>
+{% endblock %}

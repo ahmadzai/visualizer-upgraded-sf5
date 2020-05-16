@@ -1,0 +1,117 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Projects</h3>
+                </div>
+                <div class="box-body">
+
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <i class="icon fa fa-check"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <table id="ona-connect-tbl" class="table table-bordered table-striped dash-dataTable" data-setting="{
+                                    'pageLength': 10,
+                                    'lengthMenu': [ [10, 25, 50, -1], [10, 25, 50, 'All'] ] }">
+                        <thead>
+                        <tr>
+                            <th>Project ID</th>
+                            <th>Project Name</th>
+                            <th>No. of Forms</th>
+                            <th>Creation Date-time</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for project in data %}
+                            <tr>
+
+                                <td>{{ project.projectid }}</td>
+                                <td>{{ project.name }}</td>
+                                <td>{{ project.forms |length }}</td>
+                                <td>{{ project.date_created|date }}</td>
+
+                                <td>
+
+                                    <a class="btn btn-xs btn-info"
+                                       href="{{ path("ona_connect", {"project":project.projectid}) }}">
+                                        Load Project
+                                    </a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        List
+        <small> of ONA Projects</small>
+    </h1>
+    <ol class="breadcrumb">
+
+        <li>
+            <a href="{{ path("home") }}">
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </li>
+
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username }} |
+
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('app_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}
+{% block css %}
+
+    <link rel="stylesheet" href="{{ asset('template/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
+    {{ parent() }}
+{% endblock %}
+{% block js %}
+    {{ parent() }}
+    <script src="{{ asset('template/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('template/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('#ona-connect-tbl').dataTable({
+                "pageLength": 15,
+                "lengthMenu": [ [15, 25, 50, -1], [15, 25, 50, "All"] ]
+            });
+        })
+    </script>
+{% endblock %}

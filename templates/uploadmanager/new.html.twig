@@ -1,0 +1,188 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-danger">
+                <div class="box-header">
+                    <h3 class="box-title">Attach upload to a table!</h3>
+                    <a class="btn btn-info btn-sm pull-right" href="{{ path('uploadmanager_index') }}">Back to List</a>
+                </div>
+
+
+                <!-- /.box-header -->
+                {#{% for label, messages in app.flashes %}#}
+                {#{% for message in messages %}#}
+
+                {#{{ message }}#}
+
+                {#{% endfor %}#}
+                {#{% endfor %}#}
+                <div class="box-body">
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <i class="icon fa fa-info"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+
+
+                    <div class="row">
+                        {% block form_errors %}
+                            {% if not form.vars.valid %}
+                                <div class="col-md-12">
+                                    <div class="alert alert-danger alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                        <h4><i class="icon fa fa-ban"></i> Form Errors!</h4>
+
+                                        <ul>
+                                            {#Loop through every form item#}
+                                            {% for child in form.children %}
+                                                {#Display the errors of the form item#}
+                                                {%for error in child.vars.errors%}
+                                                    <li>{{error.message}}</li>
+                                                {%endfor%}
+                                            {%endfor%}
+                                        </ul>
+                                        {#{{ form_errors(form) }}#}
+
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endblock form_errors %}
+                    </div>
+                    {{ form_start(form) }}
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <div class="form-group {{ form_errors(form.tableName)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.tableName) }}
+                                {{ form_widget(form.tableName, {'attr':{'tabindex':1}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group {{ form_errors(form.excludedColumns)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.excludedColumns) }}
+                                {{ form_widget(form.excludedColumns, {'attr':{'tabindex':2}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group {{ form_errors(form.entityColumns)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.entityColumns) }}
+                                {{ form_widget(form.entityColumns, {'attr':{'tabindex':3}}) }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group {{ form_errors(form.uniqueColumns)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.uniqueColumns) }}
+                                {{ form_widget(form.uniqueColumns, {'attr':{'tabindex':4}}) }}
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                {{ form_row(form.enabled, {'attr': {'tabIndex':5}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                {{ form_row(form.hasTemp, {'attr': {'tabIndex':6}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <input type="submit" class="btn btn-primary form-control" value="Create" />
+                            </div>
+                        </div>
+
+
+                    </div>
+                    {{ form_end(form) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script>
+        var $table = $('#upload_manager_tableName');
+        // When sport gets selected ...
+        $table.change(function() {
+            // ... retrieve the corresponding form.
+            var $form = $(this).closest('form');
+            // Simulate form data, but only include the selected sport value.
+            var data = {};
+            data[$table.attr('name')] = $table.val();
+            // Submit data via AJAX to the form's action path.
+            $.ajax({
+                url : $form.attr('action'),
+                type: $form.attr('method'),
+                data : data,
+                success: function(html) {
+                    // Replace current position field ...
+                    $('#upload_manager_excludedColumns').replaceWith(
+                        // ... with the returned one from the AJAX response.
+                        $(html).find('#upload_manager_excludedColumns')
+                    );
+
+                    //$('#upload_manager_excludedColumns').select2();
+
+                    $('#upload_manager_entityColumns').replaceWith(
+                        // ... with the returned one from the AJAX response.
+                        $(html).find('#upload_manager_entityColumns')
+                    );
+
+                    //$('#upload_manager_entityColumns').select2();
+
+                    $('#upload_manager_uniqueColumns').replaceWith(
+                        // ... with the returned one from the AJAX response.
+                        $(html).find('#upload_manager_uniqueColumns')
+                    );
+
+                    //$('#upload_manager_uniqueColumns').select2();
+                    // Position field now displays the appropriate positions.
+                }
+            });
+        });
+    </script>
+{% endblock %}
+{% block breadcrumb %}
+    <h1>
+        Upload
+        <small> manager</small>
+    </h1>
+    <ol class="breadcrumb">
+
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username }} |
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('app_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-header with-border">
+                    <h3 class="box-title campaign-title" id="campaign_title">
+                        Data will load soon...
+                    </h3>
+                    <span class="badge bg-gray-light" style="font-weight: normal; color:black">Source: Coverage, Catchup and Refusals Oversight Committee's Data</span>
+                    <span class="loader"></span>
+                    <a class="pull-right btn-sm btn-primary btn-cluster"
+                       data-route="{{ urlCluster }}"
+                       style="cursor:pointer" target="_blank" href="{{ path(urlCluster) }}">
+                        <i class="fa fa-mail-forward"></i> For clusters' data click here!
+                    </a>
+
+                    <!-- Help Icon -->
+                    <a data-toggle="popover" data-container="body" class="pull-right btn-sm btn-info"
+                       data-placement="left" type="button" data-html="true"
+                       style="margin-right: 10px"
+                       href="#" id="help">
+                        <i class="fa fa-question-circle"></i>
+                    </a>
+                    <!-- Popover Help Contents -->
+                    <div id="popover-content-help" class="hide">
+                        <div>
+                            <h5>Indicators and calculations descriptions:</h5>
+                            <ul>
+                                <li><span style="color:forestgreen">Vac By CRC:</span> Vaccinated by Cluster Refusals Committees
+                                </li>
+                                <li><span style="color:yellowgreen">Vac By RC:</span> Vaccinated by Religious Committees
+                                </li>
+                                <li><span style="color:lightseagreen">Vac By CIP:</span>Vaccinated by Community Influencing People</li>
+                                <li><span style="color:midnightblue">Vac By Senior</span>Vaccinated by Senior Health/Polio staff including DCO/PCO/PHD and so on.
+                                </li>
+                                <li><span style="color:darkred">Remaining Refusals:</span> Still remaining refusals after these committees work </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="ajaxUrl" value="{{ url }}"
+                           data-source="{{ source }}"/>
+                </div>
+                <div class="box-body">
+
+                    <!-- Start of First Row --->
+                    <div class="row">
+                    <div class="col-md-9">
+                        <div class="row info-row" id="info_box">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box box-primary">
+                                     <div class="box-body table-campaign-info" id="info_table">
+                                         <span class="loader-table info-loader"></span>
+                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box box-primary">
+                                    <span class="filter-loading loader-small info-loader"></span>
+                                    <div class="box-body" style="padding: 1px;">
+                                        <div id="refusal_recovery_pie_1" style="height: 200px; max-height: 250px;" >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <div class="box box-primary">
+                                    <span class="filter-loading loader-small info-loader"></span>
+                                    <div class="box-body" style="padding: 1px;">
+                                        <div id="total_remaining_refusal_1" style="height: 200px; max-height: 250px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+{#                    <!-- End of First Row --->#}
+{#                    <div class="row">#}
+{#                        <div class="col-md-6">#}
+{#                            <div class="box box-warning">#}
+{#                                <span class="filter-loading loader-small info-loader"></span>#}
+{#                                <div class="box-body" style="padding: 1px">#}
+{#                                    <div id="total_recovered_remaining_1" style="height: 350px; max-height: 350px;"></div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+
+{#                        <div class="col-md-6">#}
+{#                            <div class="box box-warning">#}
+{#                                <input type="hidden" id="map_data" value=""/>#}
+{#                                <div class="btn-group dropdown-filter">#}
+{#                                    <button type="button" class="btn btn-default btn-sm"><i class="fa fa-filter"></i></button>#}
+{#                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle"#}
+{#                                            data-toggle="dropdown" aria-expanded="false">#}
+{#                                        <span class="caret"></span>#}
+{#                                        <span class="sr-only">Toggle Dropdown</span>#}
+{#                                    </button>#}
+{#                                    <ul class="dropdown-menu" role="menu">#}
+{#                                        <li><a href="#" data-type="TotalRemaining" class="filter-map">All Missed</a></li>#}
+{#                                        <li><a href="#" data-type="RemAbsent" class="filter-map">Absent</a></li>#}
+{#                                        <li><a href="#" data-type="RemNSS" class="filter-map">NSS</a></li>#}
+{#                                        <li><a href="#" data-type="RemRefusal" class="filter-map">Refusal</a></li>#}
+
+{#                                        <li><a href="#" data-type="PerRemaining" class="filter-map">% All Missed</a></li>#}
+{#                                        <li><a href="#" data-type="PerAbsent" class="filter-map">% Absent</a></li>#}
+{#                                        <li><a href="#" data-type="PerNSS" class="filter-map">% NSS</a></li>#}
+{#                                        <li><a href="#" data-type="PerRefusal" class="filter-map">% Refusal</a></li>#}
+{#                                    </ul>#}
+{#                                </div>#}
+{#                                <span class="filter-loading loader-small map-loader"></span>#}
+{#                                <div class="box-body" style="padding: 1px">#}
+{#                                    <div id="map_container_1" style="height: 350px; max-height: 350px;"></div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <!-- Second Row --->#}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="refusal_recovered_1" style="height: 280px; max-height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="refusal_recovered_general_1" style="height: 280px; max-height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="refusal_recovered_detail_1" style="height: 280px; max-height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- End of second row -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Current Campaign Row-->
+    <!-- 3 or more campaigns by location trends -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray-light">
+                <div class="box-header with-border">
+                    <h3 class="box-title last10-campaign-title">Campaigns' Trend By Location</h3>
+                    <span class="badge bg-gray" style="font-weight: normal">Source: Coverage, Catchup and Refusals Oversight Committee's Data</span>
+                </div>
+                <div class="box-body">
+                    <!-- Actual Contents Rows Starts Here -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="loc_trend_general" style="height: 380px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="loc_trend_detail" style="height: 380px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+
+{#                    <div class="row">#}
+{#                        <div class="col-md-6">#}
+{#                            <div class="box box-primary">#}
+{#                                <span class="filter-loading loader-small trend-loader"></span>#}
+{#                                <div class="box-body">#}
+{#                                    <div id="loc_trend_nss" style="height: 350px; max-width:inherit"></div>#}
+{#                                </div>#}
+{#                                <!-- /.box-body -->#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="col-md-6">#}
+{#                            <div class="box box-primary">#}
+{#                                <span class="filter-loading loader-small trend-loader"></span>#}
+{#                                <div class="box-body">#}
+{#                                    <div id="loc_trend_refusal" style="height: 350px; max-width:inherit"></div>#}
+{#                                </div>#}
+{#                                <!-- /.box-body -->#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end of 3 or more campaigns by location trends -->
+    <!-- Start of the 10 Campaign Trends --->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-header with-border">
+                    <h3 class="box-title last10-campaign-title">Campaigns' Trend </h3>
+                    <span class="badge bg-gray" style="font-weight: normal">Source: Coverage, Catchup and Refusals Oversight Committee's Data</span>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="general_refusal_recovery_trend" style="min-width: 300px; height: 380px; max-width:inherit"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="detail_refusal_recovery_trend" style="min-width: 300px; height: 380px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--- End of the 10 Camp Trends --->
+{% endblock %}
+{% block title %}Refusal Committees' Dashboard{% endblock %}
+{% block header %}
+    {% embed 'shared/header.html.twig' %}
+        {% block filter %}
+            {{ render(controller(
+            'App\\Controller\\Ajax\\AjaxFilterController:smallFilterAction',
+                { 'source': 'RefusalComm'}
+            ))
+            }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+
+    <script  src="{{ asset('build/ref_committee.js') }}"></script>
+{% endblock %}

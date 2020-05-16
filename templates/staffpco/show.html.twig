@@ -1,0 +1,51 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+
+        <div class="col-md-6">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">PCOs in (Province): {{ staffPco.province.provinceName }}</h3>
+                    <h5 class="widget-user-desc">As of: {{ staffPco.asOfMonth }}-{{ staffPco.asOfYear }}</h5>
+                </div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+                        <li><a href="#">Total PCOs <span class="pull-right badge">{{ staffPco.noOfPco }}</span></a></li>
+                        <li><a href="#">Female PCOs <span class="pull-right badge bg-red-active">{{ staffPco.noOfFemalePco }}</span></a></li>
+                        <li><a href="#">% of Female <span class="pull-right badge ">
+                                    {% if staffPco.noOfFemalePco is not null %}
+                                    {{ staffPco.noOfFemalePco/staffPco.noOfPco*100 }}%
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                </span></a></li>
+                        <li><a href="#">Updated At <span class="pull-right badge ">{{ staffPco.updatedAt|date('d-M-Y') }}</span></a></li>
+
+                    </ul>
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+    </div>
+
+    <div>
+
+        <a href="{{ path('staff-pco_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
+
+
+        <a href="{{ path('staff-pco_edit', { 'id': staffPco.id }) }}" class="btn btn-info">Edit</a>
+
+    </div>
+    <br>
+    <div>
+        {{ form_start(delete_form) }}
+        <button type="submit" value="Delete" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+        {{ form_end(delete_form) }}
+    </div>
+{% endblock %}

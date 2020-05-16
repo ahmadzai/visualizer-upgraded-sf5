@@ -1,0 +1,91 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Add a new service!</h3>
+                </div>
+
+                {{ form_start(form) }}
+                <div class="box-body">
+
+                    {% block form_errors %}
+                        {% if not form.vars.valid %}
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-ban"></i> Form Errors!</h4>
+
+                                <ul>
+                                    {#Loop through every form item#}
+                                    {% for child in form.children %}
+                                        {#Display the errors of the form item#}
+                                        {%for error in child.vars.errors%}
+                                            <li>{{ child.vars.label }}: {{error.message}}</li>
+                                        {%endfor%}
+                                    {%endfor%}
+                                </ul>
+                                {#{{ form_errors(form) }}#}
+
+                            </div>
+                        {% endif %}
+                    {% endblock form_errors %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <div class="form-group {{ form_errors(form.apiServiceName)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.apiServiceName) }}
+                                {{ form_widget(form.apiServiceName, {'attr':{'tabindex':1}}) }}
+                            </div>
+
+
+                            <div class="form-group {{ form_errors(form.apiServiceUrl)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.apiServiceUrl) }}
+                                {{ form_widget(form.apiServiceUrl, {'attr':{'tabindex':2}}) }}
+                            </div>
+
+
+                            <div class="form-group {{ form_errors(form.apiKey)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.apiKey) }}
+                                {{ form_widget(form.apiKey, {'attr':{'tabindex':3}}) }}
+                            </div>
+
+
+                            <div class="form-group {{ form_errors(form.apiUser)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.apiUser) }}
+                                {{ form_widget(form.apiUser, {'attr':{'tabindex':4}}) }}
+                            </div>
+
+                            <div class="form-group {{ form_errors(form.apiPass)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.apiPass) }}
+                                {{ form_widget(form.apiPass,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                            </div>
+
+                            <div class="form-group {{ form_errors(form.apiLoginType)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.apiLoginType) }}
+                                {{ form_widget(form.apiLoginType,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+
+                    </div>
+                    {#{% endblock form_row %}#}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="submit" tabindex="13" class="btn btn-info" value="Create" />
+                            <a href="{{ path('apiconnect_index') }}" class="btn btn-default">
+                                <i class="fa fa-mail-reply"></i> Go Back!
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

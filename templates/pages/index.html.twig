@@ -1,0 +1,282 @@
+{% extends 'template.html.twig' %}
+{% block content %}
+    {#<script src="{{ asset('charts/highcharts.js') }}"></script>#}
+    {#<script src="{{ asset('charts/modules/exporting.js') }}"></script>#}
+    {#<script src="{{ asset('charts/modules/grouped-categories.js') }}"></script>#}
+    <!-- Current Row -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-header with-border">
+                    <h3 class="box-title" id="campaign_title">Data will load soon... </h3>
+                    <span class="badge bg-gray-light" style="font-weight: normal; color:black">Source: Admin, Catchup and Refusals Committees Data</span>
+                    <span class="loader"></span>
+
+                    <!-- Cluster Link -->
+                    <a class="pull-right btn-sm btn-primary btn-cluster"
+                       data-route="{{ urlCluster }}"
+                       style="cursor:pointer" target="_blank" href="{{ path(urlCluster) }}">
+                        <i class="fa fa-mail-forward"></i> For clusters' data click here!
+                    </a>
+
+                    <!-- Help Icon -->
+                    <a data-toggle="popover" data-container="body" class="pull-right btn-sm btn-info"
+                       data-placement="left" type="button" data-html="true"
+                       style="margin-right: 10px"
+                       href="#" id="help">
+                       <i class="fa fa-question-circle"></i>
+                    </a>
+                    <!-- Popover Help Contents -->
+                    <div id="popover-content-help" class="hide">
+                        <div>
+                            <h5>Indicators and calculations descriptions:</h5>
+                            <ul>
+                                <li><span style="color:green">Total Vaccinated:</span>  Vaccinated in Campaign (including nomads and children vaccinated in PTTs),
+                                in Catchup and vaccinated by refusals committees</li>
+                                <li><span style="color:deepskyblue">Vac Campaign:</span> Vaccinated in Campaign days (3 days of campaign + revisit day)</li>
+                                <li><span style="color:dodgerblue">Vac Catchup:</span> Vaccinated in Catchup days, which starts on Sunday (the following week of the campaign) </br>
+                                It's normally 2-3 days to recover missed children, it only happens in ICN districts
+                                </li>
+                                <li><span>Target:</span> Vaccinated children + missed children in campaign (excluding nomads and children vaccinated in PTTs)</li>
+                                <li><span style="color:gray">Discrepancy/Discrep:</span>
+                                Difference of missed children (by reason as well) between tallysheet and ICN register book.
+                                You might see more discrepancy in the aggregated dashboard, but if you filter for an ICN district, then there will be no or very less
+                                discrepancy.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="ajaxUrl" value="{{ url }}"
+                           data-source="{{ source }}"/>
+                </div>
+                <div class="box-body">
+                    <!-- First Row --->
+                    <div class="box-body">
+
+                    <!-- Start of First Row --->
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="row info-row" id="info_box">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                         <div class="box-body table-campaign-info" id="info_table">
+                                             <span class="loader-table info-loader"></span>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <span class="filter-loading loader-small info-loader"></span>
+                                        <div class="box-body" style="padding: 1px;">
+                                            <div id="missed_by_reason_pie_1" style="height: 200px; max-height: 250px;" >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <div class="box box-primary">
+                                        <span class="filter-loading loader-small info-loader"></span>
+                                        <div class="box-body" style="padding: 1px;">
+                                            <div id="total_remaining_1" style="height: 200px; max-height: 250px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of First Row and Start of Second one-->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="total_recovered_remaining_1" style="height: 350px; max-height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="box box-warning">
+                                <input type="hidden" id="map_data" value=""/>
+                                <div class="btn-group dropdown-filter">
+                                    <button type="button" class="btn btn-default btn-sm"><i class="fa fa-filter"></i></button>
+                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                            data-toggle="dropdown" aria-expanded="false">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" data-type="DiscFinalRemaining" class="filter-map">All Missed</a></li>
+                                        <li><a href="#" data-type="DiscRemainingAbsent" class="filter-map">Absent</a></li>
+                                        <li><a href="#" data-type="DiscRemainingNSS" class="filter-map">NSS</a></li>
+                                        <li><a href="#" data-type="DiscFinalRemainingRefusal" class="filter-map">Refusal</a></li>
+
+                                        <li><a href="#" data-type="PerRemaining" class="filter-map">% All Missed</a></li>
+                                        <li><a href="#" data-type="PerAbsent" class="filter-map">% Absent</a></li>
+                                        <li><a href="#" data-type="PerNSS" class="filter-map">% NSS</a></li>
+                                        <li><a href="#" data-type="PerRefusal" class="filter-map">% Refusal</a></li>
+                                    </ul>
+                                </div>
+                                <span class="filter-loading loader-small map-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="map_container_1" style="height: 350px; max-height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of Second Row, Start of Third Row-->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="recovered_all_type_1" style="height: 200px; max-height: 250px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="recovered_absent_1" style="height: 200px; max-height: 250px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="recovered_nss_1" style="height: 200px; max-height: 250px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="recovered_refusal_1" style="height: 200px; max-height: 250px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of second row -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Current Campaign Row-->
+    <!-- Start of the 10 Campaign Trends --->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray-light">
+                <div class="box-header with-border">
+                    <h3 class="box-title last10-campaign-title">Last 10 Campaigns' Trend </h3>
+                    <span class="badge bg-gray" style="font-weight: normal">Source: Admin, Catchup and Refusals Committees Data</span>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="vac_child_trend" style="min-width: 300px; height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="missed_child_trend" style="min-width: 300px; height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="missed_recovered_trend" style="min-width: 300px; height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="absent_recovered_trend" style="min-width: 300px; height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="nss_recovered_trend" style="min-width: 300px; height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="refusal_recovered_trend" style="min-width: 300px; height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box box-info">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="missed_child_recovery_trend" style="min-width: 300px; height: 350px; max-width:inherit">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--- End of the 10 Camp Trends --->
+{% endblock %}
+{% block title %}Polio DB Main Dashboard{% endblock %}
+{% block header %}
+    {% embed 'shared/header.html.twig' %}
+        {% block filter %}
+            {{ render(controller(
+            'App\\Controller\\Ajax\\AjaxFilterController::smallFilterAction'
+            ))
+            }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+     <script  src="{{ asset('build/main.js') }}"></script>
+{% endblock %}

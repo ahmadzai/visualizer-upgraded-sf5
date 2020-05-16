@@ -1,0 +1,334 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <!-- Current Campaign Information Row -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-header with-border">
+                    <h3 class="box-title campaign-title" id="campaign_title">
+                        Data will load soon...
+                    </h3>
+                    <span class="badge bg-gray-light" style="font-weight: normal; color:black">Source: Catchup Data</span>
+                    <span class="loader"></span>
+                    <a class="pull-right btn-sm btn-primary btn-cluster"
+                       data-route="{{ urlCluster }}"
+                       style="cursor:pointer" target="_blank" href="{{ path(urlCluster) }}">
+                        <i class="fa fa-mail-forward"></i> For clusters' data click here!
+                    </a>
+
+                    <!-- Help Icon -->
+                    <a data-toggle="popover" data-container="body" class="pull-right btn-sm btn-info"
+                       data-placement="left" type="button" data-html="true"
+                       style="margin-right: 10px"
+                       href="#" id="help">
+                        <i class="fa fa-question-circle"></i>
+                    </a>
+                    <!-- Popover Help Contents -->
+                    <div id="popover-content-help" class="hide">
+                        <div>
+                            <h5>Indicators and calculations descriptions:</h5>
+                            <ul>
+                                <li><span style="color:orange">Target:</span> Total missed children (source: ICN Register Book)
+                                </li>
+                                <li><span style="color:deepskyblue">Recovered:</span> Total Recovered children out of the Target.
+                                </li>
+                                <li><span style="color:gray">Unrecorded:</span>Vaccinated children during catchup that were not recorded as missed</li>
+                                <li><span style="color:forestgreen">Recovered Percentage:</span>
+                                Shows the percentage of the recovered children out of target missed (Recovered / Target Missed * 100)
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="ajaxUrl" value="{{ url }}"
+                           data-source="{{ source }}"/>
+                </div>
+                <div class="box-body">
+
+                    <!-- Start of First Row --->
+                    <div class="row">
+                        <div class="col-md-9">
+                            <!-- The information row with widgets -->
+                            <div class="row info-row" id="info_box">
+                            </div>
+                            <!-- The table part of the dashboard -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                         <div class="box-body table-campaign-info" id="info_table">
+                                             <span class="info-loader loader-table"></span>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Left sidebar -->
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <span class="filter-loading loader-small info-loader"></span>
+                                         <div class="box-body" style="padding: 1px;">
+                                            <div id="missed_by_reason_pie_1" style="height: 200px; max-height: 250px;" >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <div class="box box-primary">
+                                        <span class="filter-loading loader-small info-loader"></span>
+                                        <div class="box-body" style="padding: 1px;">
+                                            <div id="total_remaining_1" style="height: 200px; max-height: 250px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of left side bar -->
+                    </div>
+                    <!-- End of First Row --->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="total_recovered_remaining_1" style="height: 350px; max-height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="box box-warning">
+                                <input type="hidden" id="map_data" value=""/>
+                                <div class="btn-group dropdown-filter">
+                                    <button type="button" class="btn btn-default btn-sm"><i class="fa fa-filter"></i></button>
+                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                            data-toggle="dropdown" aria-expanded="false">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" data-type="TotalRemaining" class="filter-map">All Missed</a></li>
+                                        <li><a href="#" data-type="RemAbsent" class="filter-map">Absent</a></li>
+                                        <li><a href="#" data-type="RemNSS" class="filter-map">NSS</a></li>
+                                        <li><a href="#" data-type="RemRefusal" class="filter-map">Refusal</a></li>
+                                        <li><a href="#" data-type="PerRecovered" class="filter-map">Percentage of Recovered</a></li>
+                                    </ul>
+                                </div>
+                                <span class="filter-loading loader-small map-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="map_container_1" style="height: 350px; max-height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Second Row --->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="recovered_all_type_1"
+                                         style="height: 200px; max-height: 250px; width: inherit;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="recovered_absent_1" style="height: 200px; max-height: 250px; width: inherit;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="recovered_nss_1" style="height: 200px; max-height: 250px; width: inherit;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="box box-warning">
+                                <span class="filter-loading loader-small info-loader"></span>
+                                <div class="box-body" style="padding: 1px">
+                                    <div id="recovered_refusal_1" style="height: 200px; max-height: 250px; width: inherit;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Current Campaign Row-->
+    <!-- 3 or more campaigns by location trends -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray-light">
+                <div class="box-header with-border">
+                    <h3 class="box-title last10-campaign-title">Campaigns' Trend By Location</h3>
+                    <span class="badge bg-gray" style="font-weight: normal">Source: Catchup Data</span>
+                </div>
+                <div class="box-body">
+                    <!-- Actual Contents Rows Starts Here -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="loc_trend_all_type" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="loc_trend_absent" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="loc_trend_nss" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="loc_trend_refusal" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end of 3 or more campaigns by location trends -->
+    <!-- Start of the 10 Campaign Trends --->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-header with-border">
+                    <h3 class="box-title last10-campaign-title">Last 10 Campaigns' Trend </h3>
+                    <span class="badge bg-gray-light" style="font-weight: normal; color:black">Source: Catchup Data</span>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="vac_child_trend" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="missed_child_trend" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="missed_by_type_trend" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="absent_recovered_trend" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="nss_recovered_trend" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="box box-primary">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="refusal_recovered_trend" style="height: 350px; max-width:inherit"></div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box box-info">
+                                <span class="filter-loading loader-small trend-loader"></span>
+                                <div class="box-body">
+                                    <div id="missed_child_recovery_trend" style="height: 350px; max-width:inherit">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of 10 Campaigns Trends -->
+
+{% endblock %}
+{% block title %}Catchup Data Dashboard{% endblock %}
+{% block header %}
+    {% embed 'shared/header.html.twig' %}
+        {% block filter %}
+            {{ render(controller(
+            'App\\Controller\\Ajax\\AjaxFilterController:smallFilterAction',
+            { 'source': 'CatchupData'}
+            ))
+            }}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+
+    <script  src="{{ asset('build/catchup.js') }}"></script>
+{% endblock %}

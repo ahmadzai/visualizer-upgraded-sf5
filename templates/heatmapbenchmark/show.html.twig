@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Heatmapbenchmark</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ heatmapBenchmark.id }}</td>
+            </tr>
+            <tr>
+                <th>Minvalue</th>
+                <td>{{ heatmapBenchmark.minValue }}</td>
+            </tr>
+            <tr>
+                <th>Maxvalue</th>
+                <td>{{ heatmapBenchmark.maxValue }}</td>
+            </tr>
+            <tr>
+                <th>Midstop</th>
+                <td>{{ heatmapBenchmark.midStop }}</td>
+            </tr>
+            <tr>
+                <th>Mincolor</th>
+                <td>{{ heatmapBenchmark.minColor }}</td>
+            </tr>
+            <tr>
+                <th>Maxcolor</th>
+                <td>{{ heatmapBenchmark.maxColor }}</td>
+            </tr>
+            <tr>
+                <th>Midcolor</th>
+                <td>{{ heatmapBenchmark.midColor }}</td>
+            </tr>
+            <tr>
+                <th>Datasource</th>
+                <td>{{ heatmapBenchmark.dataSource }}</td>
+            </tr>
+            <tr>
+                <th>Indicator</th>
+                <td>{{ heatmapBenchmark.indicator }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('heatmap_benchmark_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('heatmap_benchmark_edit', { 'id': heatmapBenchmark.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}
+
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+
+        <div class="col-md-6">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">Data Source: {{ heatmapBenchmark.dataSource }}</h3>
+                    <h5 class="widget-user-desc">Indicator: {{ heatmapBenchmark.indicator }}</h5>
+                </div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+                        <li><a href="#">Min Value <span class="pull-right badge ">{{ province.provinceNamePashtu }}</span></a></li>
+                        <li><a href="#">Dari Name <span class="pull-right badge ">{{ province.provinceNameDari }}</span></a></li>
+                        <li><a href="#">Rhizome Code <span class="pull-right badge ">{{ province.provinceRhizomeCode }}</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+    </div>
+
+    <div>
+
+        <a href="{{ path('province_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
+
+
+        <a href="{{ path('province_edit', { 'id': province.id }) }}" class="btn btn-info">Edit</a>
+
+    </div>
+    <br>
+    <div>
+        {{ form_start(delete_form) }}
+        <button type="submit" value="Delete" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+        {{ form_end(delete_form) }}
+    </div>
+{% endblock %}
+

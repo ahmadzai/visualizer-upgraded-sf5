@@ -1,0 +1,113 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Forms</h3>
+                </div>
+                <div class="box-body">
+
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <i class="icon fa fa-check"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <table id="ona-connect-tbl" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Form ID</th>
+                            <th>Form Name</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for form in data.forms %}
+                            <tr>
+
+                                <td>{{ form.formid}}</td>
+                                <td>{{ form.name }}</td>
+                                <td>
+
+                                    <a class="btn btn-xs btn-info" title="Sync ONA data with Poliodb"
+                                       href="{{ path("ona_sync_form", {"form":form.formid, "table":form.id_string}) }}">
+                                        Sync Form Data
+                                    </a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        {{ data.name }}
+        <small> Project's Forms</small>
+    </h1>
+    <ol class="breadcrumb">
+
+        <li>
+            <a href="{{ path("home") }}">
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </li>
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username}} |
+            {#<li class="active"><i class="fa fa-user"></i>#}
+            {#<a href="{{ path('fos_user_security_logout') }}">#}
+            {#{{ 'layout.logout'|trans({}, 'FOSUserBundle') }}#}
+            {#</a>#}
+            {#</li>#}
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('app_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}
+{% block css %}
+
+    <link rel="stylesheet" href="{{ asset('template/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
+    {{ parent() }}
+{% endblock %}
+{% block js %}
+    {{ parent() }}
+    <script src="{{ asset('template/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('template/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('#ona-connect-tbl').dataTable({
+                "pageLength": 15,
+                "lengthMenu": [ [15, 25, 50, -1], [15, 25, 50, "All"] ]
+            });
+        })
+    </script>
+{% endblock %}

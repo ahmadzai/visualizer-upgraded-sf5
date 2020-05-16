@@ -1,7 +1,16 @@
 security:
     encoders:
         App\Entity\User:
-            algorithm: auto
+            algorithm: bcrypt
+    role_hierarchy:
+        ROLE_COVID19_VIEWER: ROLE_COVID19_VIEWER
+        ROLE_PARTNER: ROLE_COVID19_VIEWER
+        ROLE_NORMAL_USER: ROLE_PARTNER
+        ROLE_COVID19_EDITOR: ROLE_COVID19_VIEWER
+        ROLE_RESTRICTED_EDITOR: ROLE_NORMAL_USER
+        ROLE_EDITOR: [ROLE_COVID19_EDITOR, ROLE_RESTRICTED_EDITOR]
+        ROLE_ADMIN: ROLE_EDITOR
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:

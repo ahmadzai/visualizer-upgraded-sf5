@@ -1,0 +1,56 @@
+{% if change_breadcrumb is defined and change_breadcrumb==true %}
+    <h1>
+        {% if breadcrumb_text is defined %}
+            {{ breadcrumb_text|raw }}
+        {% else %}
+            General <small> settings</small>
+        {% endif %}
+    </h1>
+    <ol class="breadcrumb">
+
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username }} |
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+{#        {% else %}#}
+{#            <li>#}
+{#                <a href="{{ path('fos_user_security_login') }}">#}
+{#                    <i class="fa fa-sign-in"></i>#}
+{#                    {{ 'layout.login'|trans({}, 'FOSUserBundle') }}#}
+{#                </a>#}
+{#            </li>#}
+
+        {% endif %}
+    </ol>
+{% elseif change_breadcrumb is not defined %}
+    <h1>
+        {{ knp_menu_get_current_item('covidMenu').label }}
+        <small>{{ knp_menu_get_current_item('covidMenu').getExtra('info')}}</small>
+    </h1>
+    <ol class="breadcrumb">
+                {% for breadcrumb_item in knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('covidMenu')) %}
+                {% if not loop.last %}
+                    {% if not loop.last and not loop.first %}
+                    <li>
+                        <a href="{{ breadcrumb_item.uri }}">
+                            <i class="fa {{ breadcrumb_item.item.getAttribute('icon') }} "></i>
+                            {{ breadcrumb_item.label }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% else %}
+                    <li class="active">
+                        <i class="fa {{ breadcrumb_item.item.getAttribute('icon') }} "></i>
+                        {{ breadcrumb_item.label }}
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+        {#<li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>#}
+        {#<li class="active">Here</li>#}
+    </ol>
+{% endif %}

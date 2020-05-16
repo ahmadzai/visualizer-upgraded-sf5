@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Bphshfindicators list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Annualtarget</th>
+                <th>Monthlytarget</th>
+                <th>Targetyear</th>
+                <th>Createdat</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for bphsHfIndicator in bphsHfIndicators %}
+            <tr>
+                <td><a href="{{ path('bphs_hf_indicator_show', { 'id': bphsHfIndicator.id }) }}">{{ bphsHfIndicator.id }}</a></td>
+                <td>{{ bphsHfIndicator.annualTarget }}</td>
+                <td>{{ bphsHfIndicator.monthlyTarget }}</td>
+                <td>{{ bphsHfIndicator.targetYear }}</td>
+                <td>{% if bphsHfIndicator.createdAt %}{{ bphsHfIndicator.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('bphs_hf_indicator_show', { 'id': bphsHfIndicator.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('bphs_hf_indicator_edit', { 'id': bphsHfIndicator.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('bphs_hf_indicator_new') }}">Create a new bphsHfIndicator</a>
+        </li>
+    </ul>
+{% endblock %}

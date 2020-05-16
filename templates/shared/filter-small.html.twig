@@ -1,0 +1,68 @@
+<li style="padding-top: 8px; padding-bottom: 8px;">
+    <div class="dropdown">
+        {#<label class="col-md-1 control-label" style="color: #ffffff;">Campaigns:</label>#}
+        <div class="col-md-10">
+            <select multiple="multiple" class="multiselect" name="filterCampaign" id="filterCampaign">
+                {% for campaign in campaigns %}
+
+                    <option value="{{ campaign.id }}"
+                            {% for camp in selectedCampaign %}
+                                {% if camp == campaign.id %} selected {% endif %}
+                            {% endfor %}
+                    >{{ campaign.campaignName }}</option>
+
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</li>
+
+<li style="padding-top: 8px; padding-bottom: 8px;">
+    <div class="dropdown">
+        {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
+        <div class="col-md-10">
+            <select multiple="multiple" class="multiselect" name="filterRegion" id="filterRegion">
+                {% for region in regions %}
+                    <option value="{{ region['provinceRegion'] }}"
+
+                            {#{% if app.session.has(region['provinceRegion']) %} selected {% endif %}#}
+
+                    >{{ region['provinceRegion'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</li>
+
+<li style="padding: 8px 0px;">
+    <div class="dropdown">
+        {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
+        <div class="col-md-10">
+            <select multiple="multiple" class="multiselect" name="filterProvince" id="filterProvince">
+
+            </select>
+        </div>
+    </div>
+</li>
+
+<li style="padding-top: 8px; padding-bottom: 8px;">
+    <div class="dropdown">
+        {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
+        <div class="col-md-10">
+            <!--
+            //Todo: make below dynamic
+            -->
+            <select multiple="multiple" class="multiselect" name="filterDistrict" id="filterDistrict">
+                <option value="All">All districts</option>
+                <option value="VHR">VHR districts</option>
+                <option value="Focus">Focus districts</option>
+                <option value="HR">HR districts</option>
+                <option value="None">Non-V/HR districts</option>
+            </select>
+        </div>
+    </div>
+</li>
+
+<li style="padding:8px 0px;">
+    <button type="button" class="btn btn-warning" id="filterButton"><i class="fa fa-filter"></i> Filter</button>
+</li>

@@ -1,0 +1,100 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Add a new heatmap rule!</h3>
+                </div>
+
+                {{ form_start(form) }}
+                <div class="box-body">
+
+                    {% block form_errors %}
+                        {% if not form.vars.valid %}
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-ban"></i> Form Errors!</h4>
+
+                                <ul>
+                                    {#Loop through every form item#}
+                                    {% for child in form.children %}
+                                        {#Display the errors of the form item#}
+                                        {%for error in child.vars.errors%}
+                                            <li>{{ child.vars.label }}: {{error.message}}</li>
+                                        {%endfor%}
+                                    {%endfor%}
+                                </ul>
+                                {#{{ form_errors(form) }}#}
+
+                            </div>
+                        {% endif %}
+                    {% endblock form_errors %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <div class="form-group {{ form_errors(form.minValue)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.minValue) }}
+                                {{ form_widget(form.minValue, {'attr':{'tabindex':1}}) }}
+                            </div>
+
+
+                            <div class="form-group {{ form_errors(form.maxValue)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.maxValue) }}
+                                {{ form_widget(form.maxValue, {'attr':{'tabindex':2}}) }}
+                            </div>
+
+
+                            <div class="form-group {{ form_errors(form.midStop)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.midStop) }}
+                                {{ form_widget(form.midStop, {'attr':{'tabindex':3}}) }}
+                            </div>
+
+
+                            <div class="form-group {{ form_errors(form.minColor)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.minColor) }}
+                                {{ form_widget(form.minColor, {'attr':{'tabindex':4}}) }}
+                            </div>
+
+                            <div class="form-group {{ form_errors(form.midColor)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.midColor) }}
+                                {{ form_widget(form.midColor,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                            </div>
+
+                            <div class="form-group {{ form_errors(form.maxColor)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.maxColor) }}
+                                {{ form_widget(form.maxColor,{'attr':{'tabindex':6, 'style':'width:100%'}}) }}
+                            </div>
+
+                            <div class="form-group {{ form_errors(form.dataSource)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.dataSource) }}
+                                {{ form_widget(form.dataSource,{'attr':{'tabindex':7, 'style':'width:100%'}}) }}
+                            </div>
+
+                            <div class="form-group {{ form_errors(form.indicator)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.indicator) }}
+                                {{ form_widget(form.indicator,{'attr':{'tabindex':8, 'style':'width:100%'}}) }}
+                            </div>
+                            <!-- /.form-group -->
+                        </div>
+
+                    </div>
+                    {#{% endblock form_row %}#}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="submit" tabindex="13" class="btn btn-info" value="Create" />
+                            <a href="{{ path('heatmap_benchmark_index') }}" class="btn btn-default">
+                                <i class="fa fa-mail-reply"></i> Go Back!
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Provinces</h3>
+                <a href="{{ path("province_new") }}" class="btn btn-sm btn-info pull-right">
+                    <i class="fa fa-plus"></i> New Province
+                </a>
+            </div>
+            <div class="box-body">
+
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <i class="icon fa fa-check"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <table id="provinces" class="table table-bordered table-striped dash-dataTable"
+                       data-setting="{% if tableSetting is defined %}{{ tableSetting }}{% endif %}">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Region</th>
+                            <th>Province</th>
+                            <th>Pashto Name</th>
+                            <th>Dari Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for province in provinces %}
+                        <tr>
+                            <td><a href="{{ path('province_show', { 'id': province.id }) }}">{{ province.id }}</a></td>
+                            <td>{{ province.provinceRegion }}</td>
+                            <td>{{ province.provinceName }}</td>
+                            <td>{{ province.provinceNamePashtu }}</td>
+                            <td>{{ province.provinceNameDari }}</td>
+
+                            <td>
+
+                                <a href="{{ path('province_show', { 'id': province.id }) }}" class="btn btn-xs btn-info">show</a>
+
+                                <a href="{{ path('province_edit', { 'id': province.id }) }}" class="btn btn-xs btn-warning">edit</a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        List
+        <small> of all provinces</small>
+    </h1>
+    <ol class="breadcrumb">
+
+        <li>
+            <a href="{{ path("home") }}">
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </li>
+
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username }} |
+
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('app_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}

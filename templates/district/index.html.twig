@@ -1,0 +1,119 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Districts</h3>
+                <a href="{{ path("district_new") }}" class="btn btn-sm btn-info pull-right">
+                    <i class="fa fa-plus"></i> New District
+                </a>
+            </div>
+
+            <div class="box-body">
+
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <i class="icon fa fa-check"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <table id="districts" class="table table-bordered table-striped dash-dataTable"
+                       data-setting="{% if tableSetting is defined %}{{ tableSetting }}{% endif %}">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Province</th>
+                            <th>District</th>
+                            <th>Alt Name</th>
+                            <th>LPD Status</th>
+                            <th>HR/VHR</th>
+                            <th>ICN Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for district in districts %}
+                        <tr>
+
+                            <td><a href="{{ path('district_show', { 'id': district.id }) }}">{{ district.id }}</a></td>
+                            <td>{{ district.province.provinceName }}</td>
+                            <td>{{ district.districtName }}</td>
+                            <td>{{ district.districtNameAlt }}</td>
+                            <td>
+                                {% if district.districtLpdStatus == 1 %}
+                                <span class="badge bg-red">{{ district.districtLpdStatus }}</span>
+                                {% elseif district.districtLpdStatus == 2 %}
+                                <span class="badge bg-yellow">{{ district.districtLpdStatus }}</span>
+                                {% elseif district.districtLpdStatus == 3 %}
+                                <span class="badge bg-warning">{{ district.districtLpdStatus }}</span>
+                                {% endif %}
+
+                            </td>
+                            <td>
+                                {% if district.districtRiskStatus == "VHR" %}
+                                    <span class="badge bg-red">{{ district.districtRiskStatus }}</span>
+                                {% elseif district.districtRiskStatus == "HR" %}
+                                    <span class="badge bg-yellow">{{ district.districtRiskStatus }}</span>
+                                {% endif %}
+
+                            </td>
+                            <td>{{ district.districtIcnStatus }}</td>
+
+                            <td>
+
+                                <a class="btn btn-xs btn-info" href="{{ path('district_show', { 'id': district.id }) }}">show</a>
+
+                                <a class="btn btn-xs btn-warning" href="{{ path('district_edit', { 'id': district.id }) }}">edit</a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        List
+        <small> of districts</small>
+    </h1>
+    <ol class="breadcrumb">
+
+        <li>
+            <a href="{{ path("home") }}">
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </li>
+
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+            {{ app.user.username }} |
+
+            <li>
+                <a href="{{ path('app_logout') }}">
+                    <i class="fa fa-sign-out"></i>
+                    Logout
+                </a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ path('app_login') }}">
+                    <i class="fa fa-sign-in"></i>
+                    Login
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ol>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'template-error.html.twig' %}
+
+{% block content %}
+    <div class="error-page">
+        <h2 class="headline text-red">Error!</h2>
+
+        <div class="error-content">
+            <h3><i class="fa fa-warning text-red"></i> Oops! Something went wrong.</h3>
+
+            <p>
+                The requested page couldn't be located. Checkout for any URL
+                misspelling or return to main <a href="{{ path('home')}}">Dashboard</a>
+            </p>
+
+        </div>
+    </div>
+{% endblock %}
+{% block title %}
+Error!
+{% endblock %}

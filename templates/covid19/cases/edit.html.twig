@@ -1,0 +1,102 @@
+{% extends 'covid19/covid_template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Updating Cases</h3>
+                </div>
+
+                {{ form_start(edit_form) }}
+                <div class="box-body">
+
+                    {% block form_errors %}
+                        {% if not edit_form.vars.valid %}
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h4><i class="icon fa fa-ban"></i> edit_form Errors!</h4>
+
+                                <ul>
+                                    {#Loop through every edit_form item#}
+                                    {% for child in edit_form.children %}
+                                        {#Display the errors of the edit_form item#}
+                                        {%for error in child.vars.errors%}
+                                            <li>{{ child.vars.label }}: {{error.message}}</li>
+                                        {%endfor%}
+                                    {%endfor%}
+                                </ul>
+                                {#{{ form_errors(edit_form) }}#}
+
+                            </div>
+                        {% endif %}
+                    {% endblock form_errors %}
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-4 edit_form-group {{ form_errors(edit_form.province)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(edit_form.province) }}
+                                {{ form_widget(edit_form.province,{'attr':{'tabindex':1, 'style':'width:100%'}}) }}
+                            </div>
+
+
+                            <div class="col-md-4 edit_form-group {{ form_errors(edit_form.noOfConfirmedCases)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(edit_form.noOfConfirmedCases) }}
+                                {{ form_widget(edit_form.noOfConfirmedCases, {'attr':{'tabindex':2}}) }}
+                            </div>
+
+
+                            <div class="col-md-4 edit_form-group {{ form_errors(edit_form.noOfSuspectedCases)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(edit_form.noOfSuspectedCases) }}
+                                {{ form_widget(edit_form.noOfSuspectedCases, {'attr':{'tabindex':3}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4 edit_form-group {{ form_errors(edit_form.noOfRecoveredCases)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(edit_form.noOfRecoveredCases) }}
+                                {{ form_widget(edit_form.noOfRecoveredCases, {'attr':{'tabindex':4}}) }}
+                            </div>
+
+                            <div class="col-md-4 edit_form-group {{ form_errors(edit_form.noOfDeaths)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(edit_form.noOfDeaths) }}
+                                {{ form_widget(edit_form.noOfDeaths,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                            </div>
+
+                            <div class="col-md-4 edit_form-group {{ form_errors(edit_form.lastUpdated)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(edit_form.lastUpdated) }}
+                                {{ form_widget(edit_form.lastUpdated,{'attr':{'tabindex':6, 'style':'width:100%'}}) }}
+                            </div>
+
+                            <!-- /.edit_form-group -->
+                        </div>
+
+                    </div>
+                    {#{% endblock form_row %}#}
+                    <br>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="submit" tabindex="7" class="btn btn-warning" value="Update Cases" />
+                            <a href="{{ path('covid19_cases') }}" tabindex="8" class="btn btn-default">
+                                <i class="fa fa-mail-reply"></i> Go Back!
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div>
+                {{ form_end(edit_form) }}
+                {% if is_granted("ROLE_ADMIN") %}
+                <div class="row box-body">
+                    <div class="col-md-6">
+                        {{ form_start(delete_form) }}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Delete
+                        </button>
+                        {{ form_end(delete_form) }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

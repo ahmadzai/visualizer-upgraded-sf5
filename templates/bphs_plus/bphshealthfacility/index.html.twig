@@ -1,0 +1,43 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <h1>Bphshealthfacilities list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Facilityname</th>
+                <th>Slug</th>
+                <th>Createdat</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for bphsHealthFacility in bphsHealthFacilities %}
+            <tr>
+                <td><a href="{{ path('bphs_hf_show', { 'id': bphsHealthFacility.id }) }}">{{ bphsHealthFacility.id }}</a></td>
+                <td>{{ bphsHealthFacility.facilityName }}</td>
+                <td>{{ bphsHealthFacility.facilitySlug }}</td>
+                <td>{% if bphsHealthFacility.createdAt %}{{ bphsHealthFacility.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('bphs_hf_show', { 'id': bphsHealthFacility.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('bphs_hf_edit', { 'id': bphsHealthFacility.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('bphs_hf_new') }}">Create a new bphsHealthFacility</a>
+        </li>
+    </ul>
+{% endblock %}

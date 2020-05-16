@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Bphsindicators list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Shortname</th>
+                <th>Createdat</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for bphsIndicator in bphsIndicators %}
+            <tr>
+                <td><a href="{{ path('bphs_indicator_show', { 'id': bphsIndicator.id }) }}">{{ bphsIndicator.id }}</a></td>
+                <td>{{ bphsIndicator.name }}</td>
+                <td>{{ bphsIndicator.shortName }}</td>
+                <td>{% if bphsIndicator.createdAt %}{{ bphsIndicator.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('bphs_indicator_show', { 'id': bphsIndicator.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('bphs_indicator_edit', { 'id': bphsIndicator.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('bphs_indicator_new') }}">Create a new bphsIndicator</a>
+        </li>
+    </ul>
+{% endblock %}

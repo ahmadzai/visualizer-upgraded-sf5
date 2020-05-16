@@ -11,8 +11,10 @@ Encore
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
     .setPublicPath(Encore.isProduction() ? '/build' : '/visualizer5/public/build')
+    .cleanupOutputBeforeBuild()
+    .enableBuildNotifications()
     // only needed for CDN's or sub-directory deploy
-    //.setManifestKeyPrefix('public/build/')
+    .setManifestKeyPrefix('build/')
 
     /*
      * ENTRY CONFIG
@@ -23,17 +25,25 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
-    //.createSharedEntry('layout', './assets/js/layout.js')
-    .addEntry('layout', './assets/js/layout.js')
+    .createSharedEntry('layout', './assets/js/layout.js')
+    //.addEntry('layout', './assets/js/layout.js')
+    //.addEntry('login', './assets/js/login.js')
+    .addEntry('main', './assets/js/main.js')
+    .addEntry('coverage', './assets/js/coverage.js')
+    .addEntry('catchup', './assets/js/catchup.js')
+    .addEntry('cluster-filter', './assets/js/cluster_filter.js')
+    .addEntry('ccs-sm-filter', './assets/js/ccs_sm_filter.js')
+    .addEntry('ref_committee', './assets/js/ref_committee.js')
+    .addEntry('covid19', './assets/js/covid19.js')
     //.addEntry('page1', './assets/js/page1.js')
     //.addEntry('page2', './assets/js/page2.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
-    .splitEntryChunks()
+    //.splitEntryChunks()
 
     // will require an extra script tag for runtime.js
     // but, you probably want this, unless you're building a single-page app
-    .enableSingleRuntimeChunk()
+    //.enableSingleRuntimeChunk()
 
     /*
      * FEATURE CONFIG
@@ -42,8 +52,6 @@ Encore
      * list of features, see:
      * https://symfony.com/doc/current/frontend.html#adding-more-features
      */
-    .cleanupOutputBeforeBuild()
-    .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
     // enables hashed filenames (e.g. app.abc123.css)
     .enableVersioning(Encore.isProduction())
@@ -52,6 +60,12 @@ Encore
     .configureBabelPresetEnv((config) => {
         config.useBuiltIns = 'usage';
         config.corejs = 3;
+    })
+    .configureBabel(function (config) {
+        //config.presets.push('stage-2');
+        config.plugins = [
+            '@babel/plugin-proposal-class-properties'
+        ]
     })
 
     // enables Sass/SCSS support
@@ -74,8 +88,6 @@ Encore
         'from': './assets/static',
         'to': 'static'
     })
-    .enableBuildNotifications()
-    .cleanupOutputBeforeBuild()
 ;
 // var config = Encore.getWebpackConfig();
 // config.module.rules[3].options.publicPath = '../';

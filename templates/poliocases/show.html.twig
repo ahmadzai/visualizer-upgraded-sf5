@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Poliocase</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ polioCase.id }}</td>
+            </tr>
+            <tr>
+                <th>Epid</th>
+                <td>{{ polioCase.epid }}</td>
+            </tr>
+            <tr>
+                <th>Onsetdate</th>
+                <td>{% if polioCase.onsetDate %}{{ polioCase.onsetDate|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Sex</th>
+                <td>{{ polioCase.sex }}</td>
+            </tr>
+            <tr>
+                <th>Ageinmonths</th>
+                <td>{{ polioCase.ageInMonths }}</td>
+            </tr>
+            <tr>
+                <th>Noroutinedoses</th>
+                <td>{{ polioCase.noRoutineDoses }}</td>
+            </tr>
+            <tr>
+                <th>Nosiadoses</th>
+                <td>{{ polioCase.noSiaDoses }}</td>
+            </tr>
+            <tr>
+                <th>Lastopvdate</th>
+                <td>{% if polioCase.lastOpvDate %}{{ polioCase.lastOpvDate|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Stooldate</th>
+                <td>{% if polioCase.stoolDate %}{{ polioCase.stoolDate|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Cluster</th>
+                <td>{{ polioCase.cluster }}</td>
+            </tr>
+            <tr>
+                <th>Linkage</th>
+                <td>{{ polioCase.linkage }}</td>
+            </tr>
+            <tr>
+                <th>Year</th>
+                <td>{{ polioCase.year }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('poliocases_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('poliocases_edit', { 'id': polioCase.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

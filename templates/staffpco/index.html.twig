@@ -1,0 +1,65 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Provincial Staff</h3>
+                <a href="{{ path("staff-pco_new") }}" class="btn btn-sm btn-info pull-right">
+                    <i class="fa fa-plus"></i> New Provincial Staff
+                </a>
+            </div>
+
+            <div class="box-body">
+
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <i class="icon fa fa-check"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <table id="districts" class="table table-bordered table-striped dash-dataTable"
+                       data-setting="{% if tableSetting is defined %}{{ tableSetting }}{% endif %}">
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Province</th>
+                            <th>PCOs</th>
+                            <th>Female PCOs</th>
+                            <th>As of</th>
+                            <th>Last Updated At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for staffPco in staffPcos %}
+                        <tr>
+
+                            <td>{{ staffPco.province.provinceRegion }}</td>
+                            <td>{{ staffPco.province.provinceName }}</td>
+                            <td>{{ staffPco.noOfPco }}</td>
+                            <td>{{ staffPco.noOfFemalePco }}</td>
+                            <td>{{ staffPco.asOfMonth }}-{{ staffPco.asOfYear }}</td>
+                            <td>{{ staffPco.updatedAt|date('d-M-Y') }}</td>
+
+                            <td>
+
+                                <a class="btn btn-xs btn-info" href="{{ path('staff-pco_show', { 'id': staffPco.id }) }}">show</a>
+
+                                <a class="btn btn-xs btn-warning" href="{{ path('staff-pco_edit', { 'id': staffPco.id }) }}">edit</a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
