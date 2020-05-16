@@ -27,6 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Vich\UploaderBundle\Handler\DownloadHandler;
 
 /**
  * Class ImportedFilesController
@@ -120,16 +121,16 @@ class ImportedFilesController extends AbstractController
 
     /**
      * @param $id
+     * @param DownloadHandler $downloadHandler
      * @return StreamedResponse
      * @internal param ImportedFiles $file
      * @Route("/uploaded/files/download/{id}", name="uploaded_files_download")
      */
-    public function downloadFileAction($id)
+    public function downloadFileAction($id, DownloadHandler $downloadHandler)
     {
         $em = $this->getDoctrine()->getManager();
         $file = $em->getRepository("App:ImportedFiles")->find($id);
         if($file !== null) {
-            $downloadHandler = $this->get('vich_uploader.download_handler');
 
             return $downloadHandler->downloadObject($file, $fileField = 'importedFile');
         } else
