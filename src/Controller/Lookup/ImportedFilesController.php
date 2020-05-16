@@ -9,23 +9,16 @@
 namespace App\Controller\Lookup;
 
 
-use App\Datatables\AdminDataDatatable;
 use App\Datatables\ImportedFilesDatatable;
-use App\Entity\AdminData;
-use App\Entity\ImportedFiles;
 use Sg\DatatablesBundle\Datatable\DatatableFactory;
 use Sg\DatatablesBundle\Response\DatatableResponse;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use App\Service\Importer;
 use Symfony\Component\HttpFoundation\Response;
-
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Vich\UploaderBundle\Handler\DownloadHandler;
 
