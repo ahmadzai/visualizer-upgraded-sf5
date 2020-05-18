@@ -48,14 +48,8 @@ class MenuBuilder
 
         $reachableRoles = $this->userRoles();
 
-
-//        $adminRole = $this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
-//        $editRole = $this->container->get('security.authorization_checker')->isGranted('ROLE_EDITOR');
-//        $partnerRole = $this->container->get('security.authorization_checker')->isGranted('ROLE_PARTNER');
-
-        //dump($adminRole); dump($editRole); dump($partnerRole); die;
-
         $menu = $this->factory->createItem('Home');
+        $menu->setAttribute('icon', 'fa-home');
         $menu->setChildrenAttributes(array('class'=>'sidebar-menu', 'data-widget'=>'tree'));
         // ---------------------------------------------- COVID 19 Link ------------------------------------------
         $menu->addChild('COVID-19', array('route'=>'covid19_cases'));
@@ -192,20 +186,26 @@ class MenuBuilder
 
         $reachableRoles = $this->userRoles();
 
-        $menu = $this->factory->createItem('SideBarMenu');
+        $menu = $this->factory->createItem('Site Control');
+        $menu->setExtra('info', 'Contents Management');
+        $menu->setAttribute('icon', 'fa-gear');
         $menu->setChildrenAttributes(array('class'=>'control-sidebar-menu sidebar-menu', 'data-widget'=>'tree'));
 
         // Campaign Management
         if(in_array("ROLE_EDITOR", $reachableRoles)) {
             $menu->addChild("Campaigns Management", array('route' => 'campaign_index'))
                 ->setExtra('info', 'Manage Campaigns');
-            $menu['Campaigns Management']->setAttribute('icon', 'fa-eyedropper');
+            $menu['Campaigns Management']->setAttribute('icon', 'fa-eyedropper')
+                ->setExtra('routes', [
+                    'campaign_new', 'campaign_show', 'campaign_edit', 'campaign_index'
+                ]);
         }
 
         if(in_array("ROLE_ADMIN", $reachableRoles)) {
             // Users Management
             $menu->addChild("User Management", array('route' => 'user_index'))
-                ->setExtra('info', 'Manage Users');
+                ->setExtra('info', 'Manage Users')
+                ->setExtra('routes', []);
             $menu['User Management']->setAttribute('icon', 'fa-user');
             // ------------------------------------------------ Location Mgt ------------------------------------------------
             $menu->addChild("Location", array('uri' => '#'))->setExtra('info', 'Manage Locations');
@@ -214,10 +214,16 @@ class MenuBuilder
             $menu['Location']->setChildrenAttributes(array('class' => 'treeview-menu'));
             // Sub Menu
             $menu['Location']->addChild("Provinces", array('route' => 'province_index'))
-                ->setExtra('info', 'Manage Provinces');
+                ->setExtra('info', 'Manage Provinces')
+                ->setExtra('routes', [
+                   'province_index', 'province_new', 'province_show', 'province_edit'
+                ]);
             $menu['Location']['Provinces']->setAttribute('icon', 'fa-cog');
             $menu['Location']->addChild("Districts", array('route' => 'district_index'))
-                ->setExtra('info', 'Manage Districts');
+                ->setExtra('info', 'Manage Districts')
+                ->setExtra('routes', [
+                    'district_index', 'district_new', 'district_show', 'district_edit'
+                ]);
             $menu['Location']['Districts']->setAttribute('icon', 'fa-cog');
 
         }
@@ -232,7 +238,10 @@ class MenuBuilder
         if(in_array("ROLE_ADMIN", $reachableRoles)) {
             // Sub Menu
             $menu['Upload Mgt']->addChild("Uploader Mgt", array('route' => 'uploadmanager_index'))
-                ->setExtra('info', 'Mange Uploader');
+                ->setExtra('info', 'Mange Uploader')
+                ->setExtra('routes', [
+                    'uploadmanager_index', 'uploadmanager_new', 'uploadmanager_show', 'uploadmanager_edit'
+                ]);
             $menu['Upload Mgt']['Uploader Mgt']->setAttribute('icon', 'fa-upload');
         }
 

@@ -59,7 +59,7 @@ class BphsHealthFacilityController extends AbstractController
     /**
      * Finds and displays a bphsHealthFacility entity.
      *
-     * @Route("/{id}", name="bphs_hf_show", methods={"GET"})
+     * @Route("/{id}", name="bphs_hf_show", methods={"GET"}, requirements={"id"="\d+"})
      */
     public function showAction(BphsHealthFacility $bphsHealthFacility)
     {

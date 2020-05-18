@@ -74,9 +74,9 @@ class BphsHfIndicator
      * @var string
      * @ORM\Column(name="unique_slug", type="string", unique=true)
      * @Gedmo\Slug(handlers={{"class":"Gedmo\Sluggable\Handler\RelativeSlugHandler",
-     *     "options":[{"name":"relationField", "value":"healthFacility"},{"name":"relationSlugField",
+     *     "options":{"name":"relationField", "value":"healthFacility"},{"name":"relationSlugField",
      *          "value":"id"},{"name":"seperator", "value":"-"},{"name":"urilize",
-     *          "value":"true"},{"name":"style", "value":"lower"}],
+     *          "value":"true"},{"name":"style", "value":"lower"},
      *          "value":null}}, fields={"indicatorSlug",
      *          "targetYear"}, separator="-",
      *          style="lower", unique=false)

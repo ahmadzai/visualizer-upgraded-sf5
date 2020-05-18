@@ -1,5 +1,4 @@
-{#{% extends 'base.html.twig' %}#}
-{% extends 'template.html.twig' %}
+{% extends 'control-template.html.twig' %}
 {% block content %}
 <div class="row">
     <div class="col-xs-12">
@@ -74,31 +73,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-{% block breadcrumb %}
-    <h1>
-        Upload
-        <small> manager</small>
-    </h1>
-    <ol class="breadcrumb">
-
-        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-            {{ app.user.username }} |
-            <li>
-                <a href="{{ path('app_logout') }}">
-                    <i class="fa fa-sign-out"></i>
-                    Logout
-                </a>
-            </li>
-        {% else %}
-            <li>
-                <a href="{{ path('app_login') }}">
-                    <i class="fa fa-sign-in"></i>
-                    Login
-                </a>
-            </li>
-
-        {% endif %}
-
-    </ol>
 {% endblock %}

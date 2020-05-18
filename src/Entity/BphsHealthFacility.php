@@ -37,9 +37,9 @@ class BphsHealthFacility
      *
      * @ORM\Column(name="facility_slug", type="string", length=255, unique=true)
      * @Gedmo\Slug(handlers={{"class":"Gedmo\Sluggable\Handler\RelativeSlugHandler",
-     *      "options":[{"name":"relationField", "value":"district"},{"name":"relationSlugField",
+     *      "options":{"name":"relationField", "value":"district"},{"name":"relationSlugField",
      *          "value":"districtName"},{"name":"seperator", "value":"-"},{"name":"urilize",
-     *          "value":"true"},{"name":"style", "value":"lower"}],
+     *          "value":"true"},{"name":"style", "value":"lower"},
      *          "value":null}}, fields={"facilityName",
      *          "id"}, style="lower")
      *
