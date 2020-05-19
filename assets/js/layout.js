@@ -1,6 +1,7 @@
 'use strict';
 
 import $ from 'jquery';
+window.$ = $;
 // import the required CCS
 // select 2 to be replaced by bootstrap, that's why imported first
 import 'admin-lte/bower_components/select2/dist/css/select2.min.css';

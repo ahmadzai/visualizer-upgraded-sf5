@@ -3,6 +3,7 @@
 namespace App\Menu;
 
 use Knp\Menu\FactoryInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -26,16 +27,22 @@ class MenuBuilder
      * @var RoleHierarchyInterface
      */
     private $hierarchy;
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
 
 
     public function __construct(FactoryInterface $factory,
                                 TokenStorageInterface $tokenStorage,
-                                RoleHierarchyInterface $hierarchy)
+                                RoleHierarchyInterface $hierarchy,
+                                RequestStack $requestStack)
     {
 
         $this->factory = $factory;
         $this->tokenStorage = $tokenStorage;
         $this->hierarchy = $hierarchy;
+        $this->requestStack = $requestStack;
     }
 
 
@@ -45,7 +52,6 @@ class MenuBuilder
      */
     public function mainMenu(array $options)
     {
-
         $reachableRoles = $this->userRoles();
 
         $menu = $this->factory->createItem('Home');
@@ -56,17 +62,21 @@ class MenuBuilder
         $menu['COVID-19']->setAttribute('icon','fa-warning text-red');
         // ----------------------------------------------- End of COVID 19 Link ----------------------------------
 
-        $menu->addChild("Home", array('route'=>'home', 'extras'=>['route'=>'cluster_main']))->setExtra('info', 'the main dashboard');
+        $menu->addChild("Home", array('route'=>'home'))
+            ->setExtra('info', 'the main dashboard')
+            ->setExtra('routes', ['home', 'main_cluster_dashboard']);
         $menu['Home']->setAttribute('icon','fa-home');
-        // ------------------------------------------------ Admin Data ------------------------------------------------
-        $menu->addChild("Coverage Data", array('uri'=>'#'))->setExtra('info', 'the main dashboard');
+        // ------------------------------------------------ Coverage Data ----------------------------------------
+        $menu->addChild("Coverage Data", array('uri'=>'#'))
+            ->setExtra('info', 'the main dashboard');
         $menu['Coverage Data']->setAttribute('icon','fa-database');
         $menu['Coverage Data']->setAttribute('sub_menu_icon', 'fa-angle-left');
 
-        // Sub menu (child of Admin Data
+        // Sub menu (child of Coverage Data)
         // Dashboard
-        $menu['Coverage Data']->addChild("Dashboard", array('route'=>'coverage_data',
-            'extras'=>['route'=>'coverage_data_cluster']))->setExtra('info', 'Coverage Data');
+        $menu['Coverage Data']->addChild("Dashboard", array('route'=>'coverage_data'))
+            ->setExtra('info', 'Coverage Data')
+            ->setExtra('routes', ['coverage_data','coverage_data_cluster']);
         $menu['Coverage Data']->setChildrenAttributes(array('class'=>'treeview-menu'));
         $menu['Coverage Data']['Dashboard']->setAttribute('icon','fa-dashboard');
         if(in_array("ROLE_EDITOR", $reachableRoles)) {
@@ -76,16 +86,25 @@ class MenuBuilder
             // if the user had edit role
 
             $menu['Coverage Data']['Download']->setAttribute('icon', 'fa-download');
-            // Data Upload
-            {
-                $menu['Coverage Data']->addChild("Upload", array('route' => 'import_data', 'routeParameters' => ['entity' => 'coverage_data'],
-                    'extras' => ['route' => 'import_coverage_data_handle']))
-                    ->setExtra('info', 'Coverage Data');
-                $menu['Coverage Data']['Upload']->setAttribute('icon', 'fa-upload');
-                // Data Entry
-                $menu['Coverage Data']->addChild("Data Entry", array('uri' => '#'))->setExtra('info', 'of Coverage Data');
-                $menu['Coverage Data']['Data Entry']->setAttribute('icon', 'fa-table');
-            }
+
+            $menu['Coverage Data']->addChild("Upload", array('route' => 'import_data', 'routeParameters' => ['entity' => 'coverage_data']))
+                ->setExtra('info', 'Coverage Data')
+                ->setExtra('routes', [
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'coverage_data']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                            'entity'=>'coverage_data',
+                            'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]],
+                    ['route' => 'sync_data_view', 'parameters' => [
+                        'entity'=>'coverage_data',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]],
+                ]);
+            $menu['Coverage Data']['Upload']->setAttribute('icon', 'fa-upload');
+            // Data Entry
+            $menu['Coverage Data']->addChild("Data Entry", array('uri' => '#'))->setExtra('info', 'of Coverage Data');
+            $menu['Coverage Data']['Data Entry']->setAttribute('icon', 'fa-table');
+
         }
 
         //------------------------------------------------------- Catchup Data ---------------------------------------
@@ -95,7 +114,9 @@ class MenuBuilder
 
         // Sub menu (child of Catchup Data
         // Dashboard
-        $menu['Catchup Data']->addChild("Dashboard", array('route'=>'catchup_data', 'extras'=>['route'=>'cluster_catchup_data']))->setExtra('info', 'Catchup Data');
+        $menu['Catchup Data']->addChild("Dashboard", array('route'=>'catchup_data'))
+            ->setExtra('info', 'Catchup Data')
+            ->setExtra('routes', ['catchup_data','catchup_data_cluster']);
         $menu['Catchup Data']->setChildrenAttributes(array('class'=>'treeview-menu'));
         $menu['Catchup Data']['Dashboard']->setAttribute('icon','fa-dashboard');
         if(in_array("ROLE_EDITOR", $reachableRoles)) {
@@ -103,9 +124,19 @@ class MenuBuilder
             $menu['Catchup Data']->addChild("Download", array('route' => 'catchup_data_download'))->setExtra('info', 'Catchup Data');
             $menu['Catchup Data']['Download']->setAttribute('icon', 'fa-download');
             // Data Upload
-            $menu['Catchup Data']->addChild("Upload", array('route' => 'import_data', 'routeParameters' => ['entity' => 'catchup_data'],
-                'extras' => ['route' => 'import_catchup_data_handle']))
-                ->setExtra('info', 'Catchup Data');
+            $menu['Catchup Data']->addChild("Upload", array('route' => 'import_data', 'routeParameters' => ['entity' => 'catchup_data']))
+                ->setExtra('info', 'Catchup Data')
+                ->setExtra('routes', [
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'catchup_data']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                        'entity'=>'catchup_data',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]],
+                    ['route' => 'sync_data_view', 'parameters' => [
+                        'entity'=>'catchup_data',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]],
+                ]);
             $menu['Catchup Data']['Upload']->setAttribute('icon', 'fa-upload');
             // Data Entry
             $menu['Catchup Data']->addChild("Data Entry", array('uri' => '#'))->setExtra('info', 'Catchup Data');
@@ -119,18 +150,26 @@ class MenuBuilder
 
         // Sub menu (child of Catchup Data
         // Dashboard
-        $menu['Refusals Committees']->addChild("Dashboard", array('route'=>'ref_committees', 'extras'=>['route'=>'cluster_ref_committees']))
-            ->setExtra('info', 'Refusals Committees Data');
+        $menu['Refusals Committees']->addChild("Dashboard", array('route'=>'ref_committees'))
+            ->setExtra('info', 'Refusals Committees Data')
+            ->setExtra('routes', ['ref_committees', 'cluster_ref_committees']);
         $menu['Refusals Committees']->setChildrenAttributes(array('class'=>'treeview-menu'));
         $menu['Refusals Committees']['Dashboard']->setAttribute('icon','fa-dashboard');
         if(in_array("ROLE_EDITOR", $reachableRoles)) {
             // Data Download
-            $menu['Refusals Committees']->addChild("Download", array('route' => 'ref_committees_data_download'))->setExtra('info', 'Download Refusals Committees Data');
+            $menu['Refusals Committees']->addChild("Download", array('route' => 'ref_committees_data_download'))
+                ->setExtra('info', 'Download Refusals Committees Data');
             $menu['Refusals Committees']['Download']->setAttribute('icon', 'fa-download');
             // Data Upload
-            $menu['Refusals Committees']->addChild("Upload", array('route' => 'import_data', 'routeParameters' => ['entity' => 'refusal_comm'],
-                'extras' => ['route' => 'import_ref_committees_data_handle']))
-                ->setExtra('info', 'Catchup Data');
+            $menu['Refusals Committees']->addChild("Upload", array('route' => 'import_data', 'routeParameters' => ['entity' => 'refusal_comm']))
+                ->setExtra('info', 'Catchup Data')
+                ->setExtra('routes', [
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'refusal_comm']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                        'entity'=>'refusal_comm',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]]
+                ]);
             $menu['Refusals Committees']['Upload']->setAttribute('icon', 'fa-upload');
             // Data Entry
             $menu['Refusals Committees']->addChild("Data Entry", array('uri' => '#'))->setExtra('info', 'Catchup Data');
@@ -139,40 +178,102 @@ class MenuBuilder
 
         if(in_array("ROLE_NORMAL_USER", $reachableRoles)) {
             //------------------------------------------------------- ICN Data TPM ---------------------------------------
-            $menu->addChild("ICN & Other Staff", array('uri' => '#'))->setExtra('info', 'ICN Monitoring Report');
+            $menu->addChild("ICN & Other Staff", array('uri' => '#'))
+                ->setExtra('info', 'ICN Monitoring Report');
             $menu['ICN & Other Staff']->setAttribute('icon', 'fa-database');
             $menu['ICN & Other Staff']->setAttribute('sub_menu_icon', 'fa-angle-left');
 
-            // Sub menu (child of Catchup Data
+            // Sub menu
             // Dashboard
-            $menu['ICN & Other Staff']->addChild("Dashboard", array('route' => '',
-                'extras' => ['route' => '']
-            ))->setExtra('info', 'Report');
+            $menu['ICN & Other Staff']->addChild("Dashboard", array('route' => 'staff_dashboard'))
+                ->setExtra('info', 'of Polio/ICN staff');
             $menu['ICN & Other Staff']->setChildrenAttributes(array('class' => 'treeview-menu'));
             $menu['ICN & Other Staff']['Dashboard']->setAttribute('icon', ' fa-bar-chart');
 
             // Provincial Staff
-            $menu['ICN & Other Staff']->addChild("Provincial Staff", array('route' => 'staff-pco_index',
-                'extras' => ['route' => 'staff-pco_show']
-            ))->setExtra('info', 'Details');
+            $menu['ICN & Other Staff']->addChild("Provincial Staff", array('route' => 'staff-pco_index'))
+                ->setExtra('routes', ['staff-pco_show', 'staff-pco_index'])
+                ->setExtra('info', 'Details');
             $menu['ICN & Other Staff']->setChildrenAttributes(array('class' => 'treeview-menu'));
-            $menu['ICN & Other Staff']['Provincial Staff']->setAttribute('icon', ' fa-bar-chart');
+            $menu['ICN & Other Staff']['Provincial Staff']->setAttribute('icon', ' fa-users');
 
             // District Level Staff
-            $menu['ICN & Other Staff']->addChild("District Level Staff", array('route' => 'staff-icn_index',
-                'extras' => ['route' => 'staff-icn_show']
-            ))->setExtra('info', 'Details');
+            $menu['ICN & Other Staff']->addChild("District Level Staff", array('route' => 'staff-icn_index'))
+                ->setExtra('routes', ['staff-icn_show', 'staff-icn_index'])
+                ->setExtra('info', 'Details');
             $menu['ICN & Other Staff']->setChildrenAttributes(array('class' => 'treeview-menu'));
-            $menu['ICN & Other Staff']['District Level Staff']->setAttribute('icon', ' fa-bar-chart');
+            $menu['ICN & Other Staff']['District Level Staff']->setAttribute('icon', ' fa-users');
         }
 
         // TPM SM/CCS Upload Option
         if(in_array("ROLE_EDITOR", $reachableRoles)) {
             $menu['ICN & Other Staff']->addChild("Upload", array('route' => 'import_staff_icn',
                 'extras' => ['route' => '']))
-                ->setExtra('info', 'Provincial or District Staff');
+                ->setExtra('info', 'Provincial or District Staff')
+                ->setExtra('routes', [
+                    ['route'=> 'import_staff_icn'],
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'staff_pco']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                        'entity'=>'staff_pco',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]],
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'staff_icn']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                        'entity'=>'staff_icn',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]]
+                ]);
             $menu['ICN & Other Staff']['Upload']->setAttribute('icon', 'fa-upload');
         }
+
+        if(in_array("ROLE_PARTNER", $reachableRoles)) {
+            //------------------------------------------------------- ICN Data TPM ---------------------------------------
+            $menu->addChild("BPHS Plus", array('uri' => '#'))
+                ->setExtra('info', 'Indicators dashboard');
+            $menu['BPHS Plus']->setAttribute('icon', 'fa-plus');
+            $menu['BPHS Plus']->setAttribute('sub_menu_icon', 'fa-angle-left');
+
+            // Sub menu
+            // Dashboard
+            $menu['BPHS Plus']->addChild("Dashboard", array('route' => 'bphs_dashboard'))
+                ->setExtra('info', 'of BPHS+ Indicators');
+            $menu['BPHS Plus']->setChildrenAttributes(array('class' => 'treeview-menu'));
+            $menu['BPHS Plus']['Dashboard']->setAttribute('icon', ' fa-bar-chart');
+
+            // Health Facility
+            $menu['BPHS Plus']->addChild("Health Facilities", array('route' => 'bphs_hf_index'))
+                ->setExtra('info', 'List');
+            $menu['BPHS Plus']->setChildrenAttributes(array('class' => 'treeview-menu'));
+            $menu['BPHS Plus']['Health Facilities']->setAttribute('icon', ' fa-hospital-o');
+
+            // Indicators
+            $menu['BPHS Plus']->addChild("BPHS+ Indicators", array('route' => 'bphs_indicator_index'))
+                ->setExtra('info', 'List');
+            $menu['BPHS Plus']->setChildrenAttributes(array('class' => 'treeview-menu'));
+            $menu['BPHS Plus']['BPHS+ Indicators']->setAttribute('icon', ' fa-line-chart');
+
+            // Health Facility and Indicator
+            $menu['BPHS Plus']->addChild("Health Facility/Indicators", array('route' => 'bphs_hf_indicator_index'))
+                ->setExtra('info', 'List');
+            $menu['BPHS Plus']->setChildrenAttributes(array('class' => 'treeview-menu'));
+            $menu['BPHS Plus']['Health Facility/Indicators']->setAttribute('icon', '  fa-table');
+        }
+
+        // TPM SM/CCS Upload Option
+        if(in_array("ROLE_EDITOR", $reachableRoles)) {
+            $menu['BPHS Plus']->addChild("Upload", array('route' => 'import_data',
+                'routeParameters' => ['entity'=>'bphs_indicator_reach']))
+                ->setExtra('info', 'Monthly Indicators Reach Data')
+                ->setExtra('routes', [
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'bphs_indicator_reach']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                        'entity'=>'bphs_indicator_reach',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]]
+                ]);
+            $menu['BPHS Plus']['Upload']->setAttribute('icon', 'fa-upload');
+        }
+
 
         if(in_array("ROLE_ADMIN", $reachableRoles))
             $menu->addChild('other', array('route'=>'home'))->setAttribute('icon','fa-link');

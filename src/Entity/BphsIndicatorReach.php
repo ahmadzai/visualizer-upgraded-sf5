@@ -58,9 +58,9 @@ class BphsIndicatorReach
      * @var string
      * @ORM\Column(name="slug", type="string", unique=true)
      * @Gedmo\Slug(handlers={{"class":"Gedmo\Sluggable\Handler\RelativeSlugHandler",
-     *     "options":[{"name":"relationField", "value":"hfIndicator"},{"name":"relationSlugField",
+     *     "options":{"name":"relationField", "value":"hfIndicator"},{"name":"relationSlugField",
      *          "value":"uniqueSlug"},{"name":"seperator", "value":"-"},{"name":"urilize",
-     *          "value":"true"},{"name":"style", "value":"lower"}],
+     *          "value":"true"},{"name":"style", "value":"lower"},
      *          "value":null}}, fields={"reportMonth",
      *          "reportYear"}, separator="-",
      *          style="lower", unique=false)

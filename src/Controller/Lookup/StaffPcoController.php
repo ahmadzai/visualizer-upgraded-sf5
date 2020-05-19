@@ -27,7 +27,7 @@ class StaffPcoController extends AbstractController
 
         $staffPcos = $em->getRepository('App:StaffPco')->findAll();
 
-        return $this->render('staffpco/index.html.twig', array(
+        return $this->render('staff/staffpco/index.html.twig', array(
             'staffPcos' => $staffPcos,
         ));
     }
@@ -51,7 +51,7 @@ class StaffPcoController extends AbstractController
             return $this->redirectToRoute('staff-pco_show', array('id' => $staffPco->getId()));
         }
 
-        return $this->render('staffpco/new.html.twig', array(
+        return $this->render('staff/staffpco/new.html.twig', array(
             'staffPco' => $staffPco,
             'form' => $form->createView(),
         ));
@@ -66,7 +66,7 @@ class StaffPcoController extends AbstractController
     {
         $deleteForm = $this->createDeleteForm($staffPco);
 
-        return $this->render('staffpco/show.html.twig', array(
+        return $this->render('staff/staffpco/show.html.twig', array(
             'staffPco' => $staffPco,
             'delete_form' => $deleteForm->createView(),
         ));
@@ -89,7 +89,7 @@ class StaffPcoController extends AbstractController
             return $this->redirectToRoute('staff-pco_edit', array('id' => $staffPco->getId()));
         }
 
-        return $this->render('staffpco/edit.html.twig', array(
+        return $this->render('staff/staffpco/edit.html.twig', array(
             'staffPco' => $staffPco,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),

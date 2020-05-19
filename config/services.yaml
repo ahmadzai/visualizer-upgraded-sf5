@@ -51,7 +51,8 @@ services:
     App\Menu\MenuBuilder:
         arguments: ["@knp_menu.factory",
                     '@Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface',
-                    '@Symfony\Component\Security\Core\Role\RoleHierarchyInterface']
+                    '@Symfony\Component\Security\Core\Role\RoleHierarchyInterface',
+                    '@Symfony\Component\HttpFoundation\RequestStack']
         tags:
             - { name: 'knp_menu.menu_builder', method: mainMenu, alias: main }
             - { name: 'knp_menu.menu_builder', method: sideMenu, alias: side }

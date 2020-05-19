@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Bphs;
 
 use App\Entity\BphsHealthFacility;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

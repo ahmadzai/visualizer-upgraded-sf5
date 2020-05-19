@@ -26,7 +26,7 @@ class StaffIcnController extends AbstractController
 
         $staffIcns = $em->getRepository('App:StaffIcn')->findAll();
 
-        return $this->render('stafficn/index.html.twig', array(
+        return $this->render('staff/stafficn/index.html.twig', array(
             'staffIcns' => $staffIcns,
         ));
     }
@@ -50,7 +50,7 @@ class StaffIcnController extends AbstractController
             return $this->redirectToRoute('staff-icn_show', array('id' => $staffIcn->getId()));
         }
 
-        return $this->render('stafficn/new.html.twig', array(
+        return $this->render('staff/stafficn/new.html.twig', array(
             'staffIcn' => $staffIcn,
             'form' => $form->createView(),
         ));
@@ -65,7 +65,7 @@ class StaffIcnController extends AbstractController
     {
         $deleteForm = $this->createDeleteForm($staffIcn);
 
-        return $this->render('stafficn/show.html.twig', array(
+        return $this->render('staff/stafficn/show.html.twig', array(
             'staffIcn' => $staffIcn,
             'delete_form' => $deleteForm->createView(),
         ));
@@ -88,7 +88,7 @@ class StaffIcnController extends AbstractController
             return $this->redirectToRoute('staff-icn_edit', array('id' => $staffIcn->getId()));
         }
 
-        return $this->render('stafficn/edit.html.twig', array(
+        return $this->render('staff/stafficn/edit.html.twig', array(
             'staffIcn' => $staffIcn,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
