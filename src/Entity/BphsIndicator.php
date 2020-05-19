@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -56,6 +58,16 @@ class BphsIndicator
      * @Gedmo\Blameable(on="create")
      */
     private $author;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BphsIndicatorReach", mappedBy="indicator")
+     */
+    private $reaches;
+
+    public function __construct()
+    {
+        $this->reaches = new ArrayCollection();
+    }
 
 
     /**
@@ -139,5 +151,36 @@ class BphsIndicator
     public function __toString()
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection|BphsIndicatorReach[]
+     */
+    public function getReaches(): Collection
+    {
+        return $this->reaches;
+    }
+
+    public function addReach(BphsIndicatorReach $reach): self
+    {
+        if (!$this->reaches->contains($reach)) {
+            $this->reaches[] = $reach;
+            $reach->setIndicator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReach(BphsIndicatorReach $reach): self
+    {
+        if ($this->reaches->contains($reach)) {
+            $this->reaches->removeElement($reach);
+            // set the owning side to null (unless already changed)
+            if ($reach->getIndicator() === $this) {
+                $reach->setIndicator(null);
+            }
+        }
+
+        return $this;
     }
 }

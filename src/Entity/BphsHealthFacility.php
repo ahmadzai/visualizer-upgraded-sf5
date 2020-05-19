@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\District;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -74,6 +76,16 @@ class BphsHealthFacility
      * @Gedmo\Blameable(on="create")
      */
     private $author;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BphsIndicatorReach", mappedBy="hfCode")
+     */
+    private $indicators;
+
+    public function __construct()
+    {
+        $this->indicators = new ArrayCollection();
+    }
 
 
     /**
@@ -173,5 +185,36 @@ class BphsHealthFacility
     public function __toString()
     {
         return $this->getDistrict()->getDistrictName()."-".$this->getFacilityName();
+    }
+
+    /**
+     * @return Collection|BphsIndicatorReach[]
+     */
+    public function getIndicators(): Collection
+    {
+        return $this->indicators;
+    }
+
+    public function addIndicator(BphsIndicatorReach $indicator): self
+    {
+        if (!$this->indicators->contains($indicator)) {
+            $this->indicators[] = $indicator;
+            $indicator->setHfCode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIndicator(BphsIndicatorReach $indicator): self
+    {
+        if ($this->indicators->contains($indicator)) {
+            $this->indicators->removeElement($indicator);
+            // set the owning side to null (unless already changed)
+            if ($indicator->getHfCode() === $this) {
+                $indicator->setHfCode(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -87,6 +87,16 @@ class BphsIndicatorReach
      */
     private $author;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\BphsHealthFacility", inversedBy="indicators")
+     */
+    private $hfCode;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\BphsIndicator", inversedBy="reaches")
+     */
+    private $indicator;
+
 
     /**
      * Get id.
@@ -212,5 +222,29 @@ class BphsIndicatorReach
     public function getAuthor()
     {
         return $this->author;
+    }
+
+    public function getHfCode(): ?BphsHealthFacility
+    {
+        return $this->hfCode;
+    }
+
+    public function setHfCode(?BphsHealthFacility $hfCode): self
+    {
+        $this->hfCode = $hfCode;
+
+        return $this;
+    }
+
+    public function getIndicator(): ?BphsIndicator
+    {
+        return $this->indicator;
+    }
+
+    public function setIndicator(?BphsIndicator $indicator): self
+    {
+        $this->indicator = $indicator;
+
+        return $this;
     }
 }
