@@ -6,8 +6,12 @@
     <table>
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ bphsHealthFacility.id }}</td>
+                <th>Province</th>
+                <td>{{ bphsHealthFacility.district.province.provinceName }}</td>
+            </tr>
+            <tr>
+                <th>Province</th>
+                <td>{{ bphsHealthFacility.district.districtName }}</td>
             </tr>
             <tr>
                 <th>Facilityname</th>
@@ -15,10 +19,14 @@
             </tr>
             <tr>
                 <th>Facilityshortname</th>
-                <td>{{ bphsHealthFacility.facilitySlug }}</td>
+                <td>{{ bphsHealthFacility.slug }}</td>
             </tr>
             <tr>
-                <th>Createdat</th>
+                <th>Facility CODE</th>
+                <td>{{ bphsHealthFacility.id }}</td>
+            </tr>
+            <tr>
+                <th>Record Create At</th>
                 <td>{% if bphsHealthFacility.createdAt %}{{ bphsHealthFacility.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
             </tr>
         </tbody>

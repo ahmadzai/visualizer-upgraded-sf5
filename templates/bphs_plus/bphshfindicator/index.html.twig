@@ -1,45 +1,45 @@
 {% extends 'template.html.twig' %}
 
-{% block content %}
-    <h1>Bphshfindicators list</h1>
+{% block title %}BphsHfIndicator index{% endblock %}
 
-    <table>
+{% block content %}
+    <h1>BphsHfIndicator index</h1>
+
+    <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Annualtarget</th>
-                <th>Monthlytarget</th>
-                <th>Targetyear</th>
-                <th>Createdat</th>
-                <th>Actions</th>
+                <th>Province</th>
+                <th>District</th>
+                <th>Facility</th>
+                <th>Indicator</th>
+                <th>AnnualTarget</th>
+                <th>MonthlyTarget</th>
+                <th>TargetYear</th>
+                <th>actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for bphsHfIndicator in bphsHfIndicators %}
+        {% for bphs_hf_indicator in bphs_hf_indicators %}
             <tr>
-                <td><a href="{{ path('bphs_hf_indicator_show', { 'id': bphsHfIndicator.id }) }}">{{ bphsHfIndicator.id }}</a></td>
-                <td>{{ bphsHfIndicator.annualTarget }}</td>
-                <td>{{ bphsHfIndicator.monthlyTarget }}</td>
-                <td>{{ bphsHfIndicator.targetYear }}</td>
-                <td>{% if bphsHfIndicator.createdAt %}{{ bphsHfIndicator.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{{ bphs_hf_indicator.healthFacility.district.province.provinceName }}</td>
+                <td>{{ bphs_hf_indicator.healthFacility.district.districtName }}</td>
+                <td>{{ bphs_hf_indicator.healthFacility.facilityName }}</td>
+                <td>{{ bphs_hf_indicator.indicator.name }}</td>
+                <td>{{ bphs_hf_indicator.annualTarget }}</td>
+                <td>{{ bphs_hf_indicator.monthlyTarget }}</td>
+                <td>{{ bphs_hf_indicator.targetYear }}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('bphs_hf_indicator_show', { 'id': bphsHfIndicator.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('bphs_hf_indicator_edit', { 'id': bphsHfIndicator.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                    <a href="{{ path('bphs_hf_indicator_show', {'id': bphs_hf_indicator.id}) }}">show</a>
+                    <a href="{{ path('bphs_hf_indicator_edit', {'id': bphs_hf_indicator.id}) }}">edit</a>
                 </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('bphs_hf_indicator_new') }}">Create a new bphsHfIndicator</a>
-        </li>
-    </ul>
+    <a href="{{ path('bphs_hf_indicator_new') }}">Create new</a>
 {% endblock %}

@@ -1,44 +1,54 @@
-{% extends 'template.html.twig' %}
+{% extends 'control-template.html.twig' %}
+
+{% block title %}BphsHfIndicator{% endblock %}
 
 {% block content %}
-    <h1>Bphshfindicator</h1>
+    <h1>BphsHfIndicator</h1>
 
-    <table>
+    <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ bphsHfIndicator.id }}</td>
+                <th>Province</th>
+                <td>{{ bphs_hf_indicator.healthFacility.district.province.provinceName }}</td>
             </tr>
             <tr>
-                <th>Annualtarget</th>
-                <td>{{ bphsHfIndicator.annualTarget }}</td>
+                <th>District</th>
+                <td>{{ bphs_hf_indicator.healthFacility.district }}</td>
             </tr>
             <tr>
-                <th>Monthlytarget</th>
-                <td>{{ bphsHfIndicator.monthlyTarget }}</td>
+                <th>Health Facility</th>
+                <td>{{ bphs_hf_indicator.healthFacility.facilityName }}</td>
             </tr>
             <tr>
-                <th>Targetyear</th>
-                <td>{{ bphsHfIndicator.targetYear }}</td>
+                <th>Indicator</th>
+                <td>{{ bphs_hf_indicator.indicator.name }}</td>
             </tr>
             <tr>
-                <th>Createdat</th>
-                <td>{% if bphsHfIndicator.createdAt %}{{ bphsHfIndicator.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <th>AnnualTarget</th>
+                <td>{{ bphs_hf_indicator.annualTarget }}</td>
+            </tr>
+            <tr>
+                <th>MonthlyTarget</th>
+                <td>{{ bphs_hf_indicator.monthlyTarget }}</td>
+            </tr>
+            <tr>
+                <th>TargetYear</th>
+                <td>{{ bphs_hf_indicator.targetYear }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ bphs_hf_indicator.createdAt ? bphs_hf_indicator.createdAt|date('Y-m-d H:i:s T') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ bphs_hf_indicator.updatedAt ? bphs_hf_indicator.updatedAt|date('Y-m-d H:i:s T') : '' }}</td>
             </tr>
         </tbody>
     </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('bphs_hf_indicator_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('bphs_hf_indicator_edit', { 'id': bphsHfIndicator.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <a href="{{ path('bphs_hf_indicator_index') }}">back to list</a>
+
+    <a href="{{ path('bphs_hf_indicator_edit', {'id': bphs_hf_indicator.id}) }}">edit</a>
+
+    {{ include('bphs_plus/bphshfindicator/_delete_form.html.twig') }}
 {% endblock %}

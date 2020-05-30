@@ -1,0 +1,40 @@
+{% extends 'control-template.html.twig' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default bg-gray">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-4">
+                                        <a href="{{ path('import_data', {'entity':'bphs_health_facility'}) }}"
+                                           class="btn btn-lg btn-info">
+                                            Upload Health Facilities
+                                        </a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a href="{{ path('import_data', {'entity':'bphs_indicator'}) }}"
+                                           class="btn btn-lg btn-info">
+                                            Upload Indicators
+                                        </a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a href="{{ path('import_data', {'entity':'bphs_hf_indicator'}) }}"
+                                           class="btn btn-lg btn-info">
+                                            Upload Health Facility Indicators (Linkage)
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "friendsofsymfony/jsrouting-bundle": "^2.5",
+        "knplabs/doctrine-behaviors": "^2.0",
         "knplabs/knp-menu-bundle": "^3.0",
         "laminas/laminas-code": "^3.4",
         "laminas/laminas-eventmanager": "^3.2",

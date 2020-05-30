@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit BphsIndicatorReach{% endblock %}
+
+{% block body %}
+    <h1>Edit BphsIndicatorReach</h1>
+
+    {{ include('bphs_plus/indicator_reach/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('bphs_indicator_reach_index') }}">back to list</a>
+
+    {{ include('bphs_plus/indicator_reach/_delete_form.html.twig') }}
+{% endblock %}

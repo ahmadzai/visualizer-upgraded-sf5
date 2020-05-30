@@ -5,6 +5,7 @@ namespace App\Controller;
 
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -20,6 +21,16 @@ class BphsDashboardController extends AbstractController
     public function index()
     {
         return $this->render('bphs_plus/index.html.twig', [
+
+        ]);
+    }
+
+    /**
+     * @return Response
+     * @Route("/upload", name="bphs_bulk_upload")
+     */
+    public function upload() {
+        return $this->render('bphs_plus/import.html.twig', [
 
         ]);
     }

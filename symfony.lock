@@ -2,6 +2,9 @@
     "behat/transliterator": {
         "version": "v1.3.0"
     },
+    "brick/math": {
+        "version": "0.8.15"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -102,6 +105,9 @@
     "jms/metadata": {
         "version": "2.1.0"
     },
+    "knplabs/doctrine-behaviors": {
+        "version": "v2.0.4"
+    },
     "knplabs/knp-menu": {
         "version": "v3.1.1"
     },
@@ -119,6 +125,12 @@
     },
     "monolog/monolog": {
         "version": "2.0.2"
+    },
+    "nette/finder": {
+        "version": "v2.5.2"
+    },
+    "nette/utils": {
+        "version": "v3.1.1"
     },
     "nikic/php-parser": {
         "version": "v4.4.0"
@@ -161,6 +173,12 @@
     },
     "psr/simple-cache": {
         "version": "1.0.1"
+    },
+    "ramsey/collection": {
+        "version": "1.0.1"
+    },
+    "ramsey/uuid": {
+        "version": "4.0.1"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
@@ -592,6 +610,9 @@
         "files": [
             "./config/packages/reset_password.yaml"
         ]
+    },
+    "symplify/package-builder": {
+        "version": "v7.3.18"
     },
     "twig/extra-bundle": {
         "version": "v3.0.3"

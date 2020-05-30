@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use Knp\DoctrineBehaviors\Contract\Entity\BlameableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\Blameable\BlameableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -11,10 +14,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table(name="bphs_indicator_reach")
  * @ORM\Entity(repositoryClass="App\Repository\BphsIndicatorReachRepository")
- * @UniqueEntity(fields={"slug"}, message="A similar entry is already existed")
+ * @UniqueEntity(fields={"hfCode", "indicator", "reportMonth", "reportYear"},
+ *     message="A similar entry is already existed")
  */
-class BphsIndicatorReach
+class BphsIndicatorReach implements TimestampableInterface, BlameableInterface
 {
+    use TimestampableTrait;
+    use BlameableTrait;
     /**
      * @var int
      *
@@ -35,6 +41,16 @@ class BphsIndicatorReach
     private $hfIndicator;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\BphsHealthFacility", inversedBy="indicators")
+     */
+    private $hfCode;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\BphsIndicator", inversedBy="reaches")
+     */
+    private $indicator;
+
+    /**
      * @var int|null
      * @ORM\Column(name="reach", nullable=true, type="integer")
      */
@@ -53,50 +69,6 @@ class BphsIndicatorReach
      * @ORM\Column(name="report_year", type="integer", nullable=true)
      */
     private $reportYear;
-
-    /**
-     * @var string
-     * @ORM\Column(name="slug", type="string", unique=true)
-     * @Gedmo\Slug(handlers={{"class":"Gedmo\Sluggable\Handler\RelativeSlugHandler",
-     *     "options":{"name":"relationField", "value":"hfIndicator"},{"name":"relationSlugField",
-     *          "value":"uniqueSlug"},{"name":"seperator", "value":"-"},{"name":"urilize",
-     *          "value":"true"},{"name":"style", "value":"lower"},
-     *          "value":null}}, fields={"reportMonth",
-     *          "reportYear"}, separator="-",
-     *          style="lower", unique=false)
-     *
-     */
-    private $slug;
-
-    /**
-     * @var \DateTime|null
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     * @Gedmo\Timestampable(on="create")
-     */
-    private $createdAt;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="author", referencedColumnName="id")
-     * })
-     * @Gedmo\Blameable(on="create")
-     */
-    private $author;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\BphsHealthFacility", inversedBy="indicators")
-     */
-    private $hfCode;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\BphsIndicator", inversedBy="reaches")
-     */
-    private $indicator;
-
 
     /**
      * Get id.
@@ -194,34 +166,6 @@ class BphsIndicatorReach
     public function getReportYear()
     {
         return $this->reportYear;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-
-    /**
-     * Get createdAt.
-     *
-     * @return \DateTime|null
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Get author.
-     *
-     * @return User|null
-     */
-    public function getAuthor()
-    {
-        return $this->author;
     }
 
     public function getHfCode(): ?BphsHealthFacility

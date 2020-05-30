@@ -2,11 +2,15 @@
 
 namespace App\Entity;
 
-use App\Entity\District;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use Knp\DoctrineBehaviors\Contract\Entity\BlameableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\SluggableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\Blameable\BlameableTrait;
+use Knp\DoctrineBehaviors\Model\Sluggable\SluggableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -14,10 +18,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table(name="bphs_health_facility")
  * @ORM\Entity(repositoryClass="App\Repository\BphsHealthFacilityRepository")
- * @UniqueEntity(fields={"facilitySlug"}, message="A facility with same name is already existed for selected district")
+ * @UniqueEntity(fields={"slug"}, message="A facility with same name is already existed for selected district")
  */
-class BphsHealthFacility
+class BphsHealthFacility implements BlameableInterface, TimestampableInterface, SluggableInterface
 {
+    use SluggableTrait;
+    use TimestampableTrait;
+    use BlameableTrait;
     /**
      * @var int
      *
@@ -35,28 +42,6 @@ class BphsHealthFacility
     private $facilityName;
 
     /**
-     * @var string|null
-     *
-     * @ORM\Column(name="facility_slug", type="string", length=255, unique=true)
-     * @Gedmo\Slug(handlers={{"class":"Gedmo\Sluggable\Handler\RelativeSlugHandler",
-     *      "options":{"name":"relationField", "value":"district"},{"name":"relationSlugField",
-     *          "value":"districtName"},{"name":"seperator", "value":"-"},{"name":"urilize",
-     *          "value":"true"},{"name":"style", "value":"lower"},
-     *          "value":null}}, fields={"facilityName",
-     *          "id"}, style="lower")
-     *
-     */
-    private $facilitySlug;
-
-    /**
-     * @var \DateTime|null
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     * @Gedmo\Timestampable(on="create")
-     */
-    private $createdAt;
-
-    /**
      * @var District
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\District", fetch="EXTRA_LAZY")
@@ -67,17 +52,6 @@ class BphsHealthFacility
     private $district;
 
     /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="author", referencedColumnName="id")
-     * })
-     * @Gedmo\Blameable(on="create")
-     */
-    private $author;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\BphsIndicatorReach", mappedBy="hfCode")
      */
     private $indicators;
@@ -86,7 +60,6 @@ class BphsHealthFacility
     {
         $this->indicators = new ArrayCollection();
     }
-
 
     /**
      * Get id.
@@ -129,26 +102,6 @@ class BphsHealthFacility
     }
 
     /**
-     * Get facilityShortName.
-     *
-     * @return string|null
-     */
-    public function getFacilitySlug()
-    {
-        return $this->facilitySlug;
-    }
-
-    /**
-     * Get createdAt.
-     *
-     * @return \DateTime|null
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
      * Set district.
      *
      * @param District|null $district
@@ -172,15 +125,6 @@ class BphsHealthFacility
         return $this->district;
     }
 
-    /**
-     * Get author.
-     *
-     * @return User|null
-     */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
 
     public function __toString()
     {
@@ -217,4 +161,10 @@ class BphsHealthFacility
 
         return $this;
     }
+
+    public function getSluggableFields(): array
+    {
+        return ['district', 'id', 'facilityName'];
+    }
+
 }

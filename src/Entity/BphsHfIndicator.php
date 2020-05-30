@@ -3,18 +3,25 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use Knp\DoctrineBehaviors\Contract\Entity\BlameableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\Blameable\BlameableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * BphsHfIndicator
- *
- * @ORM\Table(name="bphs_hf_indicator")
- * @ORM\Entity(repositoryClass="App\Repository\BphsHealthFacilityRepository")
- * @UniqueEntity(fields={"uniqueSlug"})
+ * @ORM\Entity(repositoryClass="App\Repository\BphsHfIndicatorRepository")
+ * @UniqueEntity(fields={"healthFacility", "indicator", "targetYear"},
+ *     message="You have already set this indicator for the selected HF and year",
+ *     repositoryMethod="findOneBy")
  */
-class BphsHfIndicator
+class BphsHfIndicator implements TimestampableInterface, BlameableInterface
 {
+    use TimestampableTrait,
+        BlameableTrait;
+
     /**
      * @var int
      *
@@ -65,43 +72,14 @@ class BphsHfIndicator
     private $targetYear;
 
     /**
-     * @var string
-     * @ORM\Column(name="indicator_slug")
+     * @var District
      */
-    private $indicatorSlug;
+    private $district;
 
     /**
-     * @var string
-     * @ORM\Column(name="unique_slug", type="string", unique=true)
-     * @Gedmo\Slug(handlers={{"class":"Gedmo\Sluggable\Handler\RelativeSlugHandler",
-     *     "options":{"name":"relationField", "value":"healthFacility"},{"name":"relationSlugField",
-     *          "value":"id"},{"name":"seperator", "value":"-"},{"name":"urilize",
-     *          "value":"true"},{"name":"style", "value":"lower"},
-     *          "value":null}}, fields={"indicatorSlug",
-     *          "targetYear"}, separator="-",
-     *          style="lower", unique=false)
-     *
+     * @var Province
      */
-    private $uniqueSlug;
-
-    /**
-     * @var \DateTime|null
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     * @Gedmo\Timestampable(on="create")
-     */
-    private $createdAt;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="author", referencedColumnName="id")
-     * })
-     * @Gedmo\Blameable(on="create")
-     */
-    private $author;
+    private $province;
 
 
     /**
@@ -147,8 +125,6 @@ class BphsHfIndicator
     public function setIndicator($indicator = null)
     {
         $this->indicator = $indicator;
-        $this->indicatorSlug = strtolower($indicator->getShortName());
-        // set the indicator slug here
         return $this;
     }
 
@@ -163,27 +139,19 @@ class BphsHfIndicator
     }
 
     /**
-     * Set annualTarget.
-     *
-     * @param int|null $annualTarget
-     *
-     * @return BphsHfIndicator
+     * @return int|null
      */
-    public function setAnnualTarget($annualTarget = null)
+    public function getAnnualTarget(): ?int
     {
-        $this->annualTarget = $annualTarget;
-
-        return $this;
+        return $this->annualTarget;
     }
 
     /**
-     * Get annualTarget.
-     *
-     * @return int|null
+     * @param int|null $annualTarget
      */
-    public function getAnnualTarget()
+    public function setAnnualTarget(?int $annualTarget): void
     {
-        return $this->annualTarget;
+        $this->annualTarget = $annualTarget;
     }
 
     /**
@@ -234,46 +202,29 @@ class BphsHfIndicator
         return $this->targetYear;
     }
 
-    /**
-     * @return string
-     */
-    public function getIndicatorSlug(): string
-    {
-        return $this->indicatorSlug;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUniqueSlug(): string
-    {
-        return $this->uniqueSlug;
-    }
-
-    /**
-     * Get createdAt.
-     *
-     * @return \DateTime|null
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Get author.
-     *
-     * @return User|null
-     */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
-
     public function __toString()
     {
         return
             $this->getHealthFacility()."-".
             $this->getIndicator();
     }
+
+    /**
+     * @return District
+     */
+    public function getDistrict(): ?District
+    {
+        return $this->district;
+    }
+
+    /**
+     * @return Province
+     */
+    public function getProvince(): ?Province
+    {
+        return $this->province;
+    }
+
+
+
 }

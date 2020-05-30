@@ -5,5 +5,5 @@ stof_doctrine_extensions:
     orm:
         default:
             timestampable: true
-            blameable: true,
-            #sluggable: true
+            blameable: true
+            sluggable: true

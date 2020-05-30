@@ -352,6 +352,52 @@ class MenuBuilder
             $menu['Upload Mgt']['Manage Files']->setAttribute('icon', 'fa-file');
         }
 
+        if(in_array("ROLE_EDITOR", $reachableRoles)) {
+
+            // ------------------------------------------------ External Services Mgt ------------------------------------------------
+            $menu->addChild("BPHS+ Control", array('uri' => '#'))
+                ->setExtra('info', 'Manage Lookup Data');
+            $menu['BPHS+ Control']->setAttribute('icon', 'fa-plus');
+            $menu['BPHS+ Control']->setAttribute('sub_menu_icon', 'fa-angle-left');
+            $menu['BPHS+ Control']->setChildrenAttributes(array('class' => 'treeview-menu'));
+            // Sub Menu
+            $menu['BPHS+ Control']->addChild("Health Facilities", array('route' => 'bphs_hf_index'))
+                ->setExtra('info', 'Management')
+                ->setExtra('routes', ['bphs_hf_new', 'bphs_hf_edit', 'bphs_hf_index', 'bphs_hf_show'])
+                ->setAttribute('icon', 'fa-hospital-o');
+            $menu['BPHS+ Control']->addChild("Indicators", array('route' => 'bphs_indicator_index'))
+                ->setExtra('info', 'Managements')
+                ->setExtra('routes', ['bphs_indicator_new', 'bphs_indicator_edit', 'bphs_indicator_index', 'bphs_indicator_show'])
+                ->setAttribute('icon', 'fa-line-chart');
+            $menu['BPHS+ Control']->addChild("Link Indicator with HF", array('route' => 'bphs_hf_indicator_index'))
+                ->setExtra('info', 'Managements')
+                ->setExtra('routes', ['bphs_hf_indicator_edit', 'bphs_hf_indicator_show',
+                    'bphs_hf_indicator_new', 'bphs_hf_indicator_index'])
+                ->setAttribute('icon', 'fa-link');
+            $menu['BPHS+ Control']->addChild("Bulk Upload", array('route' => 'bphs_bulk_upload'))
+                ->setExtra('info', 'Data')
+                ->setExtra('routes', [
+                    ['route'=> 'bphs_bulk_upload'],
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'bphs_health_facility']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                        'entity'=>'bphs_health_facility',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]],
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'bphs_indicator']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                        'entity'=>'bphs_indicator',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]],
+                    ['route' => 'import_data', 'parameters' => ['entity'=>'bphs_hf_indicator']],
+                    ['route' => 'import_data_handle', 'parameters' => [
+                        'entity'=>'bphs_hf_indicator',
+                        'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
+                    ]]
+                ])
+                ->setAttribute('icon', 'fa-upload');
+
+        }
+
         if(in_array("ROLE_ADMIN", $reachableRoles)) {
 
             // ------------------------------------------------ External Services Mgt ------------------------------------------------

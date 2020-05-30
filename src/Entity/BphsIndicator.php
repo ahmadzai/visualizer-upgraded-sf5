@@ -5,7 +5,10 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use Knp\DoctrineBehaviors\Contract\Entity\BlameableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\Blameable\BlameableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -15,8 +18,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="App\Repository\BphsIndicatorRepository")
  * @UniqueEntity(fields={"shortName"}, message="An indicator with this shortname is already existed")
  */
-class BphsIndicator
+class BphsIndicator implements TimestampableInterface, BlameableInterface
 {
+    use TimestampableTrait;
+    use BlameableTrait;
     /**
      * @var int
      *
@@ -39,25 +44,6 @@ class BphsIndicator
      * @ORM\Column(name="short_name", type="string", length=50, nullable=true, unique=true)
      */
     private $shortName;
-
-    /**
-     * @var \DateTime|null
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     * @Gedmo\Timestampable(on="create")
-     */
-    private $createdAt;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="author", referencedColumnName="id")
-     * })
-     * @Gedmo\Blameable(on="create")
-     */
-    private $author;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\BphsIndicatorReach", mappedBy="indicator")
@@ -128,25 +114,6 @@ class BphsIndicator
         return $this->shortName;
     }
 
-    /**
-     * Get createdAt.
-     *
-     * @return \DateTime|null
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Get author.
-     *
-     * @return User|null
-     */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
 
     public function __toString()
     {
