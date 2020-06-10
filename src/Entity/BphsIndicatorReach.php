@@ -14,8 +14,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table(name="bphs_indicator_reach")
  * @ORM\Entity(repositoryClass="App\Repository\BphsIndicatorReachRepository")
- * @UniqueEntity(fields={"hfCode", "indicator", "reportMonth", "reportYear"},
- *     message="A similar entry is already existed")
+ * @UniqueEntity(fields={"hfIndicator", "reportMonth", "reportYear"},
+ *     message="A similar entry is already existed", repositoryMethod="findOneBy")
  */
 class BphsIndicatorReach implements TimestampableInterface, BlameableInterface
 {

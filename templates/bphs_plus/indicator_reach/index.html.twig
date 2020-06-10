@@ -12,9 +12,7 @@
                 <th>Reach</th>
                 <th>ReportMonth</th>
                 <th>ReportYear</th>
-                <th>Slug</th>
                 <th>CreatedAt</th>
-                <th>UpdatedAt</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -25,8 +23,6 @@
                 <td>{{ bphs_indicator_reach.reach }}</td>
                 <td>{{ bphs_indicator_reach.reportMonth }}</td>
                 <td>{{ bphs_indicator_reach.reportYear }}</td>
-                <td>{{ bphs_indicator_reach.slug }}</td>
-                <td>{{ bphs_indicator_reach.createdAt ? bphs_indicator_reach.createdAt|date('Y-m-d H:i:s T') : '' }}</td>
                 <td>{{ bphs_indicator_reach.updatedAt ? bphs_indicator_reach.updatedAt|date('Y-m-d H:i:s T') : '' }}</td>
                 <td>
                     <a href="{{ path('bphs_indicator_reach_show', {'id': bphs_indicator_reach.id}) }}">show</a>

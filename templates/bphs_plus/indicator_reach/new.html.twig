@@ -1,11 +1,15 @@
-{% extends 'base.html.twig' %}
+{% extends 'control-template.html.twig' %}
 
 {% block title %}New BphsIndicatorReach{% endblock %}
 
-{% block body %}
+{% block content %}
     <h1>Create new BphsIndicatorReach</h1>
 
-    {{ include('bphs_indicator_reach/_form.html.twig') }}
+    {{ include('bphs_plus/indicator_reach/_form.html.twig') }}
 
     <a href="{{ path('bphs_indicator_reach_index') }}">back to list</a>
+{% endblock %}
+{% block js %}
+    {{ parent() }}
+    {{ include('bphs_plus/indicator_reach/_ajax_request.html.twig') }}
 {% endblock %}

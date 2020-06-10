@@ -3,130 +3,122 @@
 namespace App\Controller\Bphs;
 
 use App\Entity\BphsIndicatorReach;
+use App\Form\BphsIndicatorReachType;
+use App\Repository\BphsIndicatorReachRepository;
+use mysql_xdevapi\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Bphsindicatorreach controller.
- *
- * @Route("bphs/reach/indicator")
+ * @Route("/bphs/reach/indicator")
  */
 class BphsIndicatorReachController extends AbstractController
 {
     /**
-     * Lists all bphsIndicatorReach entities.
-     *
      * @Route("/", name="bphs_indicator_reach_index", methods={"GET"})
+     * @param BphsIndicatorReachRepository $bphsIndicatorReachRepository
+     * @return Response
      */
-    public function indexAction()
+    public function index(BphsIndicatorReachRepository $bphsIndicatorReachRepository): Response
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $bphsIndicatorReaches = $em->getRepository('App:BphsIndicatorReach')->findAll();
-
-        return $this->render('bphs_plus/bphsindicatorreach/index.html.twig', array(
-            'bphsIndicatorReaches' => $bphsIndicatorReaches,
-        ));
+        return $this->render('bphs_plus/indicator_reach/index.html.twig', [
+            'bphs_indicator_reaches' => $bphsIndicatorReachRepository->findAll(),
+        ]);
     }
 
     /**
-     * Creates a new bphsIndicatorReach entity.
-     *
-     * @Route("/new", name="bphs_indicator_reach_new", methods={"GET", "POST"})
+     * @Route("/new", name="bphs_indicator_reach_new", methods={"GET","POST"})
      */
-    public function newAction(Request $request)
+    public function new(Request $request, SessionInterface $session): Response
     {
-        $bphsIndicatorReach = new Bphsindicatorreach();
-        $form = $this->createForm('App\Form\BphsIndicatorReachType', $bphsIndicatorReach);
+
+        $bphsIndicatorReach = new BphsIndicatorReach();
+        $form = $this->createForm(BphsIndicatorReachType::class, $bphsIndicatorReach);
+        //dd($request);
         $form->handleRequest($request);
 
+        if(!$form->getErrors(true, true)->count())
+            $session->remove('facilityYear');
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($bphsIndicatorReach);
-            $em->flush();
-
-            return $this->redirectToRoute('bphs_indicator_reach_show', array('id' => $bphsIndicatorReach->getId()));
+            $entityManager = $this->getDoctrine()->getManager();
+            /**
+             * @TODO
+             * The form is not working the way i designed it (it's not mapping indicator)
+             * because of too many dependent dropdowns
+             * Tried a lot to fix it, but couldn't therefore made this small hack
+             * A small Hack to update indicator in case someone has changed it
+             */
+            if($bphsIndicatorReach->getIndicator() === null) {
+                $indicator = $bphsIndicatorReach->getHfIndicator()->getIndicator();
+                $bphsIndicatorReach->setIndicator($indicator);
+            }
+            $entityManager->persist($bphsIndicatorReach);
+            $entityManager->flush();
+            return $this->redirectToRoute('bphs_indicator_reach_index');
         }
 
-        return $this->render('bphs_plus/bphsindicatorreach/new.html.twig', array(
-            'bphsIndicatorReach' => $bphsIndicatorReach,
+        return $this->render('bphs_plus/indicator_reach/new.html.twig', [
+            'bphs_indicator_reach' => $bphsIndicatorReach,
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
-     * Finds and displays a bphsIndicatorReach entity.
-     *
      * @Route("/{id}", name="bphs_indicator_reach_show", methods={"GET"})
+     * @param BphsIndicatorReach $bphsIndicatorReach
+     * @return Response
      */
-    public function showAction(BphsIndicatorReach $bphsIndicatorReach)
+    public function show(BphsIndicatorReach $bphsIndicatorReach): Response
     {
-        $deleteForm = $this->createDeleteForm($bphsIndicatorReach);
-
-        return $this->render('bphs_plus/bphsindicatorreach/show.html.twig', array(
-            'bphsIndicatorReach' => $bphsIndicatorReach,
-            'delete_form' => $deleteForm->createView(),
-        ));
+        return $this->render('bphs_plus/indicator_reach/show.html.twig', [
+            'bphs_indicator_reach' => $bphsIndicatorReach,
+        ]);
     }
 
     /**
-     * Displays a form to edit an existing bphsIndicatorReach entity.
-     *
-     * @Route("/{id}/edit", name="bphs_indicator_reach_edit", methods={"GET", "POST"})
+     * @Route("/{id}/edit", name="bphs_indicator_reach_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param BphsIndicatorReach $bphsIndicatorReach
+     * @return Response
      */
-    public function editAction(Request $request, BphsIndicatorReach $bphsIndicatorReach)
+    public function edit(Request $request, BphsIndicatorReach $bphsIndicatorReach, SessionInterface $session): Response
     {
-        $deleteForm = $this->createDeleteForm($bphsIndicatorReach);
-        $editForm = $this->createForm('App\Form\BphsIndicatorReachType', $bphsIndicatorReach);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
+        $form = $this->createForm(BphsIndicatorReachType::class, $bphsIndicatorReach);
+        $form->handleRequest($request);
+        if(!$form->getErrors(true, true)->count())
+            $session->remove('facilityYear');
+        if ($form->isSubmitted() && $form->isValid()) {
+            // A small Hack to update indicator in case someone has changed it, though it will be called at any time
+            // where there's an update request
+            $bphsIndicatorReach->setIndicator($bphsIndicatorReach->getHfIndicator()->getIndicator());
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('bphs_indicator_reach_edit', array('id' => $bphsIndicatorReach->getId()));
+            return $this->redirectToRoute('bphs_indicator_reach_index');
         }
 
-        return $this->render('bphs_plus/bphsindicatorreach/edit.html.twig', array(
-            'bphsIndicatorReach' => $bphsIndicatorReach,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
+        return $this->render('bphs_plus/indicator_reach/edit.html.twig', [
+            'bphs_indicator_reach' => $bphsIndicatorReach,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
-     * Deletes a bphsIndicatorReach entity.
-     *
      * @Route("/{id}", name="bphs_indicator_reach_delete", methods={"DELETE"})
+     * @param Request $request
+     * @param BphsIndicatorReach $bphsIndicatorReach
+     * @return Response
      */
-    public function deleteAction(Request $request, BphsIndicatorReach $bphsIndicatorReach)
+    public function delete(Request $request, BphsIndicatorReach $bphsIndicatorReach): Response
     {
-        $form = $this->createDeleteForm($bphsIndicatorReach);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($bphsIndicatorReach);
-            $em->flush();
+        if ($this->isCsrfTokenValid('delete'.$bphsIndicatorReach->getId(), $request->request->get('_token'))) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($bphsIndicatorReach);
+            $entityManager->flush();
         }
 
         return $this->redirectToRoute('bphs_indicator_reach_index');
-    }
-
-    /**
-     * Creates a form to delete a bphsIndicatorReach entity.
-     *
-     * @param BphsIndicatorReach $bphsIndicatorReach The bphsIndicatorReach entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(BphsIndicatorReach $bphsIndicatorReach)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('bphs_indicator_reach_delete', array('id' => $bphsIndicatorReach->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-        ;
     }
 }

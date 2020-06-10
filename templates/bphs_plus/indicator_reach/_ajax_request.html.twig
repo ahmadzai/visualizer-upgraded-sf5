@@ -1,0 +1,86 @@
+    <script>
+        var $province = $('#bphs_indicator_reach_province');
+        $province.change(function() {
+            var $form = $(this).closest('form');
+
+            var data = {};
+            data[$province.attr('name')] = $province.val();
+
+            $.ajax({
+                url : $form.attr('action'),
+                type: $form.attr('method'),
+                data : data,
+                success: function(html) {
+                    $('#bphs_indicator_reach_district').html($(html).find('#bphs_indicator_reach_district').html());
+                }
+            });
+            $('#bphs_indicator_reach_hfIndicator').html(resetOptions('Select facility first'));
+            $('#bphs_indicator_reach_hfCode').html(resetOptions('Select district first'));
+        });
+
+        var $district = $('#bphs_indicator_reach_district');
+        $district.change(function() {
+
+            var $form = $(this).closest('form');
+
+            var data = {};
+            data[$district.attr('name')] = $district.val();
+            $.ajax({
+                url : $form.attr('action'),
+                type: $form.attr('method'),
+                data : data,
+                success: function(html) {
+                    $('#bphs_indicator_reach_hfCode').html(
+
+                        $(html).find('#bphs_indicator_reach_hfCode').html()
+                    );
+                }
+            });
+            $('#bphs_indicator_reach_hfIndicator').html(resetOptions('Select facility first'));
+        });
+
+        var $reportYear = $('#bphs_indicator_reach_reportYear');
+        var $facilityYear = $('#bphs_indicator_reach_facilityYear');
+
+        var $facility = $('#bphs_indicator_reach_hfCode');
+        $facility.change(function() {
+
+            let $reportYear = $('#bphs_indicator_reach_reportYear');
+
+            $facilityYear.val($facility.val()+"-"+$reportYear.val());
+
+            var $form = $(this).closest('form');
+
+            var data = {};
+
+            data[$facility.attr('name')] = $facilityYear.val();
+
+            $.ajax({
+                url : $form.attr('action'),
+                type: $form.attr('method'),
+                data : data,
+                success: function(html) {
+
+                    $('#bphs_indicator_reach_hfIndicator').html(
+
+                        $(html).find('#bphs_indicator_reach_hfIndicator').html()
+                    );
+                }
+            });
+
+        });
+
+        // reset the dropdowns if user change the year
+        $reportYear.change(function () {
+
+            $province.val("");
+            $('#bphs_indicator_reach_hfIndicator').html(resetOptions('Select facility first'));
+            $('#bphs_indicator_reach_hfCode').html(resetOptions('Select district first'));
+            $('#bphs_indicator_reach_district').html(resetOptions('Select province first'));
+
+        });
+        function resetOptions(labelText) {
+            return "<option>"+labelText+"</option>";
+        }
+
+    </script>
