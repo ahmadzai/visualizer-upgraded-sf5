@@ -1,5 +1,101 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="row">
+        <div class="col-xs-6">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Indicator Reach!</h3>
+            </div>
+
+            {{ form_start(form) }}
+            <div class="box-body">
+
+                {% block form_errors %}
+                    {% if not form.vars.valid %}
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h4><i class="icon fa fa-ban"></i> Form Errors!</h4>
+
+                            <ul>
+                                {#Loop through every form item#}
+                                {% for child in form.children %}
+                                    {#Display the errors of the form item#}
+                                    {%for error in child.vars.errors%}
+                                        <li>{{ child.vars.label }}: {{error.message}}</li>
+                                    {%endfor%}
+                                {%endfor%}
+                            </ul>
+                            {#{{ form_errors(form) }}#}
+
+                        </div>
+                    {% endif %}
+                {% endblock form_errors %}
+
+                <div class="row">
+                    <div class="col-md-9">
+
+                        <div class="form-group {{ form_errors(form.reportYear)|length > 0 ? 'has-error' : '' }}">
+                            {{ form_label(form.reportYear) }}
+                            {{ form_widget(form.reportYear, {'attr':{'tabindex':1}}) }}
+                        </div>
+
+
+                        <div class="form-group {{ form_errors(form.reportMonth)|length > 0 ? 'has-error' : '' }}">
+                            {{ form_label(form.reportMonth) }}
+                            {{ form_widget(form.reportMonth, {'attr':{'tabindex':2}}) }}
+                        </div>
+
+                        <div class="form-group {{ form_errors(form.province)|length > 0 ? 'has-error' : '' }}">
+                            {{ form_label(form.province) }}
+                            {{ form_widget(form.province, {'attr':{'tabindex':3}}) }}
+                        </div>
+
+
+                        <div class="form-group {{ form_errors(form.district)|length > 0 ? 'has-error' : '' }}">
+                            {{ form_label(form.district) }}
+                            {{ form_widget(form.district, {'attr':{'tabindex':4}}) }}
+                        </div>
+
+
+                        <div class="form-group {{ form_errors(form.hfCode)|length > 0 ? 'has-error' : '' }}">
+                            {{ form_label(form.hfCode) }}
+                            {{ form_widget(form.hfCode, {'attr':{'tabindex':5}}) }}
+                        </div>
+
+                        <div class="form-group {{ form_errors(form.hfIndicator)|length > 0 ? 'has-error' : '' }}">
+                            {{ form_label(form.hfIndicator) }}
+                            {{ form_widget(form.hfIndicator, {'attr':{'tabindex':6}}) }}
+                        </div>
+
+                        <div class="form-group {{ form_errors(form.reach)|length > 0 ? 'has-error' : '' }}">
+                            {{ form_label(form.reach) }}
+                            {{ form_widget(form.reach, {'attr':{'tabindex':7}}) }}
+                        </div>
+
+                        {{ form_row(form.facilityYear) }}
+
+                        <!-- /.form-group -->
+                    </div>
+
+                </div>
+                {#{% endblock form_row %}#}
+                <div class="row">
+                    <div class="col-md-9">
+                        <button type="submit" tabindex="8" class="btn btn-primary">
+                            <i class="fa fa-save"></i> Save
+                        </button>
+                        <a href="{{ path('bphs_indicator_reach_index') }}" class="btn btn-default" tabindex="9">
+                            <i class="fa fa-mail-reply"></i> Go Back!
+                        </a>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+            {{ form_end(form) }}
+            {% if(app.request.attributes.get('_route') == 'bphs_indicator_reach_edit') %}
+                {{ include('bphs_plus/indicator_reach/_delete_form.html.twig') }}
+            {% endif %}
+        </div>
+    </div>
+    </div>
 {{ form_end(form) }}
 

@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -42,29 +43,34 @@ class BphsIndicatorReachType extends AbstractType
         $builder
             ->add('reportYear', ChoiceType::class, [
                 'choices' => $this->filter->bphsIndicatorYears(),
-                'placeholder' => 'Select year'
+                'placeholder' => 'Select year',
+                'attr' => ['class' => 'form-control']
             ])
             ->add('reportMonth', ChoiceType::class, [
                 'choices' => $this->filter->monthsArray(),
-                'placeholder' => 'Select month'
+                'placeholder' => 'Select month',
+                'attr' => ['class' => 'form-control select2']
             ])
             ->add('province', ChoiceType::class, [
                 'mapped' => false,
                 'choice_label' => 'provinceName',
                 'choice_value' => 'id',
-                'placeholder' => 'Select a province'
+                'placeholder' => 'Select a province',
+                'attr' => ['class' => 'form-control select2']
             ])
             ->add('district', ChoiceType::class, [
                 'mapped' => false,
                 'choice_value' => 'id',
                 'choice_label' => 'districtName',
-                'choices'=>null
+                'choices'=>null,
+                'attr' => ['class' => 'form-control select2']
             ])
             ->add('hfCode', ChoiceType::class, [
                 'label' => 'Health Facility',
                 'mapped' => true,
                 'choices'=>null,
-                'placeholder'=>'Select a district first'
+                'placeholder'=>'Select a district first',
+                'attr' => ['class' => 'form-control select2']
             ])
             ->add('hfIndicator', EntityType::class, [
                 'choices' => $this->filter->hfIndicators() ?? [],
@@ -72,8 +78,12 @@ class BphsIndicatorReachType extends AbstractType
                 'choice_value'=>'id',
                 'choice_label'=>'indicator',
                 'class' => BphsHfIndicator::class,
+                'attr' => ['class' => 'form-control select2']
             ])
-            ->add('reach')
+            ->add('reach', IntegerType::class, [
+                'label' => 'Monthly Reach',
+                'attr' => ['class' => 'form-control']
+            ])
             ->add('facilityYear', HiddenType::class, [
                 'mapped' => false,
                 'data' => 'undefined'
@@ -144,7 +154,8 @@ class BphsIndicatorReachType extends AbstractType
             'choice_label' => 'provinceName',
             'placeholder' => 'Select a province',
             'data' => $selectedProvince,
-            'auto_initialize' => false
+            'auto_initialize' => false,
+            'attr' => ['class' => 'form-control select2']
         ]);
 
         $provinceField->addEventListener(
@@ -192,7 +203,8 @@ class BphsIndicatorReachType extends AbstractType
             'choice_label' => 'districtName',
             'auto_initialize' => false,
             'placeholder'=> $districts ? 'Select district' : 'Select province first',
-            'data'=>$selectedDistrict
+            'data'=>$selectedDistrict,
+            'attr' => ['class' => 'form-control select2']
         ]);
 
         $districtField->addEventListener(
@@ -239,7 +251,8 @@ class BphsIndicatorReachType extends AbstractType
             'placeholder'=> $placeHolder,
             'choice_value'=>'id',
             'choice_label'=>'facilityName',
-            'auto_initialize' => false
+            'auto_initialize' => false,
+            'attr' => ['class' => 'form-control select2']
         ]);
 
         $field->addEventListener(
@@ -276,7 +289,8 @@ class BphsIndicatorReachType extends AbstractType
                 'choice_label'=>'indicator',
                 'auto_initialize' => false,
                 'empty_data' => null,
-                'class' => BphsHfIndicator::class
+                'class' => BphsHfIndicator::class,
+                'attr' => ['class' => 'form-control select2']
             ]);
 
             $form->add($field->getForm());

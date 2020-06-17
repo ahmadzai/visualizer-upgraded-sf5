@@ -242,21 +242,40 @@ class MenuBuilder
 
             // Health Facility
             $menu['BPHS Plus']->addChild("Health Facilities", array('route' => 'bphs_hf_index'))
-                ->setExtra('info', 'List');
+                ->setExtra('info', 'List')
+                ->setExtra('routes', [
+                    'bphs_hf_index', 'bphs_hf_show', 'bphs_hf_new', 'bphs_hf_edit'
+                ]);
             $menu['BPHS Plus']->setChildrenAttributes(array('class' => 'treeview-menu'));
             $menu['BPHS Plus']['Health Facilities']->setAttribute('icon', ' fa-hospital-o');
 
             // Indicators
             $menu['BPHS Plus']->addChild("BPHS+ Indicators", array('route' => 'bphs_indicator_index'))
-                ->setExtra('info', 'List');
+                ->setExtra('info', 'List')
+                ->setExtra('routes', [
+                    'bphs_indicator_index', 'bphs_indicator_show', 'bphs_indicator_new', 'bphs_indicator_edit'
+                ]);
             $menu['BPHS Plus']->setChildrenAttributes(array('class' => 'treeview-menu'));
             $menu['BPHS Plus']['BPHS+ Indicators']->setAttribute('icon', ' fa-line-chart');
 
             // Health Facility and Indicator
             $menu['BPHS Plus']->addChild("Health Facility/Indicators", array('route' => 'bphs_hf_indicator_index'))
-                ->setExtra('info', 'List');
+                ->setExtra('info', 'List')
+                ->setExtra('routes', [
+                    'bphs_hf_indicator_index', 'bphs_hf_indicator_show', 'bphs_hf_indicator_new', 'bphs_hf_indicator_edit'
+                ]);
             $menu['BPHS Plus']->setChildrenAttributes(array('class' => 'treeview-menu'));
             $menu['BPHS Plus']['Health Facility/Indicators']->setAttribute('icon', '  fa-table');
+
+            // Health Facility's Indictors' Reach
+            $menu['BPHS Plus']->addChild("Indicators Reach", array('route' => 'bphs_indicator_reach_index'))
+                ->setExtra('info', 'List')
+                ->setExtra('routes', [
+                    'bphs_indicator_reach_index', 'bphs_indicator_reach_show', 'bphs_indicator_reach_edit',
+                    'bphs_indicator_reach_new'
+                ]);
+            $menu['BPHS Plus']->setChildrenAttributes(array('class' => 'treeview-menu'));
+            $menu['BPHS Plus']['Indicators Reach']->setAttribute('icon', '  fa-table');
         }
 
         // TPM SM/CCS Upload Option
@@ -374,6 +393,11 @@ class MenuBuilder
                 ->setExtra('routes', ['bphs_hf_indicator_edit', 'bphs_hf_indicator_show',
                     'bphs_hf_indicator_new', 'bphs_hf_indicator_index'])
                 ->setAttribute('icon', 'fa-link');
+            $menu['BPHS+ Control']->addChild("Indicators Reach", array('route' => 'bphs_indicator_reach_index'))
+                ->setExtra('info', 'Managements')
+                ->setExtra('routes', ['bphs_indicator_reach_new', 'bphs_indicator_reach_edit',
+                    'bphs_indicator_reach_index', 'bphs_indicator_reach_show'])
+                ->setAttribute('icon', 'fa-bar-chart');
             $menu['BPHS+ Control']->addChild("Bulk Upload", array('route' => 'bphs_bulk_upload'))
                 ->setExtra('info', 'Data')
                 ->setExtra('routes', [

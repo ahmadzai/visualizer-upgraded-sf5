@@ -1,46 +1,49 @@
-{% extends 'base.html.twig' %}
+{% extends 'template.html.twig' %}
 
-{% block title %}BphsIndicatorReach{% endblock %}
+{% block title %}Indicator Reach!{% endblock %}
 
-{% block body %}
-    <h1>BphsIndicatorReach</h1>
+{% block content %}
+    <div class="row">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ bphs_indicator_reach.id }}</td>
-            </tr>
-            <tr>
-                <th>Reach</th>
-                <td>{{ bphs_indicator_reach.reach }}</td>
-            </tr>
-            <tr>
-                <th>ReportMonth</th>
-                <td>{{ bphs_indicator_reach.reportMonth }}</td>
-            </tr>
-            <tr>
-                <th>ReportYear</th>
-                <td>{{ bphs_indicator_reach.reportYear }}</td>
-            </tr>
-            <tr>
-                <th>Slug</th>
-                <td>{{ bphs_indicator_reach.slug }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ bphs_indicator_reach.createdAt ? bphs_indicator_reach.createdAt|date('Y-m-d H:i:s T') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ bphs_indicator_reach.updatedAt ? bphs_indicator_reach.updatedAt|date('Y-m-d H:i:s T') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="col-md-6">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">Month: {{ bphs_indicator_reach.reportMonth }} --- Reach: {{ bphs_indicator_reach.reach|number_format(0, ",") }}</h3>
+                    <h5 class="widget-user-desc">{{ bphs_indicator_reach.hfIndicator.healthFacility }} --- {{ bphs_indicator_reach.hfIndicator.indicator }}</h5>
+                    <h5 class="widget-user-desc">
+                        Province: {{ bphs_indicator_reach.hfIndicator.healthFacility.district.province.provinceName }},
+                        District: {{ bphs_indicator_reach.hfIndicator.healthFacility.district.districtName }}
+                    </h5>
 
-    <a href="{{ path('bphs_indicator_reach_index') }}">back to list</a>
+                </div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+                        <li>
+                            <a href="#">Annual Target
+                                <span class="pull-right badge bg-maroon-active">
+                                    {{ bphs_indicator_reach.hfIndicator.annualTarget|number_format(0, ",") }}
+                                </span>
+                            </a>
+                        </li>
+                        <li><a href="#">Reporting Year <span class="pull-right badge bg-yellow">{{ bphs_indicator_reach.reportYear }}</span></a></li>
+                        <li><a href="#">Record Created By <span class="pull-right badge bg-red">{{ bphs_indicator_reach.createdBy.fullName }}</span></a></li>
+                        <li><a href="#">Record Created At <span class="pull-right badge ">{{ bphs_indicator_reach.createdAt|date('d/M/Y H:i:s') }}</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <a href="{{ path('bphs_indicator_reach_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
 
-    <a href="{{ path('bphs_indicator_reach_edit', {'id': bphs_indicator_reach.id}) }}">edit</a>
+        <a href="{{ path('bphs_indicator_reach_edit',
+            {'id': bphs_indicator_reach.id}) }}" class="btn btn-primary"><i class="fa fa-edit"></i> Edit</a>
+    </div>
 
-    {{ include('bphs_plus/indicator_reach/_delete_form.html.twig') }}
+    <div style="margin-left: -10px">
+        {{ include('bphs_plus/indicator_reach/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

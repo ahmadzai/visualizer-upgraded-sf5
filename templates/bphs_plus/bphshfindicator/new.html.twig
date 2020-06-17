@@ -1,63 +1,13 @@
 {% extends 'control-template.html.twig' %}
 
-{% block title %}New BphsHfIndicator{% endblock %}
+{% block title %}Assign Indicator to Facility{% endblock %}
 
 {% block content %}
-    <h1>Create new BphsHfIndicator</h1>
 
     {{ include('bphs_plus/bphshfindicator/_form.html.twig') }}
 
-    <a href="{{ path('bphs_hf_indicator_index') }}">back to list</a>
 {% endblock %}
 {% block js %}
     {{ parent() }}
-    <script>
-            var $province = $('#bphs_hf_indicator_province');
-            //When table gets selected ...
-            $province.change(function() {
-                // ... retrieve the corresponding form.
-                var $form = $(this).closest('form');
-                // Simulate form data, but only include the selected sport value.
-                var data = {};
-                data[$province.attr('name')] = $province.val();
-                // Submit data via AJAX to the form's action path.
-                $.ajax({
-                    url : $form.attr('action'),
-                    type: $form.attr('method'),
-                    data : data,
-                    success: function(html) {
-                        // Replace current position field ...
-                        $('#bphs_hf_indicator_district').html($(html).find('#bphs_hf_indicator_district').html());
-                        $('#bphs_hf_indicator_healthFacility').html(
-                            // ... with the returned one from the AJAX response.
-                            $(html).find('#bphs_hf_indicator_healthFacility').html()
-                        );
-
-                    }
-                });
-            });
-
-            var $district = $('#bphs_hf_indicator_district');
-            $district.change(function() {
-                // ... retrieve the corresponding form.
-                var $form = $(this).closest('form');
-                // Simulate form data, but only include the selected sport value.
-                var data = {};
-                data[$district.attr('name')] = $district.val();
-                // Submit data via AJAX to the form's action path.
-                $.ajax({
-                    url : $form.attr('action'),
-                    type: $form.attr('method'),
-                    data : data,
-                    success: function(html) {
-                        // Replace current position field ...
-                        $('#bphs_hf_indicator_healthFacility').html(
-                            // ... with the returned one from the AJAX response.
-                            $(html).find('#bphs_hf_indicator_healthFacility').html()
-                        );
-                    }
-                });
-            });
-
-    </script>
+    {{ include('bphs_plus/bphshfindicator/_ajax_request.html.twig') }}
 {% endblock %}

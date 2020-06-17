@@ -33,7 +33,7 @@ class BphsIndicatorReach implements TimestampableInterface, BlameableInterface
     /**
      * @var BphsHfIndicator
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\BphsHfIndicator", fetch="EXTRA_LAZY")
+     * @ORM\ManyToOne(targetEntity="App\Entity\BphsHfIndicator", fetch="EXTRA_LAZY", inversedBy="indicatorReaches")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="hf_indicator", referencedColumnName="id", fieldName="hfIndicator")
      * })

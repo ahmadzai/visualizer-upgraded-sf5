@@ -1,54 +1,44 @@
 {% extends 'control-template.html.twig' %}
 
-{% block title %}BphsHfIndicator{% endblock %}
+{% block title %}Facility - Indicator{% endblock %}
 
 {% block content %}
-    <h1>BphsHfIndicator</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Province</th>
-                <td>{{ bphs_hf_indicator.healthFacility.district.province.provinceName }}</td>
-            </tr>
-            <tr>
-                <th>District</th>
-                <td>{{ bphs_hf_indicator.healthFacility.district }}</td>
-            </tr>
-            <tr>
-                <th>Health Facility</th>
-                <td>{{ bphs_hf_indicator.healthFacility.facilityName }}</td>
-            </tr>
-            <tr>
-                <th>Indicator</th>
-                <td>{{ bphs_hf_indicator.indicator.name }}</td>
-            </tr>
-            <tr>
-                <th>AnnualTarget</th>
-                <td>{{ bphs_hf_indicator.annualTarget }}</td>
-            </tr>
-            <tr>
-                <th>MonthlyTarget</th>
-                <td>{{ bphs_hf_indicator.monthlyTarget }}</td>
-            </tr>
-            <tr>
-                <th>TargetYear</th>
-                <td>{{ bphs_hf_indicator.targetYear }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ bphs_hf_indicator.createdAt ? bphs_hf_indicator.createdAt|date('Y-m-d H:i:s T') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ bphs_hf_indicator.updatedAt ? bphs_hf_indicator.updatedAt|date('Y-m-d H:i:s T') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="row">
 
-    <a href="{{ path('bphs_hf_indicator_index') }}">back to list</a>
+        <div class="col-md-6">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">{{ bphs_hf_indicator.healthFacility }} --- {{ bphs_hf_indicator.indicator }}</h3>
 
-    <a href="{{ path('bphs_hf_indicator_edit', {'id': bphs_hf_indicator.id}) }}">edit</a>
+                    <h5 class="widget-user-desc">
+                        Province: {{ bphs_hf_indicator.healthFacility.district.province.provinceName }},
+                        District: {{ bphs_hf_indicator.healthFacility.district.districtName }}
+                    </h5>
+                    <h5 class="widget-user-desc">Annual Target: {{ bphs_hf_indicator.annualTarget }}</h5>
+                </div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+                        <li><a href="#">Target Year <span class="pull-right badge bg-maroon-active">{{ bphs_hf_indicator.targetYear }}</span></a></li>
+                        <li><a href="#">Record Created By <span class="pull-right badge bg-red">{{ bphs_hf_indicator.createdBy.fullName }}</span></a></li>
+                        <li><a href="#">Record Created At <span class="pull-right badge ">{{ bphs_hf_indicator.createdAt|date('d/M/Y H:i:s') }}</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <a href="{{ path('bphs_hf_indicator_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
 
-    {{ include('bphs_plus/bphshfindicator/_delete_form.html.twig') }}
+        <a href="{{ path('bphs_hf_indicator_edit',
+            {'id': bphs_hf_indicator.id}) }}" class="btn btn-primary"><i class="fa fa-edit"></i> Edit</a>
+    </div>
+
+    <div style="margin-left: -10px">
+        {{ include('bphs_plus/bphshfindicator/_delete_form.html.twig') }}
+    </div>
+
 {% endblock %}

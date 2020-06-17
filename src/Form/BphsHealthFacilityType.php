@@ -6,6 +6,8 @@ use App\Entity\Province;
 use App\Service\DropdownFilter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -34,15 +36,23 @@ class BphsHealthFacilityType extends AbstractType
                 'mapped' => false,
                 'choice_label' => 'provinceName',
                 'choice_value' => 'id',
-                'placeholder' => 'Choose a province'
+                'placeholder' => 'Choose a province',
+                'attr' => ['class' => 'form-control select2']
             ])
             ->add('district', ChoiceType::class, [
                 'choice_value' => 'id',
                 'choice_label' => 'districtName',
-                'choices'=>null
+                'choices'=>null,
+                'attr' => ['class' => 'form-control select2']
             ])
-            ->add('facilityName')
-            ->add('id')
+            ->add('facilityName', TextType::class, [
+                'attr' => ['class' => 'form-control'],
+                'label' => 'Facility Name'
+            ])
+            ->add('id', NumberType::class, [
+                'attr' => ['class' => 'form-control'],
+                'label' => 'Facility Code'
+            ])
             ;
 
         $builder->addEventListener(
@@ -101,6 +111,7 @@ class BphsHealthFacilityType extends AbstractType
             'choice_value' => 'id',
             'choice_label' => 'provinceName',
             'placeholder' => 'Choose a province',
+            'attr' => ['class' => 'form-control select2'],
             'data' => $selectedProvince,
             'auto_initialize' => false
         ]);
@@ -139,7 +150,8 @@ class BphsHealthFacilityType extends AbstractType
             'choice_label' => 'districtName',
             'auto_initialize' => false,
             'placeholder'=>'Choose a district',
-            'data'=>$selectedDistrict
+            'data'=>$selectedDistrict,
+            'attr' => ['class' => 'form-control select2']
         ]);
 
         $form->add($districtField->getForm());

@@ -3,10 +3,14 @@
 namespace App\Form;
 
 use App\Entity\BphsHfIndicator;
+use App\Entity\BphsIndicator;
 use App\Entity\Province;
 use App\Service\DropdownFilter;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -32,23 +36,45 @@ class BphsHfIndicatorType extends AbstractType
                 'mapped' => false,
                 'choice_label' => 'provinceName',
                 'choice_value' => 'id',
-                'placeholder' => 'Choose a province'
+                'placeholder' => 'Choose a province',
+                'attr' => ['class' => 'form-control select2']
             ])
             ->add('district', ChoiceType::class, [
                 'mapped' => false,
                 'choice_value' => 'id',
                 'choice_label' => 'districtName',
-                'choices'=>null
+                'choices'=>null,
+                'attr' => ['class' => 'form-control select2']
             ])
             ->add('healthFacility', ChoiceType::class, [
                 'mapped' => true,
                 'choices'=>null,
-                'placeholder'=>'Select a district first'
+                'placeholder'=>'Select a district first',
+                'attr' => ['class' => 'form-control select2']
             ])
-            ->add('indicator')
-            ->add('annualTarget')
-            ->add('monthlyTarget')
-            ->add('targetYear')
+            ->add('indicator', EntityType::class, [
+                'class' => BphsIndicator::class,
+                'label' => 'Indicator',
+                'placeholder' => 'Choose indicator',
+                'attr' => ['class' => 'form-control select2']
+            ])
+            ->add('annualTarget', IntegerType::class, [
+                'attr' => ['class' => 'form-control'],
+                'label' => 'Annual Target'
+            ])
+            ->add('monthlyTarget', IntegerType::class, [
+                'attr' => ['class' => 'form-control'],
+                'label' => 'Monthly Target',
+                'required' => false
+            ])
+            ->add('targetYear', ChoiceType::class, [
+                'label' => 'Reporting Year',
+                'required' => true,
+                'placeholder' => 'Choose Reporting Year',
+                'choices' => $this->yearDropdown(),
+                'data' => date('Y'),
+                'attr' => ['class' => 'form-control']
+            ])
         ;
         // this is the pre-set data event,
         // called before setting the data to the form,
@@ -82,35 +108,6 @@ class BphsHfIndicatorType extends AbstractType
             }
         );
 
-//        $builder->get('province')->addEventListener(
-//            FormEvents::POST_SUBMIT,
-//            function (FormEvent $event) use ($builder) {
-//                $form = $event->getForm();
-//                $this->setDistricts(
-//                    $form->getParent(),
-//                    $form->getData(),
-//                    $builder
-//                );
-//                //dd($form->getData());
-//            }
-//        );
-
-//        if($builder->has('district')) {
-//            $builder->get('district')->addEventListener(
-//              FormEvents::POST_SUBMIT,
-//              function (FormEvent $event) use ($builder) {
-//                  $form = $event->getForm();
-//                  $this->setHealthFacility(
-//                      $form->getParent(),
-//                      $form->getData(),
-//                      $builder
-//                  );
-//
-//                  //dd($form->getData());
-//              }
-//            );
-//        }
-
 
     }
 
@@ -138,7 +135,8 @@ class BphsHfIndicatorType extends AbstractType
             'choice_label' => 'provinceName',
             'placeholder' => 'Choose a province',
             'data' => $selectedProvince,
-            'auto_initialize' => false
+            'auto_initialize' => false,
+            'attr' => ['class' => 'form-control select2']
         ]);
 
         $provinceField->addEventListener(
@@ -181,7 +179,8 @@ class BphsHfIndicatorType extends AbstractType
             'choice_label' => 'districtName',
             'auto_initialize' => false,
             'placeholder'=>'Choose a district',
-            'data'=>$selectedDistrict
+            'data'=>$selectedDistrict,
+            'attr' => ['class' => 'form-control select2']
         ]);
 
         $districtField->addEventListener(
@@ -223,8 +222,20 @@ class BphsHfIndicatorType extends AbstractType
             'placeholder'=> $placeHolder,
             'choice_value'=>'id',
             'choice_label'=>'facilityName',
-            'auto_initialize' => false
+            'auto_initialize' => false,
+            'attr' => ['class' => 'form-control select2']
         ]);
         $form->add($field->getForm());
+    }
+
+    private function yearDropdown()
+    {
+        $curYear = date('Y');
+        return [
+            //$curYear - 2 => $curYear - 2,
+            $curYear - 1 => $curYear - 1,
+            $curYear => $curYear,
+            $curYear + 1 => $curYear + 1
+        ];
     }
 }

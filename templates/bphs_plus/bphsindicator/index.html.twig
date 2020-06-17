@@ -1,43 +1,59 @@
 {% extends 'template.html.twig' %}
 
 {% block content %}
-    <h1>Bphsindicators list</h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Shortname</th>
-                <th>Createdat</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for bphsIndicator in bphsIndicators %}
-            <tr>
-                <td><a href="{{ path('bphs_indicator_show', { 'id': bphsIndicator.id }) }}">{{ bphsIndicator.id }}</a></td>
-                <td>{{ bphsIndicator.name }}</td>
-                <td>{{ bphsIndicator.shortName }}</td>
-                <td>{% if bphsIndicator.createdAt %}{{ bphsIndicator.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('bphs_indicator_show', { 'id': bphsIndicator.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('bphs_indicator_edit', { 'id': bphsIndicator.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Indicators List</h3>
+                    <a href="{{ path("bphs_indicator_new") }}" class="btn btn-sm btn-info pull-right">
+                        <i class="fa fa-plus"></i> New Indicator
+                    </a>
+                </div>
 
-    <ul>
-        <li>
-            <a href="{{ path('bphs_indicator_new') }}">Create an Indicator</a>
-        </li>
-    </ul>
+                <div class="box-body">
+
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <i class="icon fa fa-check"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <table id="health-facility" class="table table-bordered table-striped dash-dataTable table-responsive"
+                           data-setting="{% if tableSetting is defined %}{{ tableSetting }}{% endif %}">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Indicator</th>
+                            <th>Short Name</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for bphsIndicator in bphsIndicators %}
+                            <tr>
+                                <td>{{ bphsIndicator.id }}</td>
+                                <td>{{ bphsIndicator.name }}</td>
+                                <td>{{ bphsIndicator.shortName }}</td>
+                                <td>{{ bphsIndicator.createdAt|date('d/M/Y') }}</td>
+                                <td>
+                                    <a class="btn btn-xs btn-info" href="{{ path('bphs_indicator_show', { 'id': bphsIndicator.id }) }}">show</a>
+
+                                    <a class="btn btn-xs btn-warning" href="{{ path('bphs_indicator_edit', { 'id': bphsIndicator.id }) }}">edit</a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

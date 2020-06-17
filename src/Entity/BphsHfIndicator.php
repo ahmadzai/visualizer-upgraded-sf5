@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Contract\Entity\BlameableInterface;
 use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
@@ -81,6 +83,15 @@ class BphsHfIndicator implements TimestampableInterface, BlameableInterface
      */
     private $province;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BphsIndicatorReach", mappedBy="hfIndicator")
+     */
+    private $indicatorReaches;
+
+    public function __construct()
+    {
+        $this->indicatorReaches = new ArrayCollection();
+    }
 
     /**
      * Get id.
@@ -224,6 +235,15 @@ class BphsHfIndicator implements TimestampableInterface, BlameableInterface
     {
         return $this->province;
     }
+
+    /**
+     * @return Collection|BphsIndicatorReach[]
+     */
+    public function getIndicatorReaches(): Collection
+    {
+        return $this->indicatorReaches;
+    }
+
 
 
 

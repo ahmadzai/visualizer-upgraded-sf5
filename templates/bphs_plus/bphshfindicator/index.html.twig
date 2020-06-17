@@ -1,45 +1,76 @@
 {% extends 'template.html.twig' %}
 
-{% block title %}BphsHfIndicator index{% endblock %}
+{% block title %}Facilities & Indicators{% endblock %}
 
 {% block content %}
-    <h1>BphsHfIndicator index</h1>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Facilities' Indicators</h3>
+                    <a href="{{ path("bphs_hf_indicator_new") }}" class="btn btn-sm btn-info pull-right">
+                        <i class="fa fa-plus"></i> Assign Indicator to Facility
+                    </a>
+                </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Province</th>
-                <th>District</th>
-                <th>Facility</th>
-                <th>Indicator</th>
-                <th>AnnualTarget</th>
-                <th>MonthlyTarget</th>
-                <th>TargetYear</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for bphs_hf_indicator in bphs_hf_indicators %}
-            <tr>
-                <td>{{ bphs_hf_indicator.healthFacility.district.province.provinceName }}</td>
-                <td>{{ bphs_hf_indicator.healthFacility.district.districtName }}</td>
-                <td>{{ bphs_hf_indicator.healthFacility.facilityName }}</td>
-                <td>{{ bphs_hf_indicator.indicator.name }}</td>
-                <td>{{ bphs_hf_indicator.annualTarget }}</td>
-                <td>{{ bphs_hf_indicator.monthlyTarget }}</td>
-                <td>{{ bphs_hf_indicator.targetYear }}</td>
-                <td>
-                    <a href="{{ path('bphs_hf_indicator_show', {'id': bphs_hf_indicator.id}) }}">show</a>
-                    <a href="{{ path('bphs_hf_indicator_edit', {'id': bphs_hf_indicator.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="8">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                <div class="box-body">
 
-    <a href="{{ path('bphs_hf_indicator_new') }}">Create new</a>
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <i class="icon fa fa-check"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <table id="health-facility" class="table table-bordered table-striped dash-dataTable table-responsive"
+                           data-setting="{% if tableSetting is defined %}{{ tableSetting }}{% endif %}">
+                        <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Region</th>
+                            <th>Province</th>
+                            <th>District</th>
+                            <th>Facility</th>
+                            <th>Indicator</th>
+                            <th>Cumulative Reach</th>
+                            <th>Annual Target</th>
+                            <th>Monthly Target</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for hfIndicator in bphs_hf_indicators %}
+                            <tr>
+                                <td>{{ hfIndicator.targetYear }}</td>
+                                <td>{{ hfIndicator.healthFacility.district.province.provinceRegion }}</td>
+                                <td>{{ hfIndicator.healthFacility.district.province.provinceName }}</td>
+                                <td>{{ hfIndicator.healthFacility.district.districtName }}</td>
+                                <td>{{ hfIndicator.healthFacility.facilityName }}</td>
+                                <td>{{ hfIndicator.indicator.name }}</td>
+                                <td>
+                                    {% set reach = 0 %}
+                                    {% for indicatorReach in hfIndicator.indicatorReaches %}
+                                    {% set reach = reach + indicatorReach.reach %}
+                                    {% endfor %}
+                                    {{ reach|number_format(0, ',') }}
+                                </td>
+                                <td>{{ hfIndicator.annualTarget|number_format(0, ",") }}</td>
+                                <td>{{ hfIndicator.monthlyTarget|number_format(0, ",") }}</td>
+                                <td>
+                                    <a class="btn btn-xs btn-info" href="{{ path('bphs_hf_indicator_show', { 'id': hfIndicator.id }) }}">show</a>
+
+                                    <a class="btn btn-xs btn-warning" href="{{ path('bphs_hf_indicator_edit', { 'id': hfIndicator.id }) }}">edit</a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

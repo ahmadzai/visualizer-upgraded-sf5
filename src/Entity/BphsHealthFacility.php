@@ -18,11 +18,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table(name="bphs_health_facility")
  * @ORM\Entity(repositoryClass="App\Repository\BphsHealthFacilityRepository")
- * @UniqueEntity(fields={"slug"}, message="A facility with same name is already existed for selected district")
+ * @UniqueEntity(fields={"id"}, message="A facility with same id is already existed")
  */
-class BphsHealthFacility implements BlameableInterface, TimestampableInterface, SluggableInterface
+class BphsHealthFacility implements BlameableInterface, TimestampableInterface
 {
-    use SluggableTrait;
     use TimestampableTrait;
     use BlameableTrait;
     /**
@@ -160,11 +159,6 @@ class BphsHealthFacility implements BlameableInterface, TimestampableInterface, 
         }
 
         return $this;
-    }
-
-    public function getSluggableFields(): array
-    {
-        return ['district', 'id', 'facilityName'];
     }
 
 }

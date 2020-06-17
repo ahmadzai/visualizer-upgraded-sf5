@@ -1,48 +1,46 @@
 {% extends 'template.html.twig' %}
 
 {% block content %}
-    <h1>Bphshealthfacility</h1>
+    <div class="row">
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Province</th>
-                <td>{{ bphsHealthFacility.district.province.provinceName }}</td>
-            </tr>
-            <tr>
-                <th>Province</th>
-                <td>{{ bphsHealthFacility.district.districtName }}</td>
-            </tr>
-            <tr>
-                <th>Facilityname</th>
-                <td>{{ bphsHealthFacility.facilityName }}</td>
-            </tr>
-            <tr>
-                <th>Facilityshortname</th>
-                <td>{{ bphsHealthFacility.slug }}</td>
-            </tr>
-            <tr>
-                <th>Facility CODE</th>
-                <td>{{ bphsHealthFacility.id }}</td>
-            </tr>
-            <tr>
-                <th>Record Create At</th>
-                <td>{% if bphsHealthFacility.createdAt %}{{ bphsHealthFacility.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="col-md-6">
+            <!-- Widget: user widget style 1 -->
+            <div class="box box-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-aqua-active">
+                    <!-- /.widget-user-image -->
+                    <h3 class="widget-user-username">{{ bphsHealthFacility.facilityName }}</h3>
+                    <h5 class="widget-user-desc">CODE: {{ bphsHealthFacility.id }}</h5>
+                    <h5 class="widget-user-desc">
+                        Province: {{ bphsHealthFacility.district.province.provinceName }},
+                        District: {{ bphsHealthFacility.district.districtName }}
+                    </h5>
+                </div>
+                <div class="box-footer no-padding">
+                    <ul class="nav nav-stacked">
+                        <li><a href="#">Record Created By <span class="pull-right badge">{{ bphsHealthFacility.createdBy.fullName }}</span></a></li>
+                        <li><a href="#">Record Created At <span class="pull-right badge ">{{ bphsHealthFacility.createdAt|date('d/M/Y H:i:s') }}</span></a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+    </div>
 
-    <ul>
-        <li>
-            <a href="{{ path('bphs_hf_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('bphs_hf_edit', { 'id': bphsHealthFacility.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <div>
+
+        <a href="{{ path('bphs_hf_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
+
+
+        <a href="{{ path('bphs_hf_edit', { 'id': bphsHealthFacility.id }) }}" class="btn btn-info">Edit</a>
+
+    </div>
+    <br>
+    <div>
+        {{ form_start(delete_form) }}
+        <button type="submit" value="Delete" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Delete
+        </button>
+        {{ form_end(delete_form) }}
+    </div>
 {% endblock %}
