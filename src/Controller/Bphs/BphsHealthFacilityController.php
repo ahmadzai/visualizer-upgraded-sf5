@@ -119,7 +119,7 @@ class BphsHealthFacilityController extends AbstractController
      *
      * @param BphsHealthFacility $bphsHealthFacility The bphsHealthFacility entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return \Symfony\Component\Form\FormInterface The form
      */
     private function createDeleteForm(BphsHealthFacility $bphsHealthFacility)
     {

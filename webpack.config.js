@@ -29,6 +29,7 @@ Encore
     //.addEntry('layout', './assets/js/layout.js')
     //.addEntry('login', './assets/js/login.js')
     .addEntry('main', './assets/js/main.js')
+    .addEntry('login', './assets/js/login.js')
     .addEntry('coverage', './assets/js/coverage.js')
     .addEntry('catchup', './assets/js/catchup.js')
     .addEntry('cluster-filter', './assets/js/cluster_filter.js')
@@ -54,7 +55,7 @@ Encore
      */
     .enableSourceMaps(!Encore.isProduction())
     // enables hashed filenames (e.g. app.abc123.css)
-    .enableVersioning(Encore.isProduction())
+    //.enableVersioning(Encore.isProduction())
 
     // enables @babel/preset-env polyfills
     .configureBabelPresetEnv((config) => {

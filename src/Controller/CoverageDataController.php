@@ -8,20 +8,14 @@
 
 namespace App\Controller;
 
-
-use App\Datatables\AdminDataDatatable;
-use App\Datatables\AdminDataSummaryDatatable;
 use App\Datatables\CoverageDataDatatable;
-use App\Datatables\CoverageDataSummaryDatatable;
+use Sg\DatatablesBundle\Datatable\DatatableFactory;
+use Sg\DatatablesBundle\Response\DatatableResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
-
-use App\Service\Settings;
-use App\Service\Charts;
-use App\Service\HtmlTable;
 
 
 /**
@@ -29,6 +23,21 @@ use App\Service\HtmlTable;
  */
 class CoverageDataController extends AbstractController
 {
+
+    /**
+     * @var DatatableFactory
+     */
+    private $factory;
+    /**
+     * @var DatatableResponse
+     */
+    private $responseService;
+
+    public function __construct(DatatableFactory $factory, DatatableResponse $responseService)
+    {
+        $this->factory = $factory;
+        $this->responseService = $responseService;
+    }
 
     /**
      * @Route("/coverage_data", name="coverage_data")
@@ -62,7 +71,7 @@ class CoverageDataController extends AbstractController
         $info = null;
         $datatable = null;
         if($type == 'all')
-            $datatable = $this->get('sg_datatables.factory')->create(CoverageDataDatatable::class);
+            $datatable = $this->factory->create(CoverageDataDatatable::class);
         //Todo: define a downloader for downloading summary data
 //        else if($type == 'summary') {
 //            $datatable = $this->get('sg_datatables.factory')->create(CoverageDataSummaryDatatable::class);
@@ -74,9 +83,8 @@ class CoverageDataController extends AbstractController
 
 
         if ($isAjax) {
-            $responseService = $this->get('sg_datatables.response');
-            $responseService->setDatatable($datatable);
-            $dbQueryBuilder = $responseService->getDatatableQueryBuilder();
+            $this->responseService->setDatatable($datatable);
+            $dbQueryBuilder = $this->responseService->getDatatableQueryBuilder();
             $dbQueryBuilder->useQueryCache(true);            // (1)
             $dbQueryBuilder->useCountQueryCache(true);       // (2)
             $dbQueryBuilder->useResultCache(true, 60);       // (3)
@@ -102,7 +110,7 @@ class CoverageDataController extends AbstractController
 //                $qb->addOrderBy('coverageclustersummary.district');
 //            }
 
-            return $responseService->getResponse();
+            return $this->responseService->getResponse();
         }
 
         // creating buttons

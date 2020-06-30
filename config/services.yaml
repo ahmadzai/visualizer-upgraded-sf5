@@ -60,10 +60,9 @@ services:
             - { name: 'knp_menu.menu_builder', method: sideMenu, alias: side }
             - { name: 'knp_menu.menu_builder', method: covid19Menu, alias: covidMenu }
 
-
-    # Datatable to work
     Sg\DatatablesBundle\Datatable\DatatableFactory:
         alias: sg_datatables.factory
     Sg\DatatablesBundle\Response\DatatableResponse:
         alias: sg_datatables.response
+
 

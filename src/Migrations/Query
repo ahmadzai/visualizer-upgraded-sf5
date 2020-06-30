@@ -1,0 +1,10 @@
+INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_time`) VALUES
+('DoctrineMigrations\\Version20200519084514', '2020-05-19 08:45:14', '121'),
+('DoctrineMigrations\\Version20200519142859', '2020-05-19 14:28:59', '107'),
+('DoctrineMigrations\\Version20200519152645', '2020-05-19 15:26:45', '98'),
+('DoctrineMigrations\\Version20200519162128', '2020-05-19 16:21:28', '113'),
+('DoctrineMigrations\\Version20200520050642', '2020-05-20 05:06:42', '111'),
+('DoctrineMigrations\\Version20200530145544', '2020-05-30 14:55:44', '91'),
+('DoctrineMigrations\\Version20200614164526', '2020-06-14 16:45:26', '123'),
+('DoctrineMigrations\\Version20200617103612', '2020-06-17 10:36:12', '109'),
+('DoctrineMigrations\\Version20200629104351', '2020-06-29 10:43:51', '103');

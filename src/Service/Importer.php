@@ -9,10 +9,13 @@
 namespace App\Service;
 
 use App\Entity\ImportedFiles;
+use Doctrine\DBAL\Types\DateTimeTzType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Exception;
 use RuntimeException;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
 
 
 class Importer
@@ -32,10 +35,15 @@ class Importer
     protected $_maxRecursionDepth = 0;
 
     //protected $entity;
+    /**
+     * @var Security
+     */
+    private $security;
 
-    function __construct(EntityManagerInterface $_em)
+    function __construct(EntityManagerInterface $_em, Security $security)
     {
         $this->_em = $_em;
+        $this->security = $security;
     }
 
     /**
@@ -347,6 +355,8 @@ class Importer
 
         $readyData = $this->replaceKeys($data, $mappedArray);
 
+        //dump($readyData); die;
+        $user = $this->getUser();
         $exceptions = null;
         $batchSize = 50;
 
@@ -415,8 +425,24 @@ class Importer
                         $dataValue = $entityCol;
                     }
                 }
-
                 $entity->$func($dataValue);
+                //setting blameable and Timestampable columns
+//                if(method_exists($entity, 'setCreatedBy')) {
+//                    $func = "setCreatedBy";
+//                    $entity->$func($user);
+//                }
+//                if(method_exists($entity, 'setUpdatedBy')) {
+//                    $func = "setUpdatedBy";
+//                    $entity->$func(null);
+//                }
+//                if(method_exists($entity, 'setDeletedBy')) {
+//                    $func = "setDeletedBy";
+//                    $entity->$func(null);
+//                }
+//                if(method_exists($entity, 'setCreatedAt')) {
+//                    $func = "setCreatedAt";
+//                    $entity->$func();
+//                }
 
             }
 
@@ -431,10 +457,11 @@ class Importer
                 continue;
             }
 
-            if($counter%$batchSize == 0) {
+            //dd($entity);
+            //if($counter%$batchSize == 0) {
                 $this->_em->flush();
                 $this->_em->clear();
-            }
+            //}
 
             $counter ++;
         }
@@ -469,6 +496,10 @@ class Importer
         }
 
         return mb_strtolower($tableized);
+    }
+
+    protected function getUser() {
+        return $this->security->getUser();
     }
 
 

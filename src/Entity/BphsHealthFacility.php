@@ -11,6 +11,7 @@ use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
 use Knp\DoctrineBehaviors\Model\Blameable\BlameableTrait;
 use Knp\DoctrineBehaviors\Model\Sluggable\SluggableTrait;
 use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -20,10 +21,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="App\Repository\BphsHealthFacilityRepository")
  * @UniqueEntity(fields={"id"}, message="A facility with same id is already existed")
  */
-class BphsHealthFacility implements BlameableInterface, TimestampableInterface
+class BphsHealthFacility implements  TimestampableInterface
 {
     use TimestampableTrait;
-    use BlameableTrait;
     /**
      * @var int
      *
@@ -54,6 +54,17 @@ class BphsHealthFacility implements BlameableInterface, TimestampableInterface
      * @ORM\OneToMany(targetEntity="App\Entity\BphsIndicatorReach", mappedBy="hfCode")
      */
     private $indicators;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
+     */
+    private $createdBy;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
+     */
+    private $updatedBy;
+
 
     public function __construct()
     {
@@ -160,5 +171,43 @@ class BphsHealthFacility implements BlameableInterface, TimestampableInterface
 
         return $this;
     }
+
+    /**
+     * @return User
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * @param User|null $createdBy
+     * @return BphsHealthFacility
+     */
+    public function setCreatedBy($createdBy): self
+    {
+        $this->createdBy = $createdBy;
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUpdatedBy()
+    {
+        return $this->updatedBy;
+    }
+
+    /**
+     * @param User|null $updatedBy
+     * @return BphsHealthFacility
+     */
+    public function setUpdatedBy($updatedBy): self
+    {
+        $this->updatedBy = $updatedBy;
+        return $this;
+    }
+
+
 
 }
