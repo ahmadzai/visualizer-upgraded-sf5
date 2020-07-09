@@ -216,4 +216,13 @@ class TestController extends AbstractController
 //        return new JsonResponse($map);
 
     }
+
+    /**
+     * @Route("/test/repo")
+     */
+    public function testRepoMethod() {
+        $result = $this->getDoctrine()->getRepository('App:BphsHfIndicator')->getAssignedIndicators();
+
+        dd($result);
+    }
 }

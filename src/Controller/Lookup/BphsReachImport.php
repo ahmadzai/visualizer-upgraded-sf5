@@ -11,7 +11,10 @@ namespace App\Controller\Lookup;
 
 use App\Entity\ImportedFiles;
 use App\Entity\User;
+use App\Service\ReachImporter;
+use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\Mapping\Entity;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -35,97 +38,97 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  * syncDataAction is called, if cancel, then cancelUploadAction() is called
  * @Security("is_granted('ROLE_EDITOR')")
  */
-class ImportController extends AbstractController
+class BphsReachImport extends AbstractController
 {
 
     /**
-     * @Route("/import/{entity}", name="import_data")
+     * @Route("/import/bphs/reach", name="import_bphs_reach_data")
      * @param Request $request
-     * @param Entity $entity
      * @return Response
      */
-    public function importDataAction(Request $request, $entity) {
+    public function importDataAction(Request $request) {
 
         /*
          * First checking if the provided entity has upload enable?
          */
-        $em = $this->getDoctrine()->getManager();
+        $entity = "bphs_indicator_reach";
 
-        $uploadMgr = $em->getRepository("App:UploadManager")
-            ->findOneBy(['tableName'=>$entity]);
-        if($uploadMgr !== null) {
-            if($uploadMgr->getEnabled()) {
-                $file = new ImportedFiles();
-                $form = $this->createImportForm($file);
-                $form->handleRequest($request);
+        $file = new ImportedFiles();
+        $form = $this->createImportForm($file);
+        $form->handleRequest($request);
 
-                if ($form->isSubmitted() && $form->isValid()) {
-                    return $this->persistFileAndReturn($file, $entity, 'import_data_handle');
-                }
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->persistFileAndReturn($file, $entity,
+                'import_bphs_reach_data_handle');
+        }
 
-                return $this->render('import/import.html.twig', array(
-                    'file' => $file,
-                    'form' => $form->createView(),
-                    'entity' => $entity
-                ));
-            } else
-                throw new FileNotFoundException("Bad Request! this entity doesn't support upload");
+        return $this->render('bphs_plus/import/import.html.twig', array(
+            'file' => $file,
+            'form' => $form->createView(),
+            'entity' => $entity
+        ));
 
-        } else
-            throw new FileNotFoundException("Bad Request! this entity doesn't support upload");
     }
 
     /**
-     * @param FileID $fileId
-     * @param Importer $importer
      * @param Request $request
-     * @param EntityName $entity
-     * @Route("/import/{entity}/{fileId}/handle", name="import_data_handle")
+     * @param string $entity
+     * @param integer $fileId
+     * @param ReachImporter $importer
+     * @param Importer $orgImporter
      * @return Response
+     * @Route("/import/bphs/reach/{entity}/{fileId}/handle", name="import_bphs_reach_data_handle")
      */
 
-    public function importDataHandleAction(Request $request, $entity, $fileId, Importer $importer)
+    public function importDataHandleAction(Request $request, $entity, $fileId,
+                                           ReachImporter $importer,
+                                           Importer $orgImporter)
     {
         $em = $this->getDoctrine()->getManager();
 
         $uploadMgr = $em->getRepository("App:UploadManager")->findOneBy(['tableName'=>$entity]);
         if($uploadMgr !== null) {
-            $excludedCols = $uploadMgr->getExcludedColumns();
-            $hasTemp = $uploadMgr->getHasTemp();
+            //Todo: Here we need to do the following steps before going to the normal upload flow
+            // 1. Extract indicators names from the uploaded file - and confirm them - if not cancel the process
+            // 2. replace the indicators names with their respective ids and unpivot the data
+            //    So for each indicator (and HF, Year, Month) there should be one row
+            // 3. Once that data got ready, modify the processData function to receive a data array and insert it
+            //    to the table.
 
-
-            $entityClass = "App\\Entity\\" . $importer->remove_($entity, true);
-            $entityObject = new $entityClass();
-
-            // below function call performing huge task regarding reading file and giving us back the data
-            $data = $this->checkFileData($entityObject, $excludedCols, $fileId, $importer);
-            // if no data or any errors (flash messages also set above) redirect
-            if ($data === false) {
-                return $this->redirectToRoute('import_data', ['entity' => $entity]);
+            $result = $importer->readReachData($fileId);
+            if($result['result'] === 'error') {
+                $this->addFlash('error', $result['excel_data']);
+                $importer->deleteFile($fileId);
+                return $this->redirectToRoute('import_bphs_reach_data');
             }
+            $entityClass = "App\\Entity\\" . $orgImporter->remove_($entity, true);
+            $uploaderSettings = $importer->getUploaderSettings();
+            //dd($uploaderSettings);
+
             // this function call create the whole form for mapping columns (excel to database)
-            $form = $this->createMapperForm($data['cols_excel'], $data['cols_entity']);
+            $form = $this->createMapperForm($result['cols_excel'], $uploaderSettings['cols_required']);
             // when user click map button (submit)
             if ($request->getMethod() == "POST") {
                 $form->handleRequest($request);
                 if ($form->isValid()) {
 
                     $mappedArray = $form->getData();
-                    $excelData = $data['excel_data'];
+                    $excelData = $result['excel_data'];
                     $flashMessage = "";
                     $file_id = -1;
                     $table = 'table';
-                    if ($hasTemp) {
-                        $entityClass = "\\App\\Entity\\Temp" . $importer->remove_($entity, true);
+                    if ($uploaderSettings['has_temp'] === true) {
+                        $entityClass = "\\App\\Entity\\Temp" . $orgImporter->remove_($entity, true);
                         $flashMessage = ", please synchronize it with main table!";
                         $file_id = $fileId;
                         $table = 'temporary table';
                     }
 
                     // get entity and unique cols
-                    $uniqueCols = $uploadMgr->getUniqueColumns();
-                    $entityCols = $uploadMgr->getEntityColumns();
-                    $result = $importer->processData($entityClass, $excelData, $mappedArray, $file_id, $uniqueCols, $entityCols);
+                    $uniqueCols = $uploaderSettings['cols_unique'];
+                    $entityCols = $orgImporter->cleanDbColumns($uploaderSettings['cols_entity']);
+                    $result = $importer->processData($entityClass, $excelData, $mappedArray,
+                        $file_id, $uniqueCols, $entityCols);
 
                     if (isset($result['success'])) {
                         $this->addFlash("success", $result['success'] . $flashMessage);
@@ -139,24 +142,27 @@ class ImportController extends AbstractController
                         $this->addFlash("warning", $message);
                     }
                     // redirect based on the process of the upload
-                    if($hasTemp) {
+                    if($uploaderSettings['has_temp'] === true) {
                         // set the columns in session that are required for sync function
                         $session = $request->getSession();
                         $session->set("requiredCols", $mappedArray);
                         $session->set("uniqueCols", $uniqueCols);
                         $session->set("entityCols", $entityCols);
-                        return $this->redirectToRoute("sync_data_view", ['entity' => $entity, 'fileId' => $fileId]);
+                        return $this->redirectToRoute("sync_bphs_reach_data",
+                            ['entity' => $entity, 'fileId' => $fileId]);
                     }
-                    elseif (!$hasTemp)
-                        return $this->redirectToRoute("import_data", ['entity'=>$entity]);
+                    elseif ($uploaderSettings['has_temp'] !== true)
+                        return $this->redirectToRoute("import_bphs_reach_data");
                 }
             }
 
             return $this->render('import/import_handle.html.twig',
-                    ['form' => $form->createView(),
-                     'cols_excel' => $data['cols_excel'],
-                     'entity' => $entity,
-                     'file' => $fileId]);
+                ['form' => $form->createView(),
+                    'cols_excel' => $result['cols_excel'],
+                    'entity' => $entity,
+                    'file' => $fileId]);
+
+
         } else
             throw new FileNotFoundException("Sorry you have requested a bad file");
 
@@ -164,7 +170,7 @@ class ImportController extends AbstractController
 
 
     /**
-     * @Route("/sync/{entity}/{fileId}", name="sync_data_view")
+     * @Route("/bphs/reach/sync/{entity}/{fileId}", name="sync_bphs_reach_view")
      * @param Request $request
      * @param $entity
      * @param $fileId
@@ -178,13 +184,13 @@ class ImportController extends AbstractController
 //        if(!preg_match("/$match/", $referrer))
 //            throw $this->createNotFoundException("You can't access this route directly!");
         $breadcrumb = $importer->remove_($entity, true);
-        return $this->render("import/import_sync.html.twig", [
+        return $this->render("bphs_plus/import/import_sync.html.twig", [
             'breadcrumb' => $breadcrumb, 'entity'=>$entity, 'file'=>$fileId
         ]);
     }
 
     /**
-     * @Route("/cancel/upload/{entity}/{fileId}/{del}", name="cancel_upload")
+     * @Route("/cancel/bphs/reach/upload/{entity}/{fileId}/{del}", name="cancel_bphs_reach_upload")
      * @param $entity
      * @param $fileId
      * @param int $del
@@ -236,7 +242,7 @@ class ImportController extends AbstractController
 
 
     /**
-     * @Route("/do-sync/{entity}/{fileId}", name="sync_entity_data")
+     * @Route("/do-sync/{entity}/{fileId}", name="sync_bphs_reach_data")
      * @param Request $request
      * @param $entity
      * @param $fileId
@@ -338,9 +344,8 @@ class ImportController extends AbstractController
                     }
 
                     //setting blameable columns (createdby and updatedby)
-                    if(method_exists($tEntity, 'setCreatedBy') && $tEntity->getCreatedBy() === null) {
-                        $tEntity->setCreatedBy($em->getRepository(User::class)
-                            ->findOneBy(['username'=>$user->getUsername()]));
+                    if(method_exists($tEntity, 'setCreatedBy')) {
+                        $tEntity->setCreatedBy($em->getRepository(User::class)->findOneBy(['username'=>$user->getUsername()]));
                     }
                     if(method_exists($tEntity, 'setUpdatedBy')) {
 
@@ -501,49 +506,44 @@ class ImportController extends AbstractController
 
 
     /**
-     * @Route("/download/{entity}/template", name="download_template")
-     * @param $entity
+     * @Route("/download/bphs-reach/template", name="download_bphs_reach_template")
      * @param Importer $importer
      * @return mixed
      * @throws
      */
-    public function downloadTemplateAction($entity, Importer $importer)
+    public function downloadTemplateAction(Importer $importer)
     {
         // ask the service for a Excel5
-        $phpExcelObject = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $phpExcelObject = new Spreadsheet();
 
         $em = $this->getDoctrine()->getManager();
-        $uploadMgr = $em->getRepository("App:UploadManager")->findOneBy(['tableName'=>$entity]);
-        $excludedCols = $uploadMgr->getExcludedColumns();
 
-        $table = $importer->remove_($entity, true);
+        // manually set the columns
+        $cols = array(
+            'HF Code',
+            'Report Year',
+            'Report Month'
+        );
 
-        $table = "App\\Entity\\".$table;
-        $obj = new $table();
-        $columns = $importer->toDropDownArray($obj, $excludedCols);
-
-        $cols = array();
-        $index = 0;
-        foreach ($columns as $name=>$column) {
-            $cols[$index] = $name;
-            $index ++;
+        // dynamically load the assigned indicators of the current year (the year is taken from current date)
+        $indicators = $em->getRepository('App:BphsHfIndicator')->getAssignedIndicators();
+        foreach ($indicators as $indicator) {
+            $cols[] = $indicator['indicatorName'];
         }
 
-        unset($columns);
-        unset($excludedCols);
 
         $phpExcelObject->getProperties()->setCreator("PolioDB")
             ->setLastModifiedBy("Polio DB Server")
-            ->setTitle("Data Upload Template for ".$importer->remove_($entity, true))
+            ->setTitle("Data Upload Template for BPHS Indicators Reach")
             ->setSubject("Upload data using this template")
-            ->setKeywords("Microsoft Excel Generated by PHP Office")
+            ->setKeywords("Microsoft Excel Generated by PHP SpreadSheet")
             ->setCategory("Template");
         foreach($cols as $key=>$col) {
             $phpExcelObject->setActiveSheetIndex(0)
                 ->setCellValue(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($key+1)."1", $col);
         }
 
-        $phpExcelObject->getActiveSheet()->setTitle('template_'.$entity);
+        $phpExcelObject->getActiveSheet()->setTitle('template');
         // Set active sheet index to the first sheet, so Excel opens this as the first sheet
         $phpExcelObject->setActiveSheetIndex(0);
 
@@ -556,7 +556,7 @@ class ImportController extends AbstractController
         }
         // create the writer
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($phpExcelObject, 'Xlsx');
-        //$writer = $this->get('phpexcel')->createWriter($phpExcelObject, 'Excel2007');
+
         // create the response
         $response = new StreamedResponse(function () use ($writer) {
             $writer->save('php://output');
@@ -564,7 +564,7 @@ class ImportController extends AbstractController
         // adding headers
         $dispositionHeader = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            "template_".$entity.'.xlsx'
+            "template_bphs_indicator_reach.xlsx"
         );
         $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
         $response->headers->set('Pragma', 'public');

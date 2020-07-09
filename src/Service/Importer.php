@@ -9,6 +9,7 @@
 namespace App\Service;
 
 use App\Entity\ImportedFiles;
+use App\Entity\User;
 use Doctrine\DBAL\Types\DateTimeTzType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -206,6 +207,15 @@ class Importer
         return $readableCols;
     }
 
+    public function cleanDbColumns($dbColumns) {
+        $cleanedCols = array();
+        foreach($dbColumns as $column) {
+            $cleanedCols[] = $this->remove_($column);
+        }
+
+        return $cleanedCols;
+    }
+
 
     /**
      * Convert an entity to a JSON object
@@ -262,7 +272,7 @@ class Importer
      * @param $var
      * @return int|null|string
      */
-    public function chekType($var) {
+    public function checkType($var) {
         if($var === null)
             return null;
         $var = trim($var);
@@ -311,7 +321,7 @@ class Importer
             foreach ($excelRows as $excelCol=>$celValue) {
                 foreach ($mappingKeys as $key=>$value) {
                     if($excelCol == $key) {
-                        $row[$this->remove_($value)] = $this->chekType($celValue);
+                        $row[$this->remove_($value)] = $this->checkType($celValue);
                     }
                 }
             }
@@ -346,7 +356,7 @@ class Importer
      * @param $className
      * @param $data
      * @param $mappedArray
-     * @param ImportedFiles $fileId
+     * @param int $fileId
      * @param array $uniqueCols
      * @param array $entityCols
      * @return array|bool|null
@@ -354,8 +364,6 @@ class Importer
     public function processData($className, $data, $mappedArray, $fileId, $uniqueCols = null, $entityCols = null) {
 
         $readyData = $this->replaceKeys($data, $mappedArray);
-
-        //dump($readyData); die;
         $user = $this->getUser();
         $exceptions = null;
         $batchSize = 50;
@@ -401,7 +409,6 @@ class Importer
             }
 
             foreach($dataRow as $col=>$value) {
-
                 $func = "set" . ucfirst($col);
                 $dataValue = trim($value) == '' ? null : trim($value);
                 $type = in_array(lcfirst($col), $entityCols) === true ? 'integer': $types[$col]['type'];
@@ -426,24 +433,17 @@ class Importer
                     }
                 }
                 $entity->$func($dataValue);
-                //setting blameable and Timestampable columns
-//                if(method_exists($entity, 'setCreatedBy')) {
-//                    $func = "setCreatedBy";
-//                    $entity->$func($user);
-//                }
-//                if(method_exists($entity, 'setUpdatedBy')) {
-//                    $func = "setUpdatedBy";
-//                    $entity->$func(null);
-//                }
-//                if(method_exists($entity, 'setDeletedBy')) {
-//                    $func = "setDeletedBy";
-//                    $entity->$func(null);
-//                }
-//                if(method_exists($entity, 'setCreatedAt')) {
-//                    $func = "setCreatedAt";
-//                    $entity->$func();
-//                }
 
+            }
+
+            //setting blameable columns (createdby and updatedby)
+            if(method_exists($entity, 'setCreatedBy') && $entity->getCreatedBy() === null) {
+                $entity->setCreatedBy($this->_em->getRepository(User::class)
+                    ->findOneBy(['username'=>$user->getUsername()]));
+            }
+            if(method_exists($entity, 'setUpdatedBy')) {
+
+                $entity->setUpdatedBy($this->_em->getRepository(User::class)->findOneBy(['username'=>$user->getUsername()]));
             }
 
             // now setting the file id if file was not equal to -1, which means no file field in entity
@@ -458,10 +458,10 @@ class Importer
             }
 
             //dd($entity);
-            //if($counter%$batchSize == 0) {
+            if($counter%$batchSize == 0) {
                 $this->_em->flush();
                 $this->_em->clear();
-            //}
+            }
 
             $counter ++;
         }
@@ -498,7 +498,7 @@ class Importer
         return mb_strtolower($tableized);
     }
 
-    protected function getUser() {
+    public function getUser() {
         return $this->security->getUser();
     }
 

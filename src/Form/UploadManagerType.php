@@ -62,7 +62,8 @@ class UploadManagerType extends AbstractType
                 'choices' => $columns,
                 'placeholder' => 'Select Foreign Key Columns',
                     'attr' => array('class'=>'form-control'),
-                    'multiple' => true
+                    'multiple' => true,
+                    'required' => false,
             ))
                 ->add("uniqueColumns", ChoiceType::class, array(
                     'label' => 'Columns to make a row unique',

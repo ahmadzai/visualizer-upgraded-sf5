@@ -1,0 +1,133 @@
+{% extends 'template.html.twig' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Import data from data files</h3>
+                </div>
+                <!-- /.box-header -->
+
+                <div class="box-body">
+
+                    <div class="callout callout-info">
+                        <h4>Instructions!</h4>
+
+                        <p>Before uploading, make sure you have the clean data in a correct template (or download one from this page) with a header row</p>
+                        <ul>
+                            <li>
+                                Make sure your file is in .xlsx, .xls or .csv format
+                            </li>
+                            <li>
+                                Make sure that all columns' data is in the correct type (i.e. number, text, or date), otherwise that row will be escaped.
+                            </li>
+                            <li>
+                                If the file is too big (more then 1MB), would be good to upload it in small chunks
+                            </li>
+                            <li>
+                                After uploading there will 2 more steps, first you have to match the columns in the uploaded file with the columns in the Database.
+                                and next you have to sync the uploaded data with Master table.
+                            </li>
+                            <li>
+                                It will strictly check if the uploading data is already existed (if yes, the system will updated that)
+                            </li>
+                        </ul>
+                    </div>
+
+
+                    <div class="row">
+
+                        <form name="import_data_file" method="post">
+                            <div class="col-md-6">
+
+                                <div class="form-group ">
+                                    <label for="import_data_file_importedFile" class="required">Select Data File (.xlsx, .xls, .csv)</label>
+                                    <input type="file" id="import_data_file_importedFile"  tabindex="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-success pull-right">
+                                        <i class="fa fa-upload"></i>
+                                        Upload
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Model Window -->
+    <div class="modal fade" id="modal-default" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"  aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Step3: Sync uploaded data with Master table!</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="box-body">
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ label }} alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    <i class="icon fa fa-info"></i>
+                                    {{ message|raw }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        <div class="alert alert-info alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h4><i class="icon fa fa-info"></i> Be careful! </h4>
+                            <p>If you click Cancel button, the uploaded data/file will be deleted</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ path("cancel_bphs_reach_upload", {'fileId':file}) }}"
+                           class="btn btn-danger pull-left">
+                            <i class="fa fa-warning">
+                                Cancel
+                            </i>
+                        </a>
+
+                        <a href="{{ path("sync_bphs_reach_data", {'fileId':file}) }}"
+                           class="btn btn-primary">
+                            <i class="fa fa-play">
+                                Sync Now!
+                            </i>
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block title %}Sync Uploaded Data{% endblock %}
+
+{% block breadcrumb %}
+    <h1>
+        Upload
+        <small> {{ breadcrumb }}</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">
+                <i class="fa fa-database"></i>
+                {{ breadcrumb }}
+            </a>
+        </li>
+        <li class="active">
+            <i class="fa fa-upload "></i>
+            Upload
+        </li>
+
+    </ol>
+{% endblock %}

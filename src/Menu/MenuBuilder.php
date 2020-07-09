@@ -280,12 +280,11 @@ class MenuBuilder
 
         // TPM SM/CCS Upload Option
         if(in_array("ROLE_EDITOR", $reachableRoles)) {
-            $menu['BPHS Plus']->addChild("Upload", array('route' => 'import_data',
-                'routeParameters' => ['entity'=>'bphs_indicator_reach']))
+            $menu['BPHS Plus']->addChild("Upload", array('route' => 'import_bphs_reach_data'))
                 ->setExtra('info', 'Monthly Indicators Reach Data')
                 ->setExtra('routes', [
-                    ['route' => 'import_data', 'parameters' => ['entity'=>'bphs_indicator_reach']],
-                    ['route' => 'import_data_handle', 'parameters' => [
+                    ['route' => 'import_bphs_reach_data'],
+                    ['route' => 'import_bphs_reach_data_handle', 'parameters' => [
                         'entity'=>'bphs_indicator_reach',
                         'fileId'=>$this->requestStack->getCurrentRequest()->get('fileId')
                     ]]

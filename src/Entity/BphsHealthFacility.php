@@ -21,9 +21,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="App\Repository\BphsHealthFacilityRepository")
  * @UniqueEntity(fields={"id"}, message="A facility with same id is already existed")
  */
-class BphsHealthFacility implements  TimestampableInterface
+class BphsHealthFacility implements  TimestampableInterface, BlameableInterface
 {
     use TimestampableTrait;
+    use BlameableTrait;
     /**
      * @var int
      *
@@ -56,14 +57,17 @@ class BphsHealthFacility implements  TimestampableInterface
     private $indicators;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
-     */
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(referencedColumnName="id")
+     *
     private $createdBy;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EXTRA_LAZY")
-     */
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(referencedColumnName="id")
+     *
     private $updatedBy;
+    */
 
 
     public function __construct()
@@ -174,7 +178,7 @@ class BphsHealthFacility implements  TimestampableInterface
 
     /**
      * @return User
-     */
+     *
     public function getCreatedBy()
     {
         return $this->createdBy;
@@ -183,7 +187,7 @@ class BphsHealthFacility implements  TimestampableInterface
     /**
      * @param User|null $createdBy
      * @return BphsHealthFacility
-     */
+     *
     public function setCreatedBy($createdBy): self
     {
         $this->createdBy = $createdBy;
@@ -192,7 +196,7 @@ class BphsHealthFacility implements  TimestampableInterface
 
     /**
      * @return User
-     */
+     *
     public function getUpdatedBy()
     {
         return $this->updatedBy;
@@ -201,12 +205,13 @@ class BphsHealthFacility implements  TimestampableInterface
     /**
      * @param User|null $updatedBy
      * @return BphsHealthFacility
-     */
+     *
     public function setUpdatedBy($updatedBy): self
     {
         $this->updatedBy = $updatedBy;
         return $this;
     }
+    */
 
 
 
