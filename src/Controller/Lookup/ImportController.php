@@ -12,6 +12,7 @@ namespace App\Controller\Lookup;
 use App\Entity\ImportedFiles;
 use App\Entity\User;
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Query;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -76,10 +77,10 @@ class ImportController extends AbstractController
     }
 
     /**
-     * @param FileID $fileId
+     * @param int $fileId
      * @param Importer $importer
      * @param Request $request
-     * @param EntityName $entity
+     * @param string $entity
      * @Route("/import/{entity}/{fileId}/handle", name="import_data_handle")
      * @return Response
      */
@@ -93,7 +94,6 @@ class ImportController extends AbstractController
             $excludedCols = $uploadMgr->getExcludedColumns();
             $hasTemp = $uploadMgr->getHasTemp();
 
-
             $entityClass = "App\\Entity\\" . $importer->remove_($entity, true);
             $entityObject = new $entityClass();
 
@@ -104,7 +104,7 @@ class ImportController extends AbstractController
                 return $this->redirectToRoute('import_data', ['entity' => $entity]);
             }
             // this function call create the whole form for mapping columns (excel to database)
-            $form = $this->createMapperForm($data['cols_excel'], $data['cols_entity']);
+            $form = $importer->createMapperForm($data['cols_excel'], $data['cols_entity']);
             // when user click map button (submit)
             if ($request->getMethod() == "POST") {
                 $form->handleRequest($request);
@@ -114,18 +114,23 @@ class ImportController extends AbstractController
                     $excelData = $data['excel_data'];
                     $flashMessage = "";
                     $file_id = -1;
-                    $table = 'table';
+
                     if ($hasTemp) {
                         $entityClass = "\\App\\Entity\\Temp" . $importer->remove_($entity, true);
                         $flashMessage = ", please synchronize it with main table!";
                         $file_id = $fileId;
-                        $table = 'temporary table';
-                    }
 
+                    }
                     // get entity and unique cols
                     $uniqueCols = $uploadMgr->getUniqueColumns();
                     $entityCols = $uploadMgr->getEntityColumns();
-                    $result = $importer->processData($entityClass, $excelData, $mappedArray, $file_id, $uniqueCols, $entityCols);
+                    $updateAbleCols = $importer->cleanDbColumns($uploadMgr->getUpdateAbleColumns());
+                    $result = $importer->processData(
+                        $entityClass, $excelData, $mappedArray, $file_id,
+                        ['uniqueCols' => $uniqueCols, 'entityCols' => $entityCols, 'updateAbleCols'=>$updateAbleCols],
+                        null,
+                        null
+                    );
 
                     if (isset($result['success'])) {
                         $this->addFlash("success", $result['success'] . $flashMessage);
@@ -139,14 +144,8 @@ class ImportController extends AbstractController
                         $this->addFlash("warning", $message);
                     }
                     // redirect based on the process of the upload
-                    if($hasTemp) {
-                        // set the columns in session that are required for sync function
-                        $session = $request->getSession();
-                        $session->set("requiredCols", $mappedArray);
-                        $session->set("uniqueCols", $uniqueCols);
-                        $session->set("entityCols", $entityCols);
+                    if($hasTemp)
                         return $this->redirectToRoute("sync_data_view", ['entity' => $entity, 'fileId' => $fileId]);
-                    }
                     elseif (!$hasTemp)
                         return $this->redirectToRoute("import_data", ['entity'=>$entity]);
                 }
@@ -173,10 +172,6 @@ class ImportController extends AbstractController
      */
     public function createSyncViewAction(Request $request, $entity, $fileId, Importer $importer) {
 
-//        $referrer = $request->headers->get("referer");
-//        $match = "(import)(".$entity.")(".$fileId.")(handle)";
-//        if(!preg_match("/$match/", $referrer))
-//            throw $this->createNotFoundException("You can't access this route directly!");
         $breadcrumb = $importer->remove_($entity, true);
         return $this->render("import/import_sync.html.twig", [
             'breadcrumb' => $breadcrumb, 'entity'=>$entity, 'file'=>$fileId
@@ -254,123 +249,31 @@ class ImportController extends AbstractController
             // create symfony slandered entity name from
             // the provided entity that has _
             $entityName = $importer->remove_($entity, true);
-            // create path to the entity (normally every uploading entity will have
-            // another entity with the same name prefixed by Temp
-            $sourceEntity = "App\\Entity\\Temp" . $entityName;
 
             // get the data from the Temp entity by fileId (the recent file uploaded)
-            $sourceData = $em->getRepository($sourceEntity)->findBy(['file' => $fileId]);
+            $session = $request->getSession();
+            $columns = $importer->cleanDbColumns($session->get("requiredCols"));
+            $sourceData = $em->getRepository("App:UploadManager")
+                ->findByFile("Temp".$entityName, $fileId, $columns);
+            //EntityName, each entity having temp should have same name as final entity with a Temp prefix.
 
-            // again just for the caution, if there was any data
-            if ($sourceData !== null) {
-                //$sourceEntity = new $sourceEntity();
-                // now create a path to the target entity
-                $targetEntity = "App\\Entity\\" . $entityName;
+            $uniqueCols = $uploadMgr->getUniqueColumns();
+            $entityCols = $uploadMgr->getEntityColumns();
+            $updateAbleCols = $importer->cleanDbColumns($uploadMgr->getUpdateAbleColumns());
 
-                // session to receive the variables set in another controller
-                $session = $request->getSession();
-                $columns = $session->get("requiredCols");
-                $uniqueCols = $session->get("uniqueCols");
-                $entityCols = $session->get("entityCols");
+            $entityClass = "App\\Entity\\" . $entityName;
+            // to processData function we are not passing mappedArray, because data is already mapped
+            // filed id = -1, so no further storage in temp.
+            $result = $importer->processData(
+                $entityClass, $sourceData, null, -1,
+                ['uniqueCols' => $uniqueCols, 'entityCols' => $entityCols, 'updateAbleCols'=>$updateAbleCols],
+                null,
+                null
+            );
 
-                // set batch size for cleaning the entity manager time by time
-                $batchSize = 50;
-                $errors = null; // store exceptions
-                $updated = 0;   // variable to keep track of the updated rows
-                $inserted = 0;  // variable to keep track of inserted rows
-                // set SQL logger off, for the performance purpose
-                $em->getConnection()->getConfiguration()->setSQLLogger(null);
-                $counter = 0;   // just for the batch counter
+            $this->addFlash("success", $result['success']);
 
-                $user = $this->getUser();
-                // loop through the uploaded data to shift to the dest table
-                foreach ($sourceData as $index => $data) {
-
-                    $criteria = array();
-                    // make a criteria from the columns set in upload manager to
-                    // define a row as a unique
-                    // loop over those columns
-                    foreach ($uniqueCols as $uniqueCol) {
-                        $uniqueCol = $importer->remove_($uniqueCol, true);
-                        // prepare the get function of those columns
-                        $getFuncUniqueCol = "get" . $uniqueCol;
-                        // initialize the array ['columnName'] = value (value from the data)
-                        $criteria[lcfirst($uniqueCol)] = $data->$getFuncUniqueCol();
-                    }
-
-                    // now create the object of target entity
-                    // first check if the record is already there by criteria
-                    // we created above
-                    $tEntity = $em->getRepository($targetEntity)->findOneBy($criteria);
-                    $updated += 1;  // we assume that this is an update
-                    // check if there is any data, if not then create an empty object
-                    if ($tEntity === null) {
-                        $tEntity = new $targetEntity();  // create an empty object
-                        $updated = $updated > 0 ? $updated-1 : 0;   // decrease the update back
-                        $inserted += 1;  // increase the new inserted rows
-                    }
-                    // loop through the required columns
-                    foreach ($columns as $column) {
-                        // make an entity field out of the column by removing _
-                        $column = $importer->remove_($column, true);
-                        $getFunc = "get" . $column;    // make a get function for this field
-                        $setFunc = "set" . $column;    // make a set function for this field
-
-                        $newData = $data->$getFunc();  // now get the data from the source data
-
-                        // if this column was an entity column (FK)
-                        $isEntityCol = in_array(lcfirst($column), $entityCols);
-                        if ($isEntityCol === true) {
-                            // path to that entity
-                            $entityPath = "App\\Entity\\" . $column;
-                            // get the object of that entity by id of that column (should be id)
-                            $entityCol = $em->getRepository($entityPath)->findOneById($newData);
-                            // so in this case (if the column is entity), update the newdata to be an object
-                            $newData = $entityCol;
-                        }
-                        // now set this new data in the target entity
-                        $tEntity->$setFunc($newData);
-                        // please handle the user/author information somewhere else.
-//                        // add user information.
-//                        $userId = $em->getRepository("App:User")->find($user);
-//                        $tEntity->setUser($userId);
-
-                    }
-
-                    //setting blameable columns (createdby and updatedby)
-                    if(method_exists($tEntity, 'setCreatedBy') && $tEntity->getCreatedBy() === null) {
-                        $tEntity->setCreatedBy($em->getRepository(User::class)
-                            ->findOneBy(['username'=>$user->getUsername()]));
-                    }
-                    if(method_exists($tEntity, 'setUpdatedBy')) {
-
-                        $tEntity->setUpdatedBy($em->getRepository(User::class)->findOneBy(['username'=>$user->getUsername()]));
-                    }
-
-                    // at this point all the columns would be set, so let's presist it to the db
-                    $em->persist($tEntity);
-                    // clear the entity manager when this condition matched
-                    if (($counter % $batchSize) === 0) {
-                        $em->flush();
-                        $em->clear();
-                    }
-
-                    $counter++;
-
-                }
-
-                $em->flush();
-                $em->clear();
-
-                // deleting the uploaded records from Temp table
-                // we have to truncate/delete all the records from temp table now
-
-                $query = $em->createQuery("Delete from " . $sourceEntity . " temp Where temp.file = " . $fileId);
-                $numDeleted = $query->execute();
-
-                $this->addFlash("success", "In total " . $inserted . " rows inserted and " . $updated . " have updated as they were already existed");
-
-            }
+            $importer->truncate("temp_".$entity);
 
             return $this->redirectToRoute("import_data", ['entity'=>$entity]);
         } else
@@ -395,7 +298,6 @@ class ImportController extends AbstractController
      */
     private function persistFileAndReturn(ImportedFiles $importedFiles, $entity, $redirectUrl = null) {
         $em = $this->getDoctrine()->getManager();
-
         $importedFiles->setDataType($entity);
         $em->persist($importedFiles);
         $em->flush();
@@ -405,48 +307,6 @@ class ImportController extends AbstractController
         return $this->redirectToRoute($redirectUrl,
             ['fileId'=>$importedFiles->getId(), 'entity'=>$entity]
         );
-    }
-
-    /**
-     * @param $excelCols
-     * @param $entityCols
-     * @return Form|\Symfony\Component\Form\FormInterface
-     */
-    private function createMapperForm($excelCols, $entityCols) {
-
-        if($excelCols > $entityCols)
-            $entityCols['Exclude this field'] = '-1';
-        $formBuilder = $this->createFormBuilder($excelCols);
-        foreach ($excelCols as $index=>$column)
-        {
-            //$fieldLabel = preg_split("|", $column);
-            $formBuilder->add($index, ChoiceType::class, array('label'=> $column, 'choices' => $entityCols,
-                'data' => $this->compareColumns($column, $entityCols), 'attr' => ['class'=>'form-control select2',
-                    'style'=>"width:100%"]) );
-        }
-        $form = $formBuilder->getForm();
-
-
-        return $form;
-
-    }
-
-    private function compareColumns($col, $cols)
-    {
-        $prev = 0;
-        $key = 0;
-        foreach ($cols as $k=>$v) {
-
-            similar_text($col, $v, $per);
-            if($per > $prev) {
-                $prev = $per;
-                $key = $v;
-            }
-
-        }
-
-        return $key;
-
     }
 
     private function checkFileData($entity, $excludedCols, $fileId, Importer $importer) {

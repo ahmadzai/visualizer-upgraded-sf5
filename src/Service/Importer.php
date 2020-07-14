@@ -15,13 +15,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Exception;
 use RuntimeException;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
 
 
 class Importer
 {
-
     /**
      * @var EntityManagerInterface
      */
@@ -40,11 +46,17 @@ class Importer
      * @var Security
      */
     private $security;
+    /**
+     * @var FormBuilderInterface
+     */
+    private $builder;
 
-    function __construct(EntityManagerInterface $_em, Security $security)
+
+    function __construct(EntityManagerInterface $_em, Security $security, FormFactoryInterface $builder)
     {
         $this->_em = $_em;
         $this->security = $security;
+        $this->builder = $builder;
     }
 
     /**
@@ -332,17 +344,16 @@ class Importer
     }
 
     /**
-     * @param $className
+     * @param string $tableName
      */
-    public function truncate($className) {
-        $className = get_class($className);
-        $classMetaData = $this->_em->getClassMetadata($className);
+    public function truncate($tableName) {
+
         $connection = $this->_em->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
         $connection->beginTransaction();
         try {
             $connection->query('SET FOREIGN_KEY_CHECKS=0');
-            $q = $dbPlatform->getTruncateTableSql($classMetaData->getTableName());
+            $q = $dbPlatform->getTruncateTableSql($tableName);
             $connection->executeUpdate($q);
             $connection->query('SET FOREIGN_KEY_CHECKS=1');
             $connection->commit();
@@ -357,117 +368,90 @@ class Importer
      * @param $data
      * @param $mappedArray
      * @param int $fileId
-     * @param array $uniqueCols
-     * @param array $entityCols
+     * @param array $entityAndExcludedCols
+     * @param array|null $colsSubstitutes
+     * @param array|null $excludedAssociatedCols
      * @return array|bool|null
      */
-    public function processData($className, $data, $mappedArray, $fileId, $uniqueCols = null, $entityCols = null) {
-
-        $readyData = $this->replaceKeys($data, $mappedArray);
+    public function processData($className, $data, $mappedArray, $fileId,
+                                ?array $entityAndExcludedCols,
+                                ?array $colsSubstitutes,
+                                ?array $excludedAssociatedCols)
+    {
+        $entityCols = $entityAndExcludedCols['entityCols'];
+        $uniqueCols = $entityAndExcludedCols['uniqueCols'];
+        $updateAbleCols = $entityAndExcludedCols['updateAbleCols'];
+        // if mappedArray was null it mean the data is fetched from Temp Table
+        $readyData = $mappedArray === null ? $data : $this->replaceKeys($data, $mappedArray);
         $user = $this->getUser();
-        $exceptions = null;
-        $batchSize = 50;
-
-        $counter = 0;
-        $noRowAdded = 0;
-        $noRowUpdated = 0;
+        $exceptions = null; // for storing exceptions
+        // for tracking batch upload, counter for checking batch size
+        $batchSize = 1; $counter = 0; $noRowAdded = 0; $noRowUpdated = 0;
+        // set logger to null for performance reason
         $this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
-
+        // get the types of all variables
         $types = $this->_em->getClassMetadata($className)->fieldMappings;
-
+        $recordsForUpdate = [];
         foreach($readyData as $index => $dataRow) {
 
-            //$entity = new $className();
-            $entity = null;
+            $isRecordAlreadyExist = false;
+
             if($fileId === -1) {
 
-                $criteria = array();
-                // make a criteria from the columns set in upload manager to
-                // define a row as a unique
-                // loop over those columns
-                foreach ($uniqueCols as $uniqueCol) {
-                    $uniqueCol = $this->remove_($uniqueCol, true);
-                    // prepare the get function of those columns
-                    // initialize the array ['columnName'] = value (value from the data)
-                    $datum = trim($dataRow[lcfirst($uniqueCol)]);
-                    if(strpos(strtolower($uniqueCol), 'date') !== false) {
-                        $datum = \DateTimeImmutable::createFromFormat('Y-m-d', $datum);
-                    }
-                    $criteria[lcfirst($uniqueCol)] = $datum;
-                }
-
+                $criteria =$this->createSingleRowCriteria($uniqueCols, $dataRow);
                 // now create the object of target entity
                 // first check if the record is already there by criteria
                 // we created above
-                $entity = $this->_em->getRepository($className)->findOneBy($criteria);
-                $noRowUpdated += 1;
+                $isRecordAlreadyExist = $this->checkIfRecordAlreadyExist($className,$criteria);
+                if($isRecordAlreadyExist) {
+                    $recordsForUpdate[] = ['criteria' => $criteria, 'record' => $dataRow];
+                }
+                $noRowUpdated += $isRecordAlreadyExist ? 1 : 0;
             }
-            if($entity === null) {
+
+            if($isRecordAlreadyExist !== true) {
+
                 $entity = new $className();
-                $noRowUpdated = $noRowUpdated > 0 ? $noRowUpdated-1 : 0;
                 $noRowAdded += 1;
-            }
+                foreach ($dataRow as $col => $value) {
+                    $func = "set" . ucfirst($col);
+                    $dataValue = $this->checkTypeCleanValue($value, $col, $entityCols, $types);
 
-            foreach($dataRow as $col=>$value) {
-                $func = "set" . ucfirst($col);
-                $dataValue = trim($value) == '' ? null : trim($value);
-                $type = in_array(lcfirst($col), $entityCols) === true ? 'integer': $types[$col]['type'];
-
-                if ($type == "integer" || $type == "float" || $type == "double") {
-                    if (preg_match("/^-?[0-9]+$/", $dataValue) == false ||
-                        preg_match('/^-?[0-9]+(\.[0-9]+)?$/', $dataValue) == false ||
-                        !is_numeric($dataValue)
-                    )
-                        $dataValue = $dataValue === null ? null : 0;
-                }
-
-                if($fileId === -1) {
-                    $isEntityCol = in_array(lcfirst($col), $entityCols);
-                    if ($isEntityCol === true) {
-                        // path to that entity
-                        $entityPath = "App\\Entity\\" . ucfirst($col);
-                        // get the object of that entity by id of that column (should be id)
-                        $entityCol = $this->_em->getRepository($entityPath)->findOneById($dataValue);
-                        // so in this case (if the column is entity), update the newdata to be an object
-                        $dataValue = $entityCol;
+                    if ($fileId === -1) {
+                        $isEntityCol = in_array(lcfirst($col), $entityCols);
+                        if ($isEntityCol === true) {
+                            // fetch the entity
+                            $dataValue = $this->fetchAssociatedEntity($col, $dataValue,
+                                $colsSubstitutes);
+                        }
                     }
+                    $entity->$func($dataValue);
                 }
-                $entity->$func($dataValue);
+                $entity = $this->checkSetBlameable($entity, $user);
 
+                $entity = $this->checkSetExcludedAssociation($entity, $excludedAssociatedCols);
+
+                // now setting the file id if file was not equal to -1, which means no file field in entity
+                if ($fileId !== -1)
+                    $entity->setFile($fileId);
+
+                try {
+                    $this->_em->persist($entity);
+                } catch (\PhpOffice\PhpSpreadsheet\Exception $exception) {
+                    $exceptions[] = "Exception occurred and escaped at row: " . $index . ". Exception: " . $exception;
+                    continue;
+                }
+                if ($counter % $batchSize == 0) {
+                    $this->_em->flush();
+                    $this->_em->clear();
+                }
+                $counter++;
             }
-
-            //setting blameable columns (createdby and updatedby)
-            if(method_exists($entity, 'setCreatedBy') && $entity->getCreatedBy() === null) {
-                $entity->setCreatedBy($this->_em->getRepository(User::class)
-                    ->findOneBy(['username'=>$user->getUsername()]));
-            }
-            if(method_exists($entity, 'setUpdatedBy')) {
-
-                $entity->setUpdatedBy($this->_em->getRepository(User::class)->findOneBy(['username'=>$user->getUsername()]));
-            }
-
-            // now setting the file id if file was not equal to -1, which means no file field in entity
-            if($fileId !== -1)
-                $entity->setFile($fileId);
-
-            try {
-                $this->_em->persist($entity);
-            } catch (Exception $exception) {
-                $exceptions[] = "Exception occurred and escaped at row: ".$index. ". Exception: ".$exception;
-                continue;
-            }
-
-            //dd($entity);
-            if($counter%$batchSize == 0) {
-                $this->_em->flush();
-                $this->_em->clear();
-            }
-
-            $counter ++;
         }
-
         $this->_em->flush();
         $this->_em->clear();
+
+        $noRowUpdated = $this->updateRecords($className, $recordsForUpdate, $updateAbleCols);
 
         $result = array();
         if($exceptions == null)
@@ -476,7 +460,6 @@ class Importer
             $result['error'] = $exceptions;
 
         return $result;
-
 
     }
 
@@ -502,7 +485,209 @@ class Importer
         return $this->security->getUser();
     }
 
+    public function updateRecords($classPath, $updateData, $colsForUpdate) {
 
+        $tableName = $this->tableize(substr(strrchr($classPath, "\\"), 1));
+        $allFields = $this->_em->getConnection()->getSchemaManager()->listTableColumns($tableName);
+        $userId = $this->getUser()->getId();
+        $noRowsUpdated = 0;
+        foreach($updateData as $updateDatum) {
 
+            $criteria = $updateDatum['criteria'];
+            $record = $updateDatum['record'];
+
+            $where = [];
+            $params = [];
+            $counter = 0;
+            foreach ($criteria as $column => $value) {
+                $condition = $this->tableize($column);
+                if (($value === null || $value === ""))
+                    $condition .= " IS NULL ";
+                else {
+                    $param = "param" . $counter;
+                    $condition .= " = (:" . $param . ")";
+                    $params[$param] = $value;
+                }
+                $where[] = $condition;
+                $counter++;
+            }
+            $whereCondition = implode(" AND ", $where);
+            $updateParts = [];
+            $counter = 0;
+            foreach ($colsForUpdate as $setCol) {
+                $updateParts[] = $this->tableize($setCol) . " = (:up" . $counter . ") ";
+                $params['up' . $counter] = $record[$setCol];
+            }
+            // check for updated_by and updated_at columns
+            if(array_key_exists("updated_by_id", $allFields) || array_key_exists("updated_by", $allFields)) {
+                $updateParts[] = array_key_exists("updated_by", $allFields) ?
+                    "updated_by = (:usr) " :
+                    "updated_by_id = (:usr) ";
+                $params['usr'] = $userId;
+            }
+            if(array_key_exists("updated_at", $allFields)) {
+                $updateParts[] = "updated_at = (:dt) ";
+                $params['dt'] = date('Y-m-d H:i:s');
+            }
+            $updatePart = implode(", ", $updateParts);
+            $query = "UPDATE ".$tableName." SET " . $updatePart . " WHERE (" . $whereCondition . ")";
+            $noRowsUpdated += $this->_em->getConnection()->executeUpdate($query, $params);
+
+        }
+        return $noRowsUpdated;
+    }
+
+    public function checkIfRecordAlreadyExist($classPath, $selectionCriteria) {
+        return $this->_em->getRepository("App:UploadManager")
+            ->findOneByCriteria($classPath, $selectionCriteria);
+    }
+
+    public function createSingleRowCriteria(?array $uniqueCols, $dataRow)
+    {
+        $criteria = array();
+        // make a criteria from the columns set in upload manager to
+        // define a row as a unique
+        // loop over those columns
+        foreach ($uniqueCols as $uniqueCol) {
+            $uniqueCol = $this->remove_($uniqueCol, true);
+            // prepare the get function of those columns
+            // initialize the array ['columnName'] = value (value from the data)
+            $datum = trim($dataRow[lcfirst($uniqueCol)]);
+            if(strpos(strtolower($uniqueCol), 'date') !== false) {
+                $datum = \DateTimeImmutable::createFromFormat('Y-m-d', $datum);
+            }
+
+            $criteria[lcfirst($uniqueCol)] = $datum;
+
+        }
+
+        return $criteria;
+    }
+
+    /**
+     * @param object $entity
+     * @param UserInterface|null $user
+     */
+    private function checkSetBlameable(object $entity, ?UserInterface $user): object
+    {
+        if (method_exists($entity, 'setCreatedBy') && $entity->getCreatedBy() === null) {
+            $entity->setCreatedBy($this->_em->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]));
+        }
+        if (method_exists($entity, 'setUpdatedBy')) {
+
+            $entity->setUpdatedBy($this->_em->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]));
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param $col
+     * @param $dataValue
+     * @param $columnSubstitutes
+     * @return object
+     */
+    private function fetchAssociatedEntity($col, $dataValue, $columnSubstitutes): object
+    {
+        if (is_array($columnSubstitutes) && array_key_exists($col, $columnSubstitutes))
+            $col = $columnSubstitutes[$col];
+
+        $entityPath = "App\\Entity\\" . ucfirst($col);
+        // get the object of that entity by id of that column (should be id)
+        return $this->_em->getRepository($entityPath)->findOneById($dataValue);
+
+    }
+
+    /**
+     * @param $value
+     * @param $col
+     * @param array|null $entityCols
+     * @param array|null $types
+     * @return int|string|null
+     */
+    public function checkTypeCleanValue($value, $col, ?array $entityCols, ?array $types)
+    {
+        $dataValue = trim($value) == '' ? null : trim($value);
+        $type = in_array(lcfirst($col), $entityCols) === true ? 'integer' : $types[$col]['type'];;
+
+        if ($type == "integer" || $type == "float" || $type == "double") {
+            if (preg_match("/^-?[0-9]+$/", $dataValue) == false ||
+                preg_match('/^-?[0-9]+(\.[0-9]+)?$/', $dataValue) == false ||
+                !is_numeric($dataValue)
+            )
+                $dataValue = $dataValue === null ? null : 0;
+        }
+        return $dataValue;
+    }
+
+    /**
+     * @param object $entity
+     * @param $excludedAssociationArray
+     * @return object
+     */
+    public function checkSetExcludedAssociation(object $entity, $excludedAssociationArray): object
+    {
+        // here setting the excluded association columns (selection done as per the array provided)
+        // the array should always be in the below template:
+        /**
+        ['nameOfTheAssociatedColumn' =>                                  // this name should be similar to entity name
+        ['columnInAssociatedEntity' => 'columnInCurrentEntity']   // this is for the selection criteria
+        ]
+         */
+        if($excludedAssociationArray !== null && count($excludedAssociationArray) > 0) {
+            foreach($excludedAssociationArray as $key => $item) {
+                // key should be the name of associated variable (all the time it should be same as entity name)
+                $selectionCriteria = [];
+                // go through the sub array
+                foreach ($item as $index => $value) {
+                    $getFunc = "get".ucfirst($value); // this should always be same as entity variables
+                    $selectionCriteria[$index] = $entity->$getFunc();
+                }
+                // by this point we should have selection criteria ready
+                $tempRecord = $this->_em->getRepository("App:".ucfirst($key))
+                    ->findOneBy($selectionCriteria);
+                // now set the record that we just fetched
+                $setFunc = "set".ucfirst($key); // again this should be name of excluded column (association)
+                $entity->$setFunc($tempRecord);
+            }
+        }
+
+        return $entity;
+    }
+
+    /**
+     * @param $excelCols
+     * @param $entityCols
+     * @return FormInterface
+     */
+    public function createMapperForm($excelCols, $entityCols): FormInterface
+    {
+
+        if($excelCols > $entityCols)
+            $entityCols['Exclude this field'] = '-1';
+        $formBuilder = $this->builder->createBuilder(FormType::class, $excelCols);
+        foreach ($excelCols as $index=>$column)
+        {
+            //$fieldLabel = preg_split("|", $column);
+            $formBuilder->add($index, ChoiceType::class, array('label'=> $column, 'choices' => $entityCols,
+                'data' => $this->compareColumns($column, $entityCols), 'attr' => ['class'=>'form-control select2',
+                    'style'=>"width:100%"]) );
+        }
+        return $formBuilder->getForm();
+    }
+
+    private function compareColumns($col, $cols)
+    {
+        $prev = 0;
+        $key = 0;
+        foreach ($cols as $k=>$v) {
+            similar_text($col, $v, $per);
+            if($per > $prev) {
+                $prev = $per;
+                $key = $v;
+            }
+        }
+        return $key;
+    }
 
 }

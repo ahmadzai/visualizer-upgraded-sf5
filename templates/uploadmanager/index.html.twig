@@ -52,7 +52,7 @@
                                 <td>{% if uploadManager.entityColumns %}{{ uploadManager.entityColumns|join(', ') }}{% endif %}</td>
                                 <td>{% if uploadManager.enabled %}Yes{% else %}No{% endif %}</td>
                                 <td>{% if uploadManager.hasTemp %}Yes{% else %}No{% endif %}</td>
-                                <td>{% if uploadManager.modifiedAt %}{{ uploadManager.modifiedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                                <td>{% if uploadManager.updatedAt %}{{ uploadManager.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
                                 <td>
 
                                     <a href="{{ path('uploadmanager_show', { 'id': uploadManager.id }) }}" class="btn btn-xs btn-info">

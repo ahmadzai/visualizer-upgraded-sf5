@@ -84,7 +84,7 @@ class BphsHfIndicator implements TimestampableInterface, BlameableInterface
     private $province;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\BphsIndicatorReach", mappedBy="hfIndicator")
+     * @ORM\OneToMany(targetEntity="App\Entity\BphsIndicatorReach", mappedBy="bphsHfIndicator")
      */
     private $indicatorReaches;
 

@@ -41,6 +41,12 @@
                                             </span>
                                         </a>
                                     </li>
+                                    <li><a href="#">Update-able Cols
+                                            <span class="pull-right">
+                                                {% if uploadManager.updateAbleColumns %}{{ uploadManager.updateAbleColumns|join(', ') }}{% endif %}
+                                            </span>
+                                        </a>
+                                    </li>
                                     <li><a href="#">Enabled
                                             {% if uploadManager.enabled %}<span class="pull-right badge bg-green">Yes</span>
                                             {% else %}<span class="pull-right badge bg-red">No</span>{% endif %}
@@ -54,7 +60,7 @@
                                     </li>
 
                                     <li><a href="#">Modified At <span class="pull-right badge bg-red">
-                                                {% if uploadManager.modifiedAt %}{{ uploadManager.modifiedAt|date('Y-m-d H:i:s') }}{% endif %}
+                                                {% if uploadManager.updatedAt %}{{ uploadManager.updatedAt|date('Y-m-d H:i:s') }}{% endif %}
                                             </span></a>
                                     </li>
 

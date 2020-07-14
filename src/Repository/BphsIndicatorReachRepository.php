@@ -16,4 +16,8 @@ class BphsIndicatorReachRepository extends ServiceEntityRepository
         parent::__construct($registry, BphsIndicatorReach::class);
     }
 
+    public function updateReach($selection,$user, $reachUpdatedValue) {
+
+    }
+
 }

@@ -86,21 +86,26 @@
 
                     </div>
                     <div class="row">
-
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                {{ form_row(form.enabled, {'attr': {'tabIndex':5}}) }}
+                        <div class="col-md-3">
+                            <div class="form-group {{ form_errors(form.updateAbleColumns)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.updateAbleColumns) }}
+                                {{ form_widget(form.updateAbleColumns, {'attr':{'tabindex':5}}) }}
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                {{ form_row(form.hasTemp, {'attr': {'tabIndex':6}}) }}
+                                {{ form_row(form.enabled, {'attr': {'tabIndex':6}}) }}
                             </div>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                {{ form_row(form.hasTemp, {'attr': {'tabIndex':7}}) }}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
                             <div class="form-group">
                                 <label>&nbsp;</label>
-                                <input type="submit" class="btn btn-primary form-control" value="Create" />
+                                <input type="submit" tabindex="8" class="btn btn-primary form-control" value="Create" />
                             </div>
                         </div>
 

@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Contract\Entity\BlameableInterface;
 use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\Blameable\BlameableMethodsTrait;
 use Knp\DoctrineBehaviors\Model\Blameable\BlameableTrait;
 use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -35,18 +36,20 @@ class BphsIndicatorReach implements TimestampableInterface, BlameableInterface
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\BphsHfIndicator", fetch="EXTRA_LAZY", inversedBy="indicatorReaches")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="hf_indicator", referencedColumnName="id", fieldName="hfIndicator")
+     *   @ORM\JoinColumn(name="bphs_hf_indicator", referencedColumnName="id", fieldName="bphsHfIndicator")
      * })
      */
-    private $hfIndicator;
+    private $bphsHfIndicator;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\BphsHealthFacility", inversedBy="indicators")
+     * @ORM\JoinColumn(name="hf_code", referencedColumnName="id", fieldName="hfCode")
      */
     private $hfCode;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\BphsIndicator", inversedBy="reaches")
+     * @ORM\JoinColumn(name="indicator", referencedColumnName="id", fieldName="indicator")
      */
     private $indicator;
 
@@ -83,13 +86,12 @@ class BphsIndicatorReach implements TimestampableInterface, BlameableInterface
     /**
      * Set hfIndicator.
      *
-     * @param BphsHfIndicator|null $hfIndicator
-     *
+     * @param null $bphsHfIndicator
      * @return BphsIndicatorReach
      */
-    public function setHfIndicator($hfIndicator = null)
+    public function setBphsHfIndicator($bphsHfIndicator = null)
     {
-        $this->hfIndicator = $hfIndicator;
+        $this->bphsHfIndicator = $bphsHfIndicator;
 
         return $this;
     }
@@ -99,9 +101,9 @@ class BphsIndicatorReach implements TimestampableInterface, BlameableInterface
      *
      * @return BphsHfIndicator|null
      */
-    public function getHfIndicator()
+    public function getBphsHfIndicator()
     {
-        return $this->hfIndicator;
+        return $this->bphsHfIndicator;
     }
 
     /**
@@ -129,6 +131,9 @@ class BphsIndicatorReach implements TimestampableInterface, BlameableInterface
      */
     public function setReportMonth($reportMonth = null)
     {
+        // just to make a proper 3 letters month names
+        $reportMonth = ucfirst($reportMonth);
+        $reportMonth = strlen($reportMonth) > 3 ? substr($reportMonth, 0, 3) : $reportMonth ;
         $this->reportMonth = $reportMonth;
 
         return $this;

@@ -10,20 +10,21 @@ namespace App\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Contract\Entity\BlameableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\Blameable\BlameableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 
 /**
  * Class UploadManager
  * @package App\Entity
  * @ORM\Table(name="upload_manager")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\UploadManagerRepository")
  */
-class UploadManager
+class UploadManager implements BlameableInterface, TimestampableInterface
 {
-
-    function __construct()
-    {
-        $this->modifiedAt = new \DateTime('now');
-    }
+    use BlameableTrait;
+    use TimestampableTrait;
 
     /**
      * @ORM\Id
@@ -52,6 +53,11 @@ class UploadManager
     protected $uniqueColumns;
 
     /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    protected $updateAbleColumns;
+
+    /**
      * @ORM\Column(type="boolean", nullable=true)
      */
     protected $enabled;
@@ -61,19 +67,11 @@ class UploadManager
      */
     protected $hasTemp;
 
-    /**
-     * @var User
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user", referencedColumnName="id")
-     * })
-     */
-    protected $user;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    protected $modifiedAt;
+    protected $createdAt;
 
     /**
      * @return mixed
@@ -148,6 +146,21 @@ class UploadManager
         $this->uniqueColumns = $uniqueColumns;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUpdateAbleColumns()
+    {
+        return $this->updateAbleColumns;
+    }
+
+    /**
+     * @param mixed $updateAbleColumns
+     */
+    public function setUpdateAbleColumns($updateAbleColumns): void
+    {
+        $this->updateAbleColumns = $updateAbleColumns;
+    }
 
     /**
      * @return mixed
@@ -180,40 +193,5 @@ class UploadManager
     {
         $this->hasTemp = $hasTemp;
     }
-
-    /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param User $user
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getModifiedAt()
-    {
-        return $this->modifiedAt;
-    }
-
-    /**
-     * @param mixed $modifiedAt
-     */
-    public function setModifiedAt($modifiedAt)
-    {
-        $this->modifiedAt = $modifiedAt;
-    }
-
-
-
 
 }
