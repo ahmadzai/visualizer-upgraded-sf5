@@ -94,11 +94,11 @@ class ImportController extends AbstractController
             $excludedCols = $uploadMgr->getExcludedColumns();
             $hasTemp = $uploadMgr->getHasTemp();
 
-            $entityClass = "App\\Entity\\" . $importer->remove_($entity, true);
-            $entityObject = new $entityClass();
+            $entityName = $importer->remove_($entity, true);
+            $entityClass = "App\\Entity\\" . $entityName;
 
             // below function call performing huge task regarding reading file and giving us back the data
-            $data = $this->checkFileData($entityObject, $excludedCols, $fileId, $importer);
+            $data = $this->checkFileData($entityName, $excludedCols, $fileId, $importer);
             // if no data or any errors (flash messages also set above) redirect
             if ($data === false) {
                 return $this->redirectToRoute('import_data', ['entity' => $entity]);
@@ -116,7 +116,7 @@ class ImportController extends AbstractController
                     $file_id = -1;
 
                     if ($hasTemp) {
-                        $entityClass = "\\App\\Entity\\Temp" . $importer->remove_($entity, true);
+                        $entityClass = "\\App\\Entity\\Temp" . $entityName;
                         $flashMessage = ", please synchronize it with main table!";
                         $file_id = $fileId;
 
@@ -124,7 +124,8 @@ class ImportController extends AbstractController
                     // get entity and unique cols
                     $uniqueCols = $uploadMgr->getUniqueColumns();
                     $entityCols = $uploadMgr->getEntityColumns();
-                    $updateAbleCols = $importer->cleanDbColumns($uploadMgr->getUpdateAbleColumns());
+
+                    $updateAbleCols = $uploadMgr->getUpdateAbleColumns();
                     $result = $importer->processData(
                         $entityClass, $excelData, $mappedArray, $file_id,
                         ['uniqueCols' => $uniqueCols, 'entityCols' => $entityCols, 'updateAbleCols'=>$updateAbleCols],
@@ -249,19 +250,17 @@ class ImportController extends AbstractController
             // create symfony slandered entity name from
             // the provided entity that has _
             $entityName = $importer->remove_($entity, true);
-
-            // get the data from the Temp entity by fileId (the recent file uploaded)
-            $session = $request->getSession();
-            $columns = $importer->cleanDbColumns($session->get("requiredCols"));
+            $entityClass = "App\\Entity\\" . $entityName;
+            $columns = $importer->mapColumnsToProperties($entityClass, $uploadMgr->getExcludedColumns());
             $sourceData = $em->getRepository("App:UploadManager")
                 ->findByFile("Temp".$entityName, $fileId, $columns);
             //EntityName, each entity having temp should have same name as final entity with a Temp prefix.
 
             $uniqueCols = $uploadMgr->getUniqueColumns();
             $entityCols = $uploadMgr->getEntityColumns();
-            $updateAbleCols = $importer->cleanDbColumns($uploadMgr->getUpdateAbleColumns());
+            //dd($uploadMgr->getUpdateAbleColumns());
+            $updateAbleCols = $uploadMgr->getUpdateAbleColumns();
 
-            $entityClass = "App\\Entity\\" . $entityName;
             // to processData function we are not passing mappedArray, because data is already mapped
             // filed id = -1, so no further storage in temp.
             $result = $importer->processData(
@@ -378,10 +377,7 @@ class ImportController extends AbstractController
 
         $table = $importer->remove_($entity, true);
 
-        $table = "App\\Entity\\".$table;
-        $obj = new $table();
-        $columns = $importer->toDropDownArray($obj, $excludedCols);
-
+        $columns = $importer->toDropDownArray($table, $excludedCols);
         $cols = array();
         $index = 0;
         foreach ($columns as $name=>$column) {

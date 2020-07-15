@@ -50,7 +50,7 @@ class UploadManagerType extends AbstractType
             ]);
 
         $formModifier = function (FormInterface $form, $entity = null) {
-            $columns = null === $entity ? array() : $this->importer->listColumns($entity);
+            $columns = null === $entity ? array() : $this->importer->listTableColumns($entity);
 
             $form->add('excludedColumns', ChoiceType::class, array(
                 'choices' => $columns,

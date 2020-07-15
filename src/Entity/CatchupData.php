@@ -174,7 +174,7 @@ class CatchupData
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $entry_date;
+    private $entryDate;
 
     /**
      * @return string
@@ -506,12 +506,12 @@ class CatchupData
 
     public function getEntryDate(): ?\DateTimeInterface
     {
-        return $this->entry_date;
+        return $this->entryDate;
     }
 
-    public function setEntryDate(?\DateTimeInterface $entry_date): self
+    public function setEntryDate(?\DateTimeInterface $entryDate): self
     {
-        $this->entry_date = $entry_date;
+        $this->entryDate = $entryDate;
 
         return $this;
     }

@@ -97,71 +97,11 @@ class Importer
         return $data;
     }
 
-    /**
-     * @param $entity
-     * @param string $entityBundle
-     * @return array
-     */
-    public function listColumns($entity, $entityBundle = "App\\Entity\\") {
-        $entity = $this->remove_($entity, true);
-        $entityName = $entityBundle.$entity;
 
-        return $this->toDropDownArray(new $entityName());
-    }
-
-    protected function _serializeEntity($entity, $name = false)
+    protected function _serializeEntity($tableName)
     {
-        $className = $entity;
-        if($name === true)
-            $entity = new $className;
-        if($name === false)
-            $className = get_class($entity);
-        $metadata = $this->_em->getClassMetadata($className);
-        $data = array();
-        foreach ($metadata->fieldMappings as $field => $mapping) {
-            $value = $metadata->reflFields[$field]->getValue($entity);
-            $field = $this->tableize($field);
-            if ($value instanceof \DateTime) {
-                // We cast DateTime to array to keep consistency with array result
-                $data[$field] = (array)$value;
-            } elseif (is_object($value)) {
-                $data[$field] = (string)$value;
-            } else {
-                $data[$field] = $value;
-            }
-        }
-        foreach ($metadata->associationMappings as $field => $mapping) {
-            $key = $this->tableize($field);
-            if ($mapping['isCascadeDetach']) {
-                $data[$key] = $metadata->reflFields[$field]->getValue($entity);
-                if (null !== $data[$key]) {
-                    $data[$key] = $this->_serializeEntity($data[$key]);
-                }
-            } elseif ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadata::TO_ONE) {
-                if (null !== $metadata->reflFields[$field]->getValue($entity)) {
-                    if ($this->_recursionDepth < $this->_maxRecursionDepth) {
-                        $this->_recursionDepth++;
-                        $data[$key] = $this->_serializeEntity(
-                            $metadata->reflFields[$field]
-                                ->getValue($entity)
-                        );
-                        $this->_recursionDepth--;
-                    } else {
-                        $data[$key] = $this->_em
-                            ->getUnitOfWork()
-                            ->getEntityIdentifier(
-                                $metadata->reflFields[$field]
-                                    ->getValue($entity)
-                            );
-                    }
-                } else {
-                    // In some case the relationship may not exist, but we want
-                    // to know about it
-                    $data[$key] = null;
-                }
-            }
-        }
-        return $data;
+        $tableName = $this->tableize($tableName);
+        return $this->_em->getConnection()->getSchemaManager()->listTableColumns($tableName);
     }
 
     /**
@@ -491,6 +431,7 @@ class Importer
         $allFields = $this->_em->getConnection()->getSchemaManager()->listTableColumns($tableName);
         $userId = $this->getUser()->getId();
         $noRowsUpdated = 0;
+
         foreach($updateData as $updateDatum) {
 
             $criteria = $updateDatum['criteria'];
@@ -514,9 +455,11 @@ class Importer
             $whereCondition = implode(" AND ", $where);
             $updateParts = [];
             $counter = 0;
+            $record = array_change_key_case($record, CASE_LOWER); // change array key case for easy comparison
             foreach ($colsForUpdate as $setCol) {
-                $updateParts[] = $this->tableize($setCol) . " = (:up" . $counter . ") ";
-                $params['up' . $counter] = $record[$setCol];
+                $updateParts[] = $setCol . " = (:up" . $counter . ") ";
+                $params['up' . $counter] = $record[strtolower($this->remove_($setCol))];
+                $counter++;
             }
             // check for updated_by and updated_at columns
             if(array_key_exists("updated_by_id", $allFields) || array_key_exists("updated_by", $allFields)) {
@@ -531,6 +474,7 @@ class Importer
             }
             $updatePart = implode(", ", $updateParts);
             $query = "UPDATE ".$tableName." SET " . $updatePart . " WHERE (" . $whereCondition . ")";
+
             $noRowsUpdated += $this->_em->getConnection()->executeUpdate($query, $params);
 
         }
@@ -607,8 +551,10 @@ class Importer
      */
     public function checkTypeCleanValue($value, $col, ?array $entityCols, ?array $types)
     {
+        $types = array_change_key_case($types, CASE_LOWER);
+
         $dataValue = trim($value) == '' ? null : trim($value);
-        $type = in_array(lcfirst($col), $entityCols) === true ? 'integer' : $types[$col]['type'];;
+        $type = in_array(lcfirst($col), $entityCols) === true ? 'integer' : $types[strtolower($col)]['type'];
 
         if ($type == "integer" || $type == "float" || $type == "double") {
             if (preg_match("/^-?[0-9]+$/", $dataValue) == false ||
@@ -688,6 +634,86 @@ class Importer
             }
         }
         return $key;
+    }
+
+    public function listTableColumns($tableName) {
+        $columns = $this->_serializeEntity($tableName);
+        $columnsWithKeys = [];
+        foreach ($columns as $col => $dbal) {
+            $columnsWithKeys[$this->remove_($col, true)] = $col;
+        }
+
+        return $columnsWithKeys;
+    }
+
+    public function mapColumnsToProperties(string $entityName, ?array $getExcludedColumns)
+    {
+        $tempProperties = $this->getEntityProperties($entityName, true);
+        $properties = [];
+        foreach ($tempProperties as $key => $value) {
+            $properties[strtolower($key)] = $key;
+        }
+
+        foreach($getExcludedColumns as $column) {
+            if(array_key_exists(strtolower($this->remove_($column)), $properties)) {
+                unset($properties[strtolower($this->remove_($column))]);
+            }
+        }
+
+        return $properties;
+    }
+
+    protected function getEntityProperties($entity, $name = false)
+    {
+        $className = $entity;
+        if($name === true)
+            $entity = new $className;
+        $className = get_class($entity);
+        $metadata = $this->_em->getClassMetadata($className);
+        $data = array();
+        foreach ($metadata->fieldMappings as $field => $mapping) {
+            $value = $metadata->reflFields[$field]->getValue($entity);
+            if ($value instanceof \DateTime) {
+                // We cast DateTime to array to keep consistency with array result
+                $data[$field] = (array)$value;
+            } elseif (is_object($value)) {
+                $data[$field] = (string)$value;
+            } else {
+                $data[$field] = $value;
+            }
+        }
+        foreach ($metadata->associationMappings as $field => $mapping) {
+            $key = $field;
+            if ($mapping['isCascadeDetach']) {
+                $data[$key] = $metadata->reflFields[$field]->getValue($entity);
+                if (null !== $data[$key]) {
+                    $data[$key] = $this->_serializeEntity($data[$key]);
+                }
+            } elseif ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadata::TO_ONE) {
+                if (null !== $metadata->reflFields[$field]->getValue($entity)) {
+                    if ($this->_recursionDepth < $this->_maxRecursionDepth) {
+                        $this->_recursionDepth++;
+                        $data[$key] = $this->_serializeEntity(
+                            $metadata->reflFields[$field]
+                                ->getValue($entity)
+                        );
+                        $this->_recursionDepth--;
+                    } else {
+                        $data[$key] = $this->_em
+                            ->getUnitOfWork()
+                            ->getEntityIdentifier(
+                                $metadata->reflFields[$field]
+                                    ->getValue($entity)
+                            );
+                    }
+                } else {
+                    // In some case the relationship may not exist, but we want
+                    // to know about it
+                    $data[$key] = null;
+                }
+            }
+        }
+        return $data;
     }
 
 }
