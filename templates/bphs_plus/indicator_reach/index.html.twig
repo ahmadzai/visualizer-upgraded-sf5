@@ -46,13 +46,13 @@
                             <tr>
                                 <td>{{ reach.reportYear }}</td>
                                 <td>{{ reach.reportMonth }}</td>
-                                <td>{{ reach.hfIndicator.healthFacility.district.province.provinceRegion }}</td>
-                                <td>{{ reach.hfIndicator.healthFacility.district.province.provinceName }}</td>
-                                <td>{{ reach.hfIndicator.healthFacility.district.districtName }}</td>
-                                <td>{{ reach.hfIndicator.healthFacility.facilityName }}</td>
-                                <td>{{ reach.hfIndicator.indicator.name }}</td>
+                                <td>{{ reach.bphsHfIndicator.healthFacility.district.province.provinceRegion }}</td>
+                                <td>{{ reach.bphsHfIndicator.healthFacility.district.province.provinceName }}</td>
+                                <td>{{ reach.bphsHfIndicator.healthFacility.district.districtName }}</td>
+                                <td>{{ reach.bphsHfIndicator.healthFacility.facilityName }}</td>
+                                <td>{{ reach.bphsHfIndicator.indicator.name }}</td>
                                 <td>{{ reach.reach|number_format(0, ",") }}</td>
-                                <td>{{ reach.hfIndicator.annualTarget|number_format(0, ",") }}</td>
+                                <td>{{ reach.bphsHfIndicator.annualTarget|number_format(0, ",") }}</td>
                                 <td>
                                     <a class="btn btn-xs btn-info" href="{{ path('bphs_indicator_reach_show', { 'id': reach.id }) }}">show</a>
 

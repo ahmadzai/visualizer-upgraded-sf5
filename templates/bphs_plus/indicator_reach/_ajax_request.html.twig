@@ -36,7 +36,7 @@
                     );
                 }
             });
-            $('#bphs_indicator_reach_hfIndicator').html(resetOptions('Select facility first'));
+            $('#bphs_indicator_reach_bphsHfIndicator').html(resetOptions('Select facility first'));
         });
 
         var $reportYear = $('#bphs_indicator_reach_reportYear');
@@ -61,9 +61,9 @@
                 data : data,
                 success: function(html) {
 
-                    $('#bphs_indicator_reach_hfIndicator').html(
+                    $('#bphs_indicator_reach_bphsHfIndicator').html(
 
-                        $(html).find('#bphs_indicator_reach_hfIndicator').html()
+                        $(html).find('#bphs_indicator_reach_bphsHfIndicator').html()
                     );
                 }
             });
@@ -74,7 +74,7 @@
         $reportYear.change(function () {
 
             $province.val("");
-            $('#bphs_indicator_reach_hfIndicator').html(resetOptions('Select facility first'));
+            $('#bphs_indicator_reach_bphsHfIndicator').html(resetOptions('Select facility first'));
             $('#bphs_indicator_reach_hfCode').html(resetOptions('Select district first'));
             $('#bphs_indicator_reach_district').html(resetOptions('Select province first'));
 

@@ -72,10 +72,11 @@ class BphsIndicatorReachType extends AbstractType
                 'placeholder'=>'Select a district first',
                 'attr' => ['class' => 'form-control select2']
             ])
-            ->add('hfIndicator', EntityType::class, [
+            ->add('bphsHfIndicator', EntityType::class, [
                 'choices' => $this->filter->hfIndicators() ?? [],
                 'placeholder' => 'Select facility first',
                 'choice_value'=>'id',
+                'label' => 'Indicator',
                 'choice_label'=>'indicator',
                 'class' => BphsHfIndicator::class,
                 'attr' => ['class' => 'form-control select2']
@@ -282,9 +283,10 @@ class BphsIndicatorReachType extends AbstractType
             if(count($indicators) > 0)
                 $placeHolder = 'Select an indicator';
 
-            $field = $builder->create('hfIndicator', EntityType::class, [
+            $field = $builder->create('bphsHfIndicator', EntityType::class, [
                 'choices'=>$indicators,
                 'placeholder'=> $placeHolder,
+                'label' => 'Indicator',
                 'choice_value'=>'id',
                 'choice_label'=>'indicator',
                 'auto_initialize' => false,
