@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+//TODO: Further refactoring is needed of Both ImportController and BphsReachImportController
 /**
  * Note: The Import/Upload Workflow:
  * 1: import(DataTable)Action is called,
@@ -142,7 +143,7 @@ class BphsReachImportController extends AbstractController
                     }
                     // redirect based on the process of the upload
                     if($uploaderSettings['has_temp'] === true) {
-                        return $this->redirectToRoute("sync_data_view",
+                        return $this->redirectToRoute("sync_bphs_data_view",
                             ['entity' => $entity, 'fileId' => $fileId]);
                     }
                     elseif ($uploaderSettings['has_temp'] !== true)
@@ -150,7 +151,7 @@ class BphsReachImportController extends AbstractController
                 }
             }
 
-            return $this->render('import/import_handle.html.twig',
+            return $this->render('bphs_plus/import/import_handle.html.twig',
                 ['form' => $form->createView(),
                     'cols_excel' => $result['cols_excel'],
                     'entity' => $entity,
@@ -160,6 +161,22 @@ class BphsReachImportController extends AbstractController
         } else
             throw new FileNotFoundException("Sorry you have requested a bad file");
 
+    }
+
+    /**
+     * @Route("bphs/reach/sync/{entity}/{fileId}", name="sync_bphs_data_view")
+     * @param Request $request
+     * @param $entity
+     * @param $fileId
+     * @param Importer $importer
+     * @return Response
+     */
+    public function createSyncViewAction(Request $request, $entity, $fileId, Importer $importer) {
+
+        $breadcrumb = $importer->remove_($entity, true);
+        return $this->render("bphs_plus/import/import_sync.html.twig", [
+            'breadcrumb' => $breadcrumb, 'entity'=>$entity, 'file'=>$fileId
+        ]);
     }
 
 
@@ -259,6 +276,104 @@ class BphsReachImportController extends AbstractController
         $response->headers->set('Content-Disposition', $dispositionHeader);
 
         return $response;
+    }
+
+    /**
+     * @Route("bphs/reach/cancel/upload/{entity}/{fileId}/{del}", name="cancel_bphs_reach_upload")
+     * @param $entity
+     * @param $fileId
+     * @param int $del
+     * @param Importer $importer
+     * @return RedirectResponse
+     */
+    public function cancelUploadAction($entity, $fileId, $del = 2, Importer $importer) {
+
+        $em = $this->getDoctrine()->getManager();
+
+        if($del == 1) {
+            $file = $em->getRepository("App:ImportedFiles")->find($fileId);
+            if ($file !== null)
+                $em->remove($file);
+            $em->flush();
+            $this->addFlash("warning", "As you have canceled the process so your uploaded file has been deleted, upload new file if required!");
+            return $this->redirectToRoute("import_bphs_reach_data");
+        }
+
+        $uploadMgr = $em->getRepository("App:UploadManager")->findOneBy(['tableName'=>$entity]);
+        if($uploadMgr !== null) {
+            $entityClass = $importer->remove_($entity, true);
+            $sourceEntity = "App\\Entity\\" . $entityClass;
+            if($uploadMgr->getHasTemp())
+                $sourceEntity = "App\\Entity\\Temp" . $entityClass;
+
+            $sourceData = $em->getRepository($sourceEntity)->findBy(['file' => $fileId]);
+
+            if ($sourceData !== null) {
+
+                $query = $em->createQuery("Delete from " . $sourceEntity . " temp Where temp.file = " . $fileId);
+                $query->execute();
+
+                // Delete the file
+                $file = $em->getRepository("App:ImportedFiles")->find($fileId);
+                if ($file !== null)
+                    $em->remove($file);
+                $em->flush();
+
+            }
+
+            $this->addFlash("warning", "As you have canceled the process so your uploaded file has been deleted, upload new file if required!");
+            return $this->redirectToRoute("import_bphs_reach_data");
+        } else
+            throw  new FileNotFoundException("You have requested a bad file");
+    }
+
+    /**
+     * @Route("bphs/reach/do-sync/{entity}/{fileId}", name="sync_bphs_reach_entity_data")
+     * @param Request $request
+     * @param $entity
+     * @param $fileId
+     * @param Importer $importer
+     * @return RedirectResponse|Response
+     */
+    public function syncDataAction(Request $request, $entity, $fileId, Importer $importer) {
+
+        $em = $this->getDoctrine()->getManager();
+        // check the provided entity name in the upload manager
+        $uploadMgr = $em->getRepository("App:UploadManager")->findOneBy(['tableName'=>$entity]);
+
+        // if the entity has an uploader activated
+        if($uploadMgr !== null) {
+            // create symfony slandered entity name from
+            // the provided entity that has _
+            $entityName = $importer->remove_($entity, true);
+            $entityClass = "App\\Entity\\" . $entityName;
+            $columns = $importer->mapColumnsToProperties($entityClass, $uploadMgr->getExcludedColumns());
+            $sourceData = $em->getRepository("App:UploadManager")
+                ->findByFile("Temp".$entityName, $fileId, $columns);
+            //EntityName, each entity having temp should have same name as final entity with a Temp prefix.
+
+            $uniqueCols = $uploadMgr->getUniqueColumns();
+            $entityCols = $uploadMgr->getEntityColumns();
+            //dd($uploadMgr->getUpdateAbleColumns());
+            $updateAbleCols = $uploadMgr->getUpdateAbleColumns();
+
+            // to processData function we are not passing mappedArray, because data is already mapped
+            // filed id = -1, so no further storage in temp.
+            $result = $importer->processData(
+                $entityClass, $sourceData, null, -1,
+                ['uniqueCols' => $uniqueCols, 'entityCols' => $entityCols, 'updateAbleCols'=>$updateAbleCols],
+                null,
+                null
+            );
+
+            $this->addFlash("success", $result['success']);
+
+            $importer->truncate("temp_".$entity);
+
+            return $this->redirectToRoute("import_bphs_reach_data");
+        } else
+            throw new FileNotFoundException("You have requested a bad file");
+
     }
 
 

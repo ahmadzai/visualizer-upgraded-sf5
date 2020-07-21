@@ -10,23 +10,20 @@ namespace App\Controller\Lookup;
 
 
 use App\Entity\ImportedFiles;
-use App\Entity\User;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Query;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\Importer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+//TODO: Further refactoring is needed of Both ImportController and BphsReachImportController
 /**
  * Note: The Import/Upload Workflow:
  * 1: import(DataTable)Action is called,
