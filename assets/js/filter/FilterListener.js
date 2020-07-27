@@ -73,6 +73,24 @@ class FilterListener {
             'district': districts
         };
     }
+
+    listenBphs() {
+
+        let campaigns = $('#filterCampaign').val();
+
+        let provinces = $('#filterProvince').val();
+
+        let districts = $('#filterDistrict').val();
+
+        let facilities = $('#filterFacility').val();
+
+        return  {
+            'campaign':campaigns,
+            'facility':facilities,
+            'province': provinces,
+            'district': districts
+        };
+    }
 }
 
 export default FilterListener;

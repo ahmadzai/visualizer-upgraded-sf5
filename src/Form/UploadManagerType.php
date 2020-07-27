@@ -68,13 +68,11 @@ class UploadManagerType extends AbstractType
                 ->add("uniqueColumns", ChoiceType::class, array(
                     'label' => 'Columns to make a row unique',
                     'choices' => $columns,
-                    'placeholder' => 'Select Columns for Unique Records',
                     'attr' => array('class'=>'form-control'),
                     'multiple' => true))
                 ->add("updateAbleColumns", ChoiceType::class, array(
                     'label' => 'Columns to check for update',
                     'choices' => $columns,
-                    'placeholder' => 'Select Columns to be checked for update',
                     'attr' => array('class'=>'form-control'),
                     'multiple' => true));
         };

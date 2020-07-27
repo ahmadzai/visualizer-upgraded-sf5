@@ -157,6 +157,11 @@
                         $(html).find('#upload_manager_uniqueColumns')
                     );
 
+                    $('#upload_manager_updateAbleColumns').replaceWith(
+                        // ... with the returned one from the AJAX response.
+                        $(html).find('#upload_manager_updateAbleColumns')
+                    );
+
                     //$('#upload_manager_uniqueColumns').select2();
                     // Position field now displays the appropriate positions.
                 }

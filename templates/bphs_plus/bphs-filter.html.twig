@@ -1,15 +1,14 @@
 <li style="padding-top: 8px; padding-bottom: 8px;">
     <div class="dropdown">
-        {#<label class="col-md-1 control-label" style="color: #ffffff;">Campaigns:</label>#}
         <div class="col-md-10">
             <select multiple="multiple" class="multiselect" name="filterCampaign" id="filterCampaign">
-                {% for month in months %}
+                {% for campaign in campaigns %}
 
-                    <option value="{{ month.monthYear }}-{{ month.monthNo }}"
-                            {% for selected in selectedMonth %}
-                                {% if selected == (month.monthYear ~ "-" ~ month.monthNo) %} selected {% endif %}
+                    <option value="{{ campaign['yearMonth'] }}"
+                            {% for selected in selectedCampaign %}
+                                {% if selected == campaign['yearMonth'] %} selected {% endif %}
                             {% endfor %}
-                    >{{ month.monthYear }}-{{ month.monthName }}</option>
+                    >{{ campaign['yearMonth'] }}</option>
 
                 {% endfor %}
             </select>
@@ -19,13 +18,12 @@
 
 <li style="padding: 8px 0px;">
     <div class="dropdown">
-        {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
         <div class="col-md-10">
             <select multiple="multiple" class="multiselect" name="filterProvince" id="filterProvince">
                 {% for province in provinces %}
-                <option value="{{ province['id'] }}">
-                  {{ province['provinceName'] }}
-                </option>
+                    <option value="{{ province['id'] }}">
+                        {{ province['provinceName'] }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
@@ -34,7 +32,6 @@
 
 <li style="padding-top: 8px; padding-bottom: 8px;">
     <div class="dropdown">
-        {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
         <div class="col-md-10">
             <select multiple="multiple" class="multiselect" name="filterDistrict" id="filterDistrict">
 
@@ -47,7 +44,7 @@
     <div class="dropdown">
         {#<label class="col-md-1 control-label" style="color: #ffffff;">Region:</label>#}
         <div class="col-md-10">
-            <select multiple="multiple" class="multiselect" name="filterCluster" id="filterCluster">
+            <select multiple="multiple" class="multiselect" name="filterFacility" id="filterFacility">
             </select>
         </div>
     </div>

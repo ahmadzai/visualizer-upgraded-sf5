@@ -57,6 +57,11 @@ class BphsHealthFacility implements  TimestampableInterface, BlameableInterface
     private $indicators;
 
     /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $facilityType;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(referencedColumnName="id")
      *
@@ -176,42 +181,17 @@ class BphsHealthFacility implements  TimestampableInterface, BlameableInterface
         return $this;
     }
 
-    /**
-     * @return User
-     *
-    public function getCreatedBy()
+    public function getFacilityType(): ?string
     {
-        return $this->createdBy;
+        return $this->facilityType;
     }
 
-    /**
-     * @param User|null $createdBy
-     * @return BphsHealthFacility
-     *
-    public function setCreatedBy($createdBy): self
+    public function setFacilityType(?string $facilityType): self
     {
-        $this->createdBy = $createdBy;
+        $this->facilityType = $facilityType;
+
         return $this;
     }
-
-    /**
-     * @return User
-     *
-    public function getUpdatedBy()
-    {
-        return $this->updatedBy;
-    }
-
-    /**
-     * @param User|null $updatedBy
-     * @return BphsHealthFacility
-     *
-    public function setUpdatedBy($updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-        return $this;
-    }
-    */
 
 
 

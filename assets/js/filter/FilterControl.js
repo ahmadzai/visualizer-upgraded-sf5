@@ -65,6 +65,16 @@ class FilterControl {
         }
 
     }
+
+    bphsFilterState(newState) {
+        if(_.isEqual(this.state, newState)) {
+            return false;
+        } else {
+            this.setFilterState(newState);
+            return true;
+        }
+
+    }
 }
 
 export default FilterControl;

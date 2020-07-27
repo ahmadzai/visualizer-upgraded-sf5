@@ -221,8 +221,33 @@ class TestController extends AbstractController
      * @Route("/test/repo")
      */
     public function testRepoMethod() {
-        $result = $this->getDoctrine()->getRepository('App:BphsHfIndicator')->getAssignedIndicators();
+//        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
+//            ->findProvinces(["2020-Jul"]);
+//        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
+//            ->findYearMonth();
+//        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
+//            ->findDistricts(["2020-Feb"], [32]);
+//        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
+//            ->findHealthFacilities(["2020-Jul"], [32]);
+//        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
+//            ->findMappedIndicators();
+
+
+//        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')->checkArrayDimension($result);
+        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
+            ->getReachByMonths();
+
+        $rows = [];
+        foreach ($result as $item) {
+            $rows[] = array_slice($item, 0, 2);
+        }
+        $rows = array_unique($rows, SORT_REGULAR);
 
         dd($result);
+        foreach ($rows as $index => $row) {
+            foreach ($result as $value) {
+
+            }
+        }
     }
 }

@@ -314,6 +314,7 @@ class Importer
                                 ?array $excludedAssociatedCols)
     {
         $entityCols = $entityAndExcludedCols['entityCols'];
+        $cleanedEntityCols = $this->cleanDbColumns($entityCols);
         $uniqueCols = $entityAndExcludedCols['uniqueCols'];
         $updateAbleCols = $entityAndExcludedCols['updateAbleCols'];
         // if mappedArray was null it mean the data is fetched from Temp Table
@@ -349,11 +350,13 @@ class Importer
                 $entity = new $className();
                 $noRowAdded += 1;
                 foreach ($dataRow as $col => $value) {
+
                     $func = "set" . ucfirst($col);
                     $dataValue = $this->checkTypeCleanValue($value, $col, $entityCols, $types);
 
                     if ($fileId === -1) {
-                        $isEntityCol = in_array(lcfirst($col), $entityCols);
+
+                        $isEntityCol = in_array(lcfirst($col), $cleanedEntityCols);
                         if ($isEntityCol === true) {
                             // fetch the entity
                             $dataValue = $this->fetchAssociatedEntity($col, $dataValue,
@@ -362,6 +365,7 @@ class Importer
                     }
                     $entity->$func($dataValue);
                 }
+
                 $entity = $this->checkSetBlameable($entity, $user);
 
                 $entity = $this->checkSetExcludedAssociation($entity, $excludedAssociatedCols);
@@ -547,7 +551,7 @@ class Importer
     public function checkTypeCleanValue($value, $col, ?array $entityCols, ?array $types)
     {
         $types = array_change_key_case($types, CASE_LOWER);
-
+        $entityCols = $this->cleanDbColumns($entityCols);
         $dataValue = trim($value) == '' ? null : trim($value);
         $type = in_array(lcfirst($col), $entityCols) === true ? 'integer' : $types[strtolower($col)]['type'];
 

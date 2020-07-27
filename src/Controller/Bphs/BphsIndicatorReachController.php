@@ -52,7 +52,7 @@ class BphsIndicatorReachController extends AbstractController
              * A small Hack to update indicator in case someone has changed it
              */
             if($bphsIndicatorReach->getIndicator() === null) {
-                $indicator = $bphsIndicatorReach->getBphsHfIndicator()->getIndicator();
+                $indicator = $bphsIndicatorReach->getBphsHfIndicator()->getBphsIndicator();
                 $bphsIndicatorReach->setIndicator($indicator);
             }
             $entityManager->persist($bphsIndicatorReach);
@@ -93,7 +93,7 @@ class BphsIndicatorReachController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // A small Hack to update indicator in case someone has changed it, though it will be called at any time
             // where there's an update request
-            $bphsIndicatorReach->setIndicator($bphsIndicatorReach->getBphsHfIndicator()->getIndicator());
+            $bphsIndicatorReach->setIndicator($bphsIndicatorReach->getBphsHfIndicator()->getBphsIndicator());
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('bphs_indicator_reach_index');

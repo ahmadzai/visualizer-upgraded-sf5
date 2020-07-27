@@ -59,7 +59,7 @@ class ColorMgr
         $distFromMin = $max > 0 ? $value / $max : 0;
 
         // Define start and end color
-        if (count($gradientColors) == 0) {
+        if ((is_array($gradientColors) && count($gradientColors) == 0) || $gradientColors === null) {
             return self::numberToColor($value, $min, $max, ['#CC0000', '#EEEE00', '#00FF00']);
         } else if (count($gradientColors) == 2) {
             $startColor = $gradientColors[0];
@@ -89,7 +89,6 @@ class ColorMgr
         list($rz, $gz, $bz) = sscanf("#$endColor", "#%02x%02x%02x");
 
         // Get rgb based on
-        $distFromMin = $distFromMin;
         $distDiff = 1 - $distFromMin;
         $r = intval(($rz * $distFromMin) + ($ra * $distDiff));
         $r = min(max(0, $r), 255);

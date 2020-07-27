@@ -26,7 +26,7 @@ class BphsHfIndicatorRepository extends ServiceEntityRepository
 
         $query = $this ->getEntityManager()
             ->createQuery('SELECT DISTINCT ind.shortName as indicatorName FROM App:BphsHfIndicator hfInd 
-                            JOIN hfInd.indicator as ind WHERE hfInd.targetYear = (:year) ');
+                            JOIN hfInd.bphsIndicator as ind WHERE hfInd.targetYear = (:year) ');
 
             $query->setParameter('year', $year);
         return $query->getResult();
@@ -37,7 +37,7 @@ class BphsHfIndicatorRepository extends ServiceEntityRepository
 
         $query = $this ->getEntityManager()
             ->createQuery('SELECT DISTINCT ind.id as id, ind.shortName as indicatorName FROM App:BphsHfIndicator hfInd 
-                            JOIN hfInd.indicator as ind WHERE hfInd.targetYear = (:year) AND ind.shortName IN (:indicators)');
+                            JOIN hfInd.bphsIndicator as ind WHERE hfInd.targetYear = (:year) AND ind.shortName IN (:indicators)');
 
         $query->setParameters(['year' => $year, 'indicators' => $indicators]);
         return $query->getResult();
@@ -48,7 +48,7 @@ class BphsHfIndicatorRepository extends ServiceEntityRepository
 
         $query = $this ->getEntityManager()
             ->createQuery('SELECT DISTINCT hf.id as id, hf.facilityName as name FROM App:BphsHfIndicator hfInd 
-                            JOIN hfInd.healthFacility as hf WHERE hfInd.targetYear = (:year) AND hf.id IN (:codes)');
+                            JOIN hfInd.bphsHealthFacility as hf WHERE hfInd.targetYear = (:year) AND hf.id IN (:codes)');
 
         $query->setParameters(['year' => $year, 'codes' => $facilities]);
         return $query->getResult();

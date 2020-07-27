@@ -45,11 +45,11 @@
                         {% for hfIndicator in bphs_hf_indicators %}
                             <tr>
                                 <td>{{ hfIndicator.targetYear }}</td>
-                                <td>{{ hfIndicator.healthFacility.district.province.provinceRegion }}</td>
-                                <td>{{ hfIndicator.healthFacility.district.province.provinceName }}</td>
-                                <td>{{ hfIndicator.healthFacility.district.districtName }}</td>
-                                <td>{{ hfIndicator.healthFacility.facilityName }}</td>
-                                <td>{{ hfIndicator.indicator.name }}</td>
+                                <td>{{ hfIndicator.bphsHealthFacility.district.province.provinceRegion }}</td>
+                                <td>{{ hfIndicator.bphsHealthFacility.district.province.provinceName }}</td>
+                                <td>{{ hfIndicator.bphsHealthFacility.district.districtName }}</td>
+                                <td>{{ hfIndicator.bphsHealthFacility.facilityName }}</td>
+                                <td>{{ hfIndicator.bphsIndicator.name }}</td>
                                 <td>
                                     {% set reach = 0 %}
                                     {% for indicatorReach in hfIndicator.indicatorReaches %}

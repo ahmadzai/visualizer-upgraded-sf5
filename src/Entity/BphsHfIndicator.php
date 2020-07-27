@@ -37,20 +37,20 @@ class BphsHfIndicator implements TimestampableInterface, BlameableInterface
      * @var BphsHealthFacility
      * @ORM\ManyToOne(targetEntity="App\Entity\BphsHealthFacility", fetch="EXTRA_LAZY")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="health_facility", referencedColumnName="id", fieldName="healthFacility")
+     *   @ORM\JoinColumn(name="bphs_health_facility", referencedColumnName="id", fieldName="bphsHealthFacility")
      * })
      */
-    private $healthFacility;
+    private $bphsHealthFacility;
 
     /**
      * @var BphsIndicator
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\BphsIndicator", fetch="EXTRA_LAZY")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="indicator", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="bphs_indicator", referencedColumnName="id")
      * })
      */
-    private $indicator;
+    private $bphsIndicator;
 
     /**
      * @var int|null
@@ -110,9 +110,9 @@ class BphsHfIndicator implements TimestampableInterface, BlameableInterface
      *
      * @return BphsHfIndicator
      */
-    public function setHealthFacility($healthFacility = null)
+    public function setBphsHealthFacility($healthFacility = null)
     {
-        $this->healthFacility = $healthFacility;
+        $this->bphsHealthFacility = $healthFacility;
         return $this;
     }
 
@@ -121,9 +121,9 @@ class BphsHfIndicator implements TimestampableInterface, BlameableInterface
      *
      * @return BphsHealthFacility|null
      */
-    public function getHealthFacility()
+    public function getBphsHealthFacility()
     {
-        return $this->healthFacility;
+        return $this->bphsHealthFacility;
     }
 
     /**
@@ -133,9 +133,9 @@ class BphsHfIndicator implements TimestampableInterface, BlameableInterface
      *
      * @return BphsHfIndicator
      */
-    public function setIndicator($indicator = null)
+    public function setBphsIndicator($indicator = null)
     {
-        $this->indicator = $indicator;
+        $this->bphsIndicator = $indicator;
         return $this;
     }
 
@@ -144,9 +144,9 @@ class BphsHfIndicator implements TimestampableInterface, BlameableInterface
      *
      * @return BphsIndicator|null
      */
-    public function getIndicator()
+    public function getBphsIndicator()
     {
-        return $this->indicator;
+        return $this->bphsIndicator;
     }
 
     /**

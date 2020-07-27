@@ -123,8 +123,8 @@ class BphsReachImportController extends AbstractController
                         ['hfCode' => 'bphsHealthFacility', 'indicator' => 'bphsIndicator'],
                         [
                             'bphsHfIndicator' => [
-                                'indicator' => 'indicator',
-                                'healthFacility' => 'hfCode',
+                                'bphsIndicator' => 'indicator',
+                                'bphsHealthFacility' => 'hfCode',
                                 'targetYear' => 'reportYear'
                             ]
                         ]
