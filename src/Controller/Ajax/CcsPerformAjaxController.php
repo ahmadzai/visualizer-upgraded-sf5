@@ -30,7 +30,7 @@ class CcsPerformAjaxController extends AbstractController
 
     /**
      * @return Response
-     * @Route("api/icn_monitoring/ccs", name="ajax_icn_monitoring_ccs", options={"expose"=true})
+     * @Route("ajax/icn_monitoring/ccs", name="ajax_icn_monitoring_ccs", options={"expose"=true})
      */
     public function indexAction(Request $request, Charts $charts) {
 
@@ -110,7 +110,7 @@ class CcsPerformAjaxController extends AbstractController
 
     /**
      * @return Response
-     * @Route("api/int_icn_monitoring/ccs", name="int_ajax_icn_monitoring_ccs",  options={"expose"=true})
+     * @Route("ajax/int_icn_monitoring/ccs", name="int_ajax_icn_monitoring_ccs",  options={"expose"=true})
      */
     public function internalIndexAction(Request $request, Charts $charts) {
 

@@ -26,3 +26,6 @@ doctrine:
                 format: DoctrineExtensions\Query\Mysql\Format
                 str_to_date: DoctrineExtensions\Query\Mysql\StrToDate
 
+            numeric_functions:
+                round: DoctrineExtensions\Query\Mysql\Round
+

@@ -16,6 +16,8 @@ import RefCommCluster from './refcomm/RefCommCluster';
 import RefCommMaps from './refcomm/Maps';
 import Covid19CasesSetting from "./covid19/Covid19Cases";
 
+import BphsDashboardSetting from "./bphs/BphsDashboardSetting";
+
 export {
     SettingMain,
     SettingCoverage,
@@ -32,5 +34,6 @@ export {
     RefCommMaps,
     Covid19CasesMap,
     Covid19CasesSetting,
+    BphsDashboardSetting,
 
 };

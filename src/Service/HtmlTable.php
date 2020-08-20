@@ -724,9 +724,89 @@ class HtmlTable
         return $title;
     }
 
+    /**
+     * @param $data
+     * @param $headerVars (col, label, calc)
+     * @param $min (min color (0-1))
+     * @param $max (max color (0-1))
+     * @param null $title
+     * @return string
+     */
+    public static function tableMultiHeaders($data, $headerVars, $topHeaders = null, $min = null, $max = null, $title=null) {
+        //dd($data);
+        $table = "<table id='tbl-bphs-data' class=\"table table-bordered table-striped 
+                                                   table-responsive dash-Datatable\" 
+                         style=\"width:100%\" '>";
+        if($title !== null) {
+            $table .= "<caption>".$title."</caption>";
+        }
+        $th = "<thead>";
+        if($topHeaders !== null) {
+            $th .= "<tr>";
+            foreach ($topHeaders as $topHeader) {
+                $label = array_key_exists('col', $topHeader) ? $topHeader['col']: '';
+                $rowColSpan = array_key_exists('rowspan', $topHeader) ? 'rowspan' : 'colspan';
+                $widthHeight = array_key_exists('rowspan', $topHeader) ? $topHeader['rowspan'] : $topHeader['colspan'];
+                $th .= "<th ".$rowColSpan."='".$widthHeight."'>".$label."</th>";
+            }
+            $th .= "</tr>";
+        }
+        $th .="<tr>";
+        foreach ($headerVars as $var) {
+            $isHidden = array_key_exists('hidden', $var) ? $var['hidden'] : false;
+            if(!$isHidden) {
+                $header = array_key_exists('label', $var) ? $var['label'] : ucfirst($var);
+                $th .= "<th>" . $header . "</th>";
+            }
+        }
+        $th .= "</tr>";
+        $th .="</thead>";
+
+        $rows = "<tbody>";
+        foreach($data as $datum) {
+            $tr = "<tr>";
+            foreach ($headerVars as $headerVar) {
+                if(!array_key_exists('hidden', $headerVar)) {
+                    $index = array_key_exists('col', $headerVar) ? $headerVar['col'] : $headerVar;
+                    $calc = array_key_exists('calc', $headerVar) ? $headerVar['calc'] : 'normal';
+                    $value = is_numeric($datum[$index]) ? round($datum[$index] * 100, 2) : $datum[$index];
+                    $color = '#CCCCCC';
+                    $finalValue = is_numeric($value) ? $value . '%' : $value;
+
+                    if ($calc === 'normal') {
+                        $color = ColorMgr::numToColor($datum[$index] > 1 ? 1: $datum[$index], $min === null ? 0 : $min, $max === null ? 1 : $max);
+                    } else if ($calc === 'rev') {
+                        $colorValue = abs((1 - $datum[$index]));
+                        $color = ColorMgr::numToColor($colorValue, $min === null ? 0.5 : $min, $max === null ? 1 : $max);
+                    } else if ($calc === 'none') {
+                        $value = is_numeric($value) ? round($value / 100, 2) : $value;
+                        $finalValue = $value;
+                    } else if ($calc === 'depend') {
+                        $dependent = $datum[$headerVar['dependency']];
+                        $colorNumber = $datum[$index] * (12 - $dependent);
+                        $color = ColorMgr::numToColor($colorNumber > 1 ? 1 : $colorNumber, $min === null ? 0 : $min, $max === null ? 1 : $max);
+                        //$finalValue = $value;
+                    }
+
+                    $align = is_numeric($value) ? 'text-align:center' : '';
+                    $color = $value === null ? '#CCCCCC' : $color;
+
+                    $tr .= "<td style=\"background-color: $color; $align\">" . $finalValue . "</td>";
+                }
+            }
+            $tr .= "</tr>";
+            $rows .= $tr;
+        }
+
+        $rows .= "</tbody>";
+
+        return $table.$th.$rows."</table>";
+    }
 
     private function noDataTable() {
         return "<table><tr><td>No Data for the selected filters</td></tr></table>";
     }
+
+
 
 }

@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Service\BphsReachIndicator;
+use App\Service\DataManipulation;
+use App\Service\HtmlTable;
 use App\Service\Settings;
 use GuzzleHttp\Client;
 use PhpCollection\Set;
@@ -220,7 +223,7 @@ class TestController extends AbstractController
     /**
      * @Route("/test/repo")
      */
-    public function testRepoMethod() {
+    public function testRepoMethod(DataManipulation $manipulator, BphsReachIndicator $reachIndicator) {
 //        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
 //            ->findProvinces(["2020-Jul"]);
 //        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
@@ -236,18 +239,23 @@ class TestController extends AbstractController
 //        $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')->checkArrayDimension($result);
         $result = $this->getDoctrine()->getRepository('App:BphsIndicatorReach')
             ->getReachByMonths();
+        $reachIndicator->tableColsMonthReach($result);
+        $desiredCols = [
+            'default' => 'totalReach',
+            'default_value1' => 'target',
+            'default_value2' => 'currentProgress',
+            'default_value3' => 'overallProgress'
+        ];
+        $newData = $manipulator->tablizeData($result, 4, 'indicator', 'id', $desiredCols);
 
-        $rows = [];
-        foreach ($result as $item) {
-            $rows[] = array_slice($item, 0, 2);
-        }
-        $rows = array_unique($rows, SORT_REGULAR);
-
-        dd($result);
-        foreach ($rows as $index => $row) {
-            foreach ($result as $value) {
-
-            }
-        }
+        list($cols, $topCols) = $reachIndicator->colsReachByLocation($newData[0], 1, 3);
+//        dump($cols);
+        //dd($cols);
+//        dd($topCols);
+        $table = HtmlTable::tableMultiHeaders($newData, $cols, $topCols);
+        dd($table);
+        return new JsonResponse(['icn_table'=>$table]);
     }
+
+
 }

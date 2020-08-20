@@ -20,16 +20,38 @@ class BphsIndicatorReachRepository extends ServiceEntityRepository
     /**
      * @return int|mixed|string
      */
-    public function findYearMonth() {
+    public function findYearMonth($year = null) {
+        $condition = "";
+        if($year !== null)
+            $condition = " WHERE indReach.reportYear in (:years) ";
         $query = $this ->getEntityManager()
             ->createQuery("SELECT DISTINCT 
                            CONCAT(indReach.reportYear, CONCAT('-', indReach.reportMonth)) as yearMonth 
-                           FROM App:BphsIndicatorReach indReach 
+                           FROM App:BphsIndicatorReach indReach ".$condition."
                            ORDER BY 
                            STR_TO_DATE(CONCAT(indReach.reportYear, CONCAT(indReach.reportMonth, '01')), '%Y%b%d') 
                            DESC
                            ");
+        if($year !== null)
+            $query->setParameter('years', $year);
         return $query->getResult();
+    }
+
+    public function findReportedMonths() {
+        $currentYear = date('Y');
+        $yearMonths = $this->findYearMonth($currentYear);
+        if(!is_array($yearMonths) || count($yearMonths) < 1) {
+            $prevYear = true;
+            while ($prevYear) {
+                $currentYear -= 1;
+                $yearMonths = $this->findYearMonth($currentYear);
+                if(is_array($yearMonths) && count($yearMonths) > 0) {
+                    $prevYear = false;
+                }
+            }
+        }
+
+        return $yearMonths;
     }
 
     /**
@@ -199,7 +221,11 @@ class BphsIndicatorReachRepository extends ServiceEntityRepository
 
     public function checkArrayDimension($inputArray)
     {
-        if(count($inputArray) !== count($inputArray, COUNT_RECURSIVE)) {
+        if(!is_array($inputArray))
+            return [$inputArray];
+        if(is_array($inputArray) &&
+            (count($inputArray) !== count($inputArray, COUNT_RECURSIVE))
+           ) {
             $newFlatArray = array(); // we consider only first element of the second array
             foreach ($inputArray as $value) {
                 foreach ($value as $key=>$item)
@@ -215,23 +241,89 @@ class BphsIndicatorReachRepository extends ServiceEntityRepository
         return $inputArray;
     }
 
-    public function getReachByMonths($yearMonth = null) {
+    public function getReachByMonths($yearMonth = null, $provinces = null, $districts = null, $facilities = null) {
         list($params, $condition) = $this->yearMonthCondition($yearMonth);
 
+        $condition = $this->createCondition($condition, $provinces, $districts, $facilities);
+        list($selection, $join, $groupBy, $orderBy) = $this->createSelectionJoinGroupBy($provinces, $districts, $facilities, true);
+        $groupBy .= ", indReach.reportYear, indReach.reportMonth";
+        $orderBy .= ", STR_TO_DATE(CONCAT(indReach.reportYear, CONCAT(indReach.reportMonth, '01')), '%Y%b%d') ASC, ind.shortName";
         $query = $this ->getEntityManager()
-            ->createQuery('SELECT prov.id as id, prov.provinceName as provinceName,
-                           ind.shortName as indicator, SUM(indReach.reach) as totalReach,
-                           SUM(hfInd.annualTarget) as target
+            ->createQuery("SELECT ".$selection.", 
+                           CONCAT(indReach.reportYear, CONCAT('-', indReach.reportMonth)) as yearMonth, 
+                           ".$this->queryText().'
+                           '.$join.'
+                           '.($condition !== "" ? " WHERE ".$condition : "").' '.$groupBy.' '.$orderBy);
+        $query = $this->setParameters($query, $params, $provinces, $districts, $facilities);
+        return $query->getResult();
+    }
+
+
+    public function getReachByMonthsFacilities($yearMonth = null, $provinces = null, $districts = null, $facilities = null) {
+        list($params, $condition) = $this->yearMonthCondition($yearMonth);
+        $condition = $this->createCondition($condition, $provinces, $districts, $facilities);
+        list($selection, $join, $groupBy) = $this->createSelectionJoinGroupBy($provinces, $districts, $facilities);
+        $query = $this ->getEntityManager()
+            ->createQuery('SELECT '.$selection.', 
+                           '.$this->queryText().'
+                           '.$join.'
+                           '.($condition !== "" ? " WHERE ".$condition : "").' '.$groupBy);
+
+        $query = $this->setParameters($query, $params, $provinces, $districts, $facilities);
+        return $query->getResult();
+    }
+
+
+    private function queryText() {
+        return " ind.shortName as indicator, SUM(indReach.reach) as totalReach,
+                           ROUND(sum(hfInd.annualTarget)/count(distinct indReach.reportMonth), 0) as target, 
+                           ROUND((sum(hfInd.annualTarget)/count(distinct indReach.reportMonth))/12, 0) as monthlyTarget,
+                           COUNT(DISTINCT indReach.reportMonth) as noMonths,
+                           ROUND(SUM(indReach.reach)/ROUND(sum(hfInd.annualTarget)/count(distinct indReach.reportMonth), 0), 2) as overallProgress, 
+                           ROUND(SUM(indReach.reach)/((sum(hfInd.annualTarget)/count(distinct indReach.reportMonth))/12 * count( distinct indReach.reportMonth)), 2) as currentProgress,  
+                           count( distinct indReach.reportMonth) as noMonthsReported
                            FROM App:BphsIndicatorReach indReach 
                            JOIN indReach.bphsHfIndicator as hfInd
                            JOIN indReach.indicator as ind
-                           JOIN indReach.hfCode as hf 
-                           JOIN hf.district as dist 
-                           JOIN dist.province as prov 
-                           '.($condition !== "" ? " WHERE ".$condition : "").
-                           ' GROUP BY prov.id, indReach.indicator');
+                           JOIN indReach.hfCode as hf ";
+    }
 
-        $query = $this->setParameters($query, $params);
-        return $query->getResult();
+    /**
+     * @param null $provinces
+     * @param null $districts
+     * @param null $facilities
+     * @return array
+     */
+    private function createSelectionJoinGroupBy($provinces = null, $districts = null, $facilities = null, $byMonth=false): array
+    {
+        $selection = "";
+        $join = "";
+        $orderBy = " ORDER BY prov.provinceName ";
+        $groupBy = "GROUP BY prov.id, indReach.indicator";
+        //if ($provinces !== null) {
+            $selection = " prov.id as id, prov.provinceName as provinceName ";
+            if($byMonth === true)
+                $selection = " CONCAT(prov.id, ind.id) as id, prov.provinceName as provinceName, ind.shortName as indicatorName ";
+            $join = "JOIN hf.district as dist 
+                     JOIN dist.province as prov ";
+        //}
+        if ($districts !== null) {
+            $orderBy = " ORDER BY prov.provinceName, dist.id ";
+            $selection = " dist.id as id, prov.provinceName as provinceName, dist.districtName as districtName ";
+            if($byMonth === true)
+                $selection = " CONCAT(dist.id, ind.id) as id, 
+                               prov.provinceName as provinceName, dist.districtName as districtName, ind.shortName as indicatorName ";
+            $groupBy = "GROUP BY prov.id, dist.id, indReach.indicator";
+        }
+        if ($facilities !== null) {
+            $orderBy = " ORDER BY prov.provinceName, dist.id, hf.id ";
+            $selection = " hf.id as id, prov.provinceName as provinceName, 
+                           dist.districtName as districtName, hf.facilityName ";
+            if($byMonth === true)
+                $selection = " CONCAT(hf.id, ind.id) as id, 
+                               prov.provinceName as provinceName, dist.districtName as districtName, hf.facilityName, ind.shortName as indicatorName ";
+            $groupBy = "GROUP BY prov.id, dist.id, hf.id, indReach.indicator";
+        }
+        return [$selection, $join, $groupBy, $orderBy];
     }
 }

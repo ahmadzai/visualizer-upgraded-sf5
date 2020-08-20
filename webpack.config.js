@@ -1,5 +1,4 @@
 var Encore = require('@symfony/webpack-encore');
-
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
 if (!Encore.isRuntimeEnvironmentConfigured()) {
@@ -37,6 +36,7 @@ Encore
     .addEntry('bphs-plus', './assets/js/bphs_plus.js')
     .addEntry('ref_committee', './assets/js/ref_committee.js')
     .addEntry('covid19', './assets/js/covid19.js')
+    .addEntry('fixed-cols-table', './assets/css/fixed-cols-table.css')
     //.addEntry('page1', './assets/js/page1.js')
     //.addEntry('page2', './assets/js/page2.js')
 
@@ -88,7 +88,7 @@ Encore
     //.addEntry('admin', './assets/js/admin.js')
     .copyFiles({
         'from': './assets/static',
-        'to': 'static'
+        'to': 'static/[path][name].[ext]'
     })
 ;
 // var config = Encore.getWebpackConfig();

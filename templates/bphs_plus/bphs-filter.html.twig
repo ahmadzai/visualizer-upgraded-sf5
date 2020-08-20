@@ -2,13 +2,12 @@
     <div class="dropdown">
         <div class="col-md-10">
             <select multiple="multiple" class="multiselect" name="filterCampaign" id="filterCampaign">
+
                 {% for campaign in campaigns %}
 
                     <option value="{{ campaign['yearMonth'] }}"
-                            {% for selected in selectedCampaign %}
-                                {% if selected == campaign['yearMonth'] %} selected {% endif %}
-                            {% endfor %}
-                    >{{ campaign['yearMonth'] }}</option>
+                            {% if selectedCampaign == campaign['yearMonth'] %} selected {% endif %}
+                    >{{campaign['yearMonth'] }}</option>
 
                 {% endfor %}
             </select>

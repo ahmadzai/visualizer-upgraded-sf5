@@ -20,8 +20,6 @@ class AjaxBphsFilterController extends AbstractController
 
     /**
      * @param Request $request
-     * @param string $source
-     * @param Settings $settings
      * @Route("bphs/filter/", name="bphs_filter", options={"expose"=true}, methods={"GET"})
      * @return Response
      */

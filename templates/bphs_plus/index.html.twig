@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <div class="box box-default bg-gray">
                 <div class="box-header with-border">
-                    BPHS+ Indicators
+                    BPHS+ Indicators Cumulative Reach
                     <span class="loading loader"></span>
                     <a href="#" title="Click here for selected months' cumulative result"
                        class="btn btn-sm btn-primary pull-right btn-cum-res">
@@ -22,7 +22,38 @@
                                         <!-- data-route is required for ajax URL -->
                                         <div class="box-body route-url" data-route="ajax_bphs_dashboard">
                                             <!-- data-source is required for the filter-->
-
+                                            <div id="bphs_table" data-fixedCols="{{ noFixedCols }}">
+                                                {{ tableCumulative|raw }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid bg-gray-active">
+                <div class="box-header with-border">
+                    BPHS+ Indicators' Reach By Months
+                    <span class="loading loader"></span>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box-warning box">
+                                        <!-- data-route is required for ajax URL -->
+                                        <div class="box-body route-url" data-route="ajax_bphs_dashboard">
+                                            <!-- data-source is required for the filter-->
+                                            <div id="bphs_table_months" data-fixedCols="{{ noFixedCols }}">
+                                                {{ tableMonths|raw }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -52,4 +83,9 @@
     {{ parent() }}
 
     <script src="{{ asset('build/bphs-plus.js') }}"></script>
+{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+    <link href="{{ asset('build/fixed-cols-table.css') }}" rel="stylesheet" type="text/css" />
 {% endblock %}
