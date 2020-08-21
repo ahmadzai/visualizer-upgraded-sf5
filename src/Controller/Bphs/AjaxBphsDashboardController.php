@@ -31,23 +31,21 @@ class AjaxBphsDashboardController extends AbstractController
      * @return Response
      * @Route("ajax/bphs_dashboard", name="ajax_bphs_dashboard", options={"expose"=true})
      */
-    public function indexAction(Request $request, DataManipulation $manipulator, BphsReachIndicator $reachIndicator) {
+    public function indexAction(Request $request, BphsReachIndicator $reachIndicator) {
 
-        $selectedMonths = $request->get('campaign');
-        $provinces = $request->get('province');
-        $districts = $request->get('district');
-        $facilities = $request->get('facility');
-        $cumulative = $request->get('cumulative');
+        $params['yearMonth'] = $request->get('campaign');
+        $params['province'] = $request->get('province');
+        $params['district'] = $request->get('district');
+        $params['facility'] = $request->get('facility');
+        $params['isCumulative'] = $request->get('cumulative');
 
-        list($table, $fixedCols) = $reachIndicator->tableColsIndicatorReach([
-            'yearMonth' => $selectedMonths,
-            'province' => $provinces,
-            'district' => $districts,
-            'facility' => $facilities,
-            'isCumulative' => $cumulative
-        ]);
+        list($tableCum, $fixedCols) = $reachIndicator->tableColsIndicatorReach($params);
+        list($tableMonth) = $reachIndicator->tableColsMonthReach($params);
 
-        return new JsonResponse(['bphs_table'=>$table, 'noFixedCols'=>$fixedCols]);
+        return new JsonResponse([
+            'bphs_table_cum'=>$tableCum,
+            'bphs_table_months'=>$tableMonth]
+        );
 
     }
 

@@ -30,10 +30,7 @@ $(function () {
         'scrollY': "50vh",
         'scrollCollapse': true,
         'paging':         false,
-        'fixedColumns':   {
-            leftColumns: $('#bphs_table').data('fixedCols'),
-            heightMatch: 'none'
-        },
+        'fixedColumns': false,
         'dom': 'Bfrtip',
         'buttons': [
             'copyHtml5', 'csvHtml5'
@@ -73,12 +70,27 @@ function doAjax(cumulative, filterControl, listener) {
 
     if(filterState === true) {
         // hack to change the number of fixedCols for the table
-        Setting.bphs_table.setting.fixedColumns.leftColumns = 1;
-        if(filterData.district.length > 0)
-            Setting.bphs_table.setting.fixedColumns.leftColumns = 2;
-        if(filterData.facility.length > 0)
-            Setting.bphs_table.setting.fixedColumns.leftColumns = 3;
+        setFixedColumns(filterData, Setting);
+
         apiCall.partiallyUpdate(url, Setting, filterData, 'loading');
     } else if (filterState === false)
         Alerts.filterInfo();
+}
+
+function setFixedColumns(filterData, Setting) {
+    Setting.bphs_table_cum.setting.fixedColumns = false;
+    Setting.bphs_table_months.setting.fixedColumns = {leftColumns: 1, heightMatch: 'none'}
+    if(filterData.facility.length > 0) {
+        Setting.bphs_table_cum.setting.fixedColumns = {leftColumns: 3, heightMatch: 'none'};
+        Setting.bphs_table_months.setting.fixedColumns = {leftColumns: 4, heightMatch: 'none'}
+    }
+    else if(filterData.district.length > 0) {
+        Setting.bphs_table_cum.setting.fixedColumns = {leftColumns: 2, heightMatch: 'none'};
+        Setting.bphs_table_months.setting.fixedColumns = {leftColumns: 3, heightMatch: 'none'}
+    }
+    else if(filterData.province.length > 0) {
+        Setting.bphs_table_cum.setting.fixedColumns = {leftColumns: 1, heightMatch: 'none'};
+        Setting.bphs_table_months.setting.fixedColumns = {leftColumns: 2, heightMatch: 'none'}
+    }
+    return Setting;
 }

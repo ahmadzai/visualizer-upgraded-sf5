@@ -34,7 +34,7 @@ class BphsDashboardController extends AbstractController
 
         return $this->render('bphs_plus/index.html.twig', [
             'tableCumulative' => $table,
-            'noFixedCols' => $fixedCols,
+            'noFixedCols' => 0,
             'tableMonths' => $tableMonths,
         ]);
     }

@@ -296,17 +296,22 @@ class BphsIndicatorReachRepository extends ServiceEntityRepository
      */
     private function createSelectionJoinGroupBy($provinces = null, $districts = null, $facilities = null, $byMonth=false): array
     {
-        $selection = "";
+        $selection = " 'matching' as id ";
+        if($byMonth === true)
+            $selection = " ind.id as id, ind.shortName as indicatorName ";
         $join = "";
-        $orderBy = " ORDER BY prov.provinceName ";
-        $groupBy = "GROUP BY prov.id, indReach.indicator";
-        //if ($provinces !== null) {
+        $orderBy = "ORDER BY indReach.indicator ";
+        $groupBy = "GROUP BY indReach.indicator";
+
+        if ($provinces !== null) {
+            $orderBy = " ORDER BY prov.provinceName ";
+            $groupBy = "GROUP BY prov.id, indReach.indicator";
             $selection = " prov.id as id, prov.provinceName as provinceName ";
             if($byMonth === true)
                 $selection = " CONCAT(prov.id, ind.id) as id, prov.provinceName as provinceName, ind.shortName as indicatorName ";
             $join = "JOIN hf.district as dist 
                      JOIN dist.province as prov ";
-        //}
+        }
         if ($districts !== null) {
             $orderBy = " ORDER BY prov.provinceName, dist.id ";
             $selection = " dist.id as id, prov.provinceName as provinceName, dist.districtName as districtName ";

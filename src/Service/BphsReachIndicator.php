@@ -104,11 +104,10 @@ class BphsReachIndicator
             'default_value3' => 'overallProgress',
             'default_value4' => 'noMonthsReported'
         ];
-        $noLocCols = $this->findNoOfLocationColumns($district, $facility);
+        $noLocCols = $this->findNoOfLocationColumns($province, $district, $facility);
         $newData = $this->manipulator->tablizeData($result, $noLocCols, 'indicator', 'id', $desiredCols);
 
         list($cols, $topCols) = $this->colsReachByLocation($newData[0], 1, $noLocCols-1);
-
         //$cols = array_slice($cols, 3);
         return [
                 HtmlTable::tableMultiHeaders($newData, $cols, $topCols),
@@ -129,9 +128,8 @@ class BphsReachIndicator
             'default_value1' => 'monthlyTarget',
             'default_value2' => 'currentProgress',
         ];
-        $noLocCols = $this->findNoOfLocationColumns($district, $facility);
+        $noLocCols = $this->findNoOfLocationColumns($province, $district, $facility);
         $newData = $this->manipulator->tablizeData($result, $noLocCols+1, 'yearMonth', 'id', $desiredCols);
-        //dd($newData);
         list($cols, $topCols) = $this->colsReachByLocation($newData[0], 1, $noLocCols, 3);
         //$cols = array_slice($cols, 3);
         return [
@@ -154,13 +152,15 @@ class BphsReachIndicator
         return false;
     }
 
-    private function findNoOfLocationColumns($district = null, $facility = null) : int
+    private function findNoOfLocationColumns($provinces = null, $district = null, $facility = null) : int
     {
-        $noCols = 2;
+        $noCols = 1;
         if($facility !== null)
             $noCols = 4;
         else if ($district !== null)
             $noCols = 3;
+        else if($provinces !== null)
+            $noCols = 2;
 
         return $noCols;
     }
