@@ -72,7 +72,7 @@ class DropdownFilter
         $params = $this->session->get('facilityYear');
         $facility = $this->getEntityObject('BphsHealthFacility', ['id'=>$params[0]]);
         $indicators = $this->filter('BphsHfIndicator',
-            ['healthFacility'=>$facility, 'targetYear'=>$params[1]]);
+            ['bphsHealthFacility'=>$facility, 'targetYear'=>$params[1]]);
 
         return $indicators;
     }

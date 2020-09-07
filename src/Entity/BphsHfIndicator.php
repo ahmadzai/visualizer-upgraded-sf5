@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * BphsHfIndicator
  * @ORM\Entity(repositoryClass="App\Repository\BphsHfIndicatorRepository")
- * @UniqueEntity(fields={"healthFacility", "indicator", "targetYear"},
+ * @UniqueEntity(fields={"bphsHealthFacility", "bphsIndicator", "targetYear"},
  *     message="You have already set this indicator for the selected HF and year",
  *     repositoryMethod="findOneBy")
  */

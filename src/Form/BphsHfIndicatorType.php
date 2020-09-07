@@ -46,13 +46,14 @@ class BphsHfIndicatorType extends AbstractType
                 'choices'=>null,
                 'attr' => ['class' => 'form-control select2']
             ])
-            ->add('healthFacility', ChoiceType::class, [
+            ->add('bphsHealthFacility', ChoiceType::class, [
                 'mapped' => true,
                 'choices'=>null,
+                'label'=>'Facility',
                 'placeholder'=>'Select a district first',
                 'attr' => ['class' => 'form-control select2']
             ])
-            ->add('indicator', EntityType::class, [
+            ->add('bphsIndicator', EntityType::class, [
                 'class' => BphsIndicator::class,
                 'label' => 'Indicator',
                 'placeholder' => 'Choose indicator',
@@ -86,7 +87,7 @@ class BphsHfIndicatorType extends AbstractType
                 $data = $event->getData();
                 if(!$data)
                     return;
-                $district = $data->getHealthFacility() !==null ? $data->getHealthFacility()->getDistrict() : null;
+                $district = $data->getBphsHealthFacility() !==null ? $data->getBphsHealthFacility()->getDistrict() : null;
                 $province = $district  !== null ? $district->getProvince() : null;
                 $districtId = $district  !== null ? $district->getId() : '';
                 $this->setProvinces(
@@ -182,7 +183,6 @@ class BphsHfIndicatorType extends AbstractType
             'data'=>$selectedDistrict,
             'attr' => ['class' => 'form-control select2']
         ]);
-
         $districtField->addEventListener(
             FormEvents::POST_SUBMIT,
             function (FormEvent $event) use ($builder) {
@@ -216,8 +216,9 @@ class BphsHfIndicatorType extends AbstractType
             if(count($facilities) > 0)
                 $placeHolder = 'Choose a health facility';
         }
-        $field = $builder->create('healthFacility', ChoiceType::class, [
+        $field = $builder->create('bphsHealthFacility', ChoiceType::class, [
             'mapped'=>true,
+            'label'=>'Facility',
             'choices'=>$facilities,
             'placeholder'=> $placeHolder,
             'choice_value'=>'id',

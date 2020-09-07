@@ -6,7 +6,9 @@
                 {% for campaign in campaigns %}
 
                     <option value="{{ campaign['yearMonth'] }}"
-                            {% if selectedCampaign == campaign['yearMonth'] %} selected {% endif %}
+                            {% for selected in selectedCampaign %}
+                            {% if selected['yearMonth'] == campaign['yearMonth'] %} selected {% endif %}
+                            {% endfor %}
                     >{{campaign['yearMonth'] }}</option>
 
                 {% endfor %}

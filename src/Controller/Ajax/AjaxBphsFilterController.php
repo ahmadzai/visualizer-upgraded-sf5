@@ -31,7 +31,7 @@ class AjaxBphsFilterController extends AbstractController
 
         $provinces = $em->getRepository('App:BphsIndicatorReach')->findProvinces($campaigns);
 
-        $selectedCampaigns = count($campaigns) > 0 ? $campaigns[0]['yearMonth'] : null;
+        $selectedCampaigns = $em->getRepository('App:BphsIndicatorReach')->findReportedMonths();
 
         return $this->render("bphs_plus/bphs-filter.html.twig", [
             'campaigns' => $campaigns,
