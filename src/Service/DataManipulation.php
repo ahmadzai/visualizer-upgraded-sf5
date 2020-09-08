@@ -58,6 +58,36 @@ class DataManipulation
     }
 
     /**
+     * @param array|null $data
+     * @param string $indexNameOfPrefixInfo
+     * @param array|null $excludedCols
+     * @param bool $separate
+     * @return array
+     */
+    public function prefixIndexNames(?array $data, string $indexNameOfPrefixInfo, ?array $excludedCols = [], bool $separate = true) {
+        if(is_array($data)) {
+            $newData = array();
+            foreach ($data as $datum) {
+                $prefix = $datum[$indexNameOfPrefixInfo];
+                $newRow = array();
+                foreach ($datum as $index => $item) {
+                    if(!in_array($index, $excludedCols)) {
+                        $newRow[$prefix . "_" . $index] = $item;
+                    } else
+                        $newRow[$index] = $item;
+                }
+
+                $newData[] = $newRow;
+            }
+
+            return $separate ? $this->separateArrayByIndex($newData, $indexNameOfPrefixInfo) : $newData;
+        }
+
+        return [];
+
+    }
+
+    /**
      * @param $result
      * @param $noDefaultIndex
      * @param $columnIndex
@@ -74,6 +104,34 @@ class DataManipulation
         $rows = array_unique($rows, SORT_REGULAR);
         $indicators = array_unique($indicators);
         return array($rows, $indicators);
+    }
+
+    /**
+     * @param $data
+     * @param $index
+     * @return array
+     */
+    private function separateArrayByIndex($data, $index) {
+        $newArray = array();
+        $separatedKeys = array();
+        foreach ($data as $datum) {
+            $separatedKeys[] = $datum[$index];
+        }
+        $separatedKeys = array_unique($separatedKeys);
+
+        foreach ($separatedKeys as $key) {
+            $separatedArray = array();
+            foreach ($data as $datum) {
+
+                if($datum[$index] == $key) {
+                    $separatedArray[] = $datum;
+                }
+            }
+
+            $newArray[$key] = $separatedArray;
+        }
+
+        return $newArray;
     }
 
 }

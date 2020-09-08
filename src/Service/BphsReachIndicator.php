@@ -130,11 +130,19 @@ class BphsReachIndicator
         ];
         $noLocCols = $this->findNoOfLocationColumns($province, $district, $facility);
         $newData = $this->manipulator->tablizeData($result, $noLocCols+1, 'yearMonth', 'id', $desiredCols);
+
         list($cols, $topCols) = $this->colsReachByLocation($newData[0], 1, $noLocCols, 3);
         //$cols = array_slice($cols, 3);
+        $chartsData = $this->manipulator->prefixIndexNames(
+            $result,
+            'indicatorName',
+            ['yearMonth', 'id', 'indicator', 'indicatorName', 'province', 'district', 'facility']
+        );
+
         return [
             HtmlTable::tableMultiHeaders($newData, $cols, $topCols),
-            $noLocCols
+            $noLocCols,
+            $chartsData
         ];
 
     }
