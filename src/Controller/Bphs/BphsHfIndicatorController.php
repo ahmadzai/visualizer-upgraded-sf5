@@ -3,9 +3,14 @@
 namespace App\Controller\Bphs;
 
 use App\Entity\BphsHfIndicator;
+use App\EventListener\HfIndicatorCopyListener;
+use App\EventSubscriber\CopyHfIndicatorEvent;
 use App\Form\BphsHfIndicatorType;
+use App\Form\CopyIndicatorToHfType;
 use App\Repository\BphsHfIndicatorRepository;
+use App\Service\HfIndicatorCopyService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -50,7 +55,7 @@ class BphsHfIndicatorController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="bphs_hf_indicator_show", methods={"GET"})
+     * @Route("/{id}", name="bphs_hf_indicator_show", methods={"GET"}, requirements={"id"="\d+"})
      */
     public function show(BphsHfIndicator $bphsHfIndicator): Response
     {
@@ -91,5 +96,32 @@ class BphsHfIndicatorController extends AbstractController
         }
 
         return $this->redirectToRoute('bphs_hf_indicator_index');
+    }
+
+    /**
+     * @param Request $request
+     * @param HfIndicatorCopyService $copyService
+     * @return Response
+     * @Route("/copy", name="bphs_hf_indicator_copy")
+     */
+    public function copyHfIndicators(Request $request, HfIndicatorCopyService $copyService) : Response
+    {
+        $form = $this->createForm(CopyIndicatorToHfType::class, []);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $data = $form->getData();
+            $result = $copyService->doCopy($data);
+            foreach($result as $flash=>$message)
+                $this->addFlash($flash, $message);
+
+            return $this->redirectToRoute('bphs_hf_indicator_index');
+        }
+
+        return $this->render('bphs_plus/bphshfindicator/copy.html.twig', [
+            'form' => $form->createView(),
+        ]);
+
     }
 }

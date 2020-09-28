@@ -131,7 +131,7 @@ class DataManipulation
             $newArray[$key] = $separatedArray;
         }
 
-        return $newArray;
+        return ['indicators' => $separatedKeys, 'data' => $newArray];
     }
 
 }

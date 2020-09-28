@@ -39,21 +39,61 @@ class AjaxBphsDashboardController extends AbstractController
         $params['facility'] = $request->get('facility');
         $params['isCumulative'] = $request->get('cumulative');
 
-        $category = [['column'=>'province', 'substitute' => 'Province'],
-            ['column'=>'yearMonth']
-        ];
-
         list($tableCum, $fixedCols) = $reachIndicator->tableColsIndicatorReach($params);
         list($tableMonth, $noCols, $chartsData) = $reachIndicator->tableColsMonthReach($params);
 
-        $ancTrends = $charts->chartData1Category($category[1],
-            ['ANC_totalReach'=>'Monthly Reach'],
-            $chartsData['ANC'], false);
+        $dataToBeReturned = $this->createCharts($chartsData, $charts, $noCols);
+        $dataToBeReturned['bphs_table_cum'] = $tableCum;
+        $dataToBeReturned['bphs_table_months'] = $tableMonth;
 
-        return new JsonResponse([
-            'bphs_table_cum'=>$tableCum,
-            'bphs_table_months'=>$tableMonth]
-        );
+        return new JsonResponse($dataToBeReturned);
+
+    }
+
+
+    private function createCharts(array $data, Charts $charts, $noLocCols = 1) {
+
+        if(is_array($data)) {
+
+            $category = [['column' => 'provinceName', 'substitute' => 'Province'],
+                ['column' => 'yearMonth']
+            ];
+
+            $highCharts = [];
+            $indicators = $data['indicators'];
+            $chartData = $data['data'];
+            $title = " Monthly Reach";
+            $counter = 1;
+            foreach ($indicators as $indicator) {
+                // below conditions are static, as we already know the structure of location (1.General, 2.Province, 3.District, 4.Facility)
+                if($noLocCols <= 1) {
+                    $chart = $charts->chartData1Category($category[1],
+                        [$indicator . '_totalReach' => 'Monthly Reach'],
+                        $chartData[$indicator], false);
+                } elseif($noLocCols == 2) {
+                    $chart = $charts->chartData2Categories(['column' => 'provinceName'], $category[1],
+                        [$indicator . '_totalReach' => 'Monthly Reach'],
+                        $chartData[$indicator], false);
+                } elseif($noLocCols == 3) {
+//                    $chart = $charts->chartData3Categories(['column' => 'provinceName'], ['column'=>'districtName'], $category[1],
+//                        [$indicator . '_totalReach' => 'Monthly Reach'],
+//                        $chartData[$indicator], false);
+                    $chart = $charts->chartData2Categories(['column'=>'districtName'], $category[1],
+                        [$indicator . '_totalReach' => 'Monthly Reach'],
+                        $chartData[$indicator], false);
+                } elseif($noLocCols == 4) {
+                    $chart = $charts->chartData2Categories(['column'=>'facilityName'], $category[1],
+                        [$indicator . '_totalReach' => 'Monthly Reach'],
+                        $chartData[$indicator], false);
+                }
+                $chart['title'] = $indicator . $title;
+                $highCharts['chart'.$counter] = $chart;
+                $counter++;
+            }
+
+            return $highCharts;
+
+        }
 
     }
 

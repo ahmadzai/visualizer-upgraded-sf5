@@ -50,6 +50,9 @@ services:
               event: 'security.authentication.success'
               method: 'onSecurityAuthenticationSuccess'
 
+    App\EventListener\HfIndicatorCopyListener:
+        arguments: ['@doctrine.orm.entity_manager']
+
     App\Menu\MenuBuilder:
         arguments: ["@knp_menu.factory",
                     '@Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface',

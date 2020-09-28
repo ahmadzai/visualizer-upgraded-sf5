@@ -34,7 +34,7 @@ class Charts
 
     /***
      * @param $months array of months
-     * @return order_months
+     * @return array
      */
     function orderMonths($months) {
         $order_months = array();
@@ -237,7 +237,8 @@ class Charts
 
                                 // the value of short should be: my (month/year), m(month), y(year)
                                 $second_part = $col2 !== null ? "-" . ($short == 'my' || $short == 'y' ? $this->shortYear($val[$col2]) : $val[$col2]) : '';
-                                $first_part = ($short == 'my' || $short == 'm' ? $this->shortMonth($val[$col1]) : $val[$col1]);
+                                $first_part = $short !== null ? ($short == 'my' || $short == 'm' ? $this->shortMonth($val[$col1]) : $val[$col1]) : $col1;
+
                                 $sub_cat[] = $first_part . $second_part;
                                 //
                                 foreach ($indicators as $key => $indicator) {

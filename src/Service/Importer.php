@@ -511,7 +511,7 @@ class Importer
      * @param object $entity
      * @param UserInterface|null $user
      */
-    private function checkSetBlameable(object $entity, ?UserInterface $user): object
+    public function checkSetBlameable(object $entity, ?UserInterface $user): object
     {
         if (method_exists($entity, 'setCreatedBy') && $entity->getCreatedBy() === null) {
             $entity->setCreatedBy($this->_em->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]));

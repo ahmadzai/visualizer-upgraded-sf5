@@ -23,6 +23,9 @@ $(function () {
 
     filterControl.setFilterState(listener.listenBphs());    // store the state of the filter
 
+    // load the charts for the first time
+    doAjax(true, filterControl, listener);
+
     // setting for the table
     $('.dash-Datatable').DataTable({
         //"lengthMenu": [[15, 25, 50, 100, -1], [15, 25, 50, 100, "All"]],

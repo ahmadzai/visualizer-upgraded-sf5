@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\BphsHfIndicator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -52,6 +53,27 @@ class BphsHfIndicatorRepository extends ServiceEntityRepository
 
         $query->setParameters(['year' => $year, 'codes' => $facilities]);
         return $query->getResult();
+    }
+
+    public function findAssignedYears() {
+
+        $query = $this ->getEntityManager()
+            ->createQuery('SELECT DISTINCT hfInd.targetYear as targetYear FROM App:BphsHfIndicator hfInd ');
+
+        return $query->getResult(AbstractQuery::HYDRATE_ARRAY);
+    }
+
+    public function findByYear($year) {
+
+        $query = $this ->getEntityManager()
+            ->createQuery('SELECT hfInd.annualTarget, hfInd.monthlyTarget, ind.id as bphsIndicator,
+                           hf.id as bphsHealthFacility, hfInd.targetYear
+                           FROM App:BphsHfIndicator hfInd JOIN hfInd.bphsHealthFacility as hf
+                           JOIN hfInd.bphsIndicator as ind
+                           WHERE hfInd.targetYear = (:year)');
+        $query->setParameter('year', $year);
+
+        return $query->getResult(AbstractQuery::HYDRATE_ARRAY);
     }
 
 }

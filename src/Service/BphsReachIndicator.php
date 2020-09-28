@@ -136,7 +136,7 @@ class BphsReachIndicator
         $chartsData = $this->manipulator->prefixIndexNames(
             $result,
             'indicatorName',
-            ['yearMonth', 'id', 'indicator', 'indicatorName', 'province', 'district', 'facility']
+            ['yearMonth', 'id', 'indicator', 'indicatorName', 'provinceName', 'districtName', 'facilityName']
         );
 
         return [
