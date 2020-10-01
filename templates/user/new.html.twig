@@ -1,11 +1,123 @@
-{% extends 'main.html.twig' %}
+{% extends 'control-template.html.twig' %}
 
 {% block title %}New User{% endblock %}
 
 {% block content %}
-    <h1>Create new User</h1>
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Register a new user!</h3>
+        </div>
+        <!-- /.box-header -->
+        {{ form_start(form) }}
+        <div class="box-body">
 
-    {{ include('user/_form.html.twig') }}
+            {% block form_errors %}
+                {% if not form.vars.valid %}
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h4><i class="icon fa fa-ban"></i> Form Errors!</h4>
 
-    <a href="{{ path('user_index') }}">back to list</a>
+                        <ul>
+                            {#Loop through every form item#}
+                            {% for child in form.children %}
+                                {#Display the errors of the form item#}
+                                {%for error in child.vars.errors%}
+                                    <li>{{ child.vars.label }}: {{error.message}}</li>
+                                {%endfor%}
+                            {%endfor%}
+                        </ul>
+                        {#{{ form_errors(form) }}#}
+
+                    </div>
+                {% endif %}
+            {% endblock form_errors %}
+
+            <div class="row">
+                <div class="col-md-4">
+
+                    <div class="form-group {{ form_errors(form.fullName)|length > 0 ? 'has-error' : '' }}">
+                        {{ form_label(form.fullName) }}
+                        {{ form_widget(form.fullName, {'attr':{'tabindex':1}}) }}
+                    </div>
+
+
+                    <div class="form-group {{ form_errors(form.jobTitle)|length > 0 ? 'has-error' : '' }}">
+                        <label>Job Title</label>
+                        {{ form_widget(form.jobTitle, {'attr':{'tabindex':4, 'style':'width:100%'}}) }}
+                    </div>
+
+
+                    <div class="form-group {{ form_errors(form.mobileNo)|length > 0 ? 'has-error' : '' }}">
+                        {{ form_label(form.mobileNo) }}
+                        {{ form_widget(form.mobileNo, {'attr':{'tabindex':7}}) }}
+                    </div>
+
+
+                    <div class="form-group {{ form_errors(form.roles)|length > 0 ? 'has-error' : '' }}">
+                        <label>Roles</label>
+                        {{ form_widget(form.roles, {'attr':{'tabindex':10, 'style':'width:100%'}}) }}
+                    </div>
+                    <!-- /.form-group -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-4">
+                    <div class="form-group {{ form_errors(form.username)|length > 0 ? 'has-error' : '' }}">
+                        <label for="first_name">User Name</label>
+                        {{ form_widget(form.username, {'attr':{'tabindex':2}}) }}
+                    </div>
+                    <div class="form-group {{ form_errors(form.country)|length > 0 ? 'has-error' : '' }}">
+                        <label>Country</label>
+                        {{ form_widget(form.country,{'attr':{'tabindex':5, 'style':'width:100%'}}) }}
+                    </div>
+
+                    <div class="form-group {{ form_errors(form.password)|length > 0 ? 'has-error' : '' }}">
+                        <label>Password</label>
+                        {{ form_widget(form.password, {'attr':{'class':'form-control', 'tabindex':8}}) }}
+                    </div>
+
+                    <div class="form-group {{ form_errors(form.hasApiAccess)|length > 0 ? 'has-error' : '' }}">
+                        <label>API Access</label>
+                        {{ form_widget(form.hasApiAccess, {'attr':{'class':'form-control', 'tabindex':11}}) }}
+                    </div>
+                    <!-- /.form-group -->
+                </div>
+                <!-- /.col -->
+                <!-- /.col -->
+                <div class="col-md-4">
+                    <div class="form-group {{ form_errors(form.email)|length > 0 ? 'has-error' : '' }}">
+                        <label for="first_name">Email</label>
+                        {{ form_widget(form.email, {'attr':{'tabindex':3}}) }}
+                    </div>
+                    <div class="form-group {{ form_errors(form.city)|length > 0 ? 'has-error' : '' }}">
+                        <label>City</label>
+                        {{ form_widget(form.city,{'attr':{'tabindex':6, 'style':'width:100%'}}) }}
+                    </div>
+
+                    <div class="form-group {{ form_errors(form.retypedPassword)|length > 0 ? 'has-error' : '' }}">
+                        <label>Retype Password</label>
+                        {{ form_widget(form.retypedPassword,{'attr':{'class':'form-control', 'tabindex':9}}) }}
+                    </div>
+
+                    <div class="form-group {{ form_errors(form.enabled)|length > 0 ? 'has-error' : '' }}">
+                        <label>Enabled</label>
+                        {{ form_widget(form.enabled, {'attr':{'class':'form-control', 'tabindex':11}}) }}
+                    </div>
+
+                    <!-- /.form-group -->
+                </div>
+            </div>
+            {#{% endblock form_row %}#}
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="submit" tabindex="13" class="btn btn-info" value="Register" />
+                    <a href="{{ path('user_index') }}" class="btn btn-default">
+                        <i class="fa fa-mail-reply"></i> Go Back!
+                    </a>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        {{ form_end(form) }}
+        <!-- /.box-body -->
+    </div>
 {% endblock %}

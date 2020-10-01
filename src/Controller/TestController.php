@@ -72,11 +72,15 @@ class TestController extends AbstractController
 //        dump($data); die;
 
         $client = new Client();
-        $res = $client->post("http://afg-poliodb.info/api/token", [
-            'auth' => ['apms_api_user', '@p!Connec7']
+//        $res = $client->post("http://afg-poliodb.info/api/token", [
+//            'auth' => ['apms_api_user', '']
+//        ]);
+        $res = $client->get("http://localhost/visualizer5/public/index.php/auth/token", [
+            'auth' => ['wazir' , '']
         ]);
 
         $token = json_decode($res->getBody()->getContents());
+
 
         // Test below for admin data api
 //        $data = $client->get("http://afg-poliodb.info/api/admindata/by_district/30", [
@@ -84,12 +88,16 @@ class TestController extends AbstractController
 //        ]);
 
         // Test below for campaign api
-        $data = $client->get("http://afg-poliodb.info/api/roc_data/by_district", [
+//        $data = $client->get("http://afg-poliodb.info/api/roc_data/by_district", [
+//            'auth' => ['wazir', '']
+//        ]);
+
+        $data = $client->get("http://localhost/visualizer5/public/index.php/api/admindata/by_district", [
             'headers' => ['Authorization' => 'Bearer '.$token->token]
         ]);
 
         // Test below for catchup data api
-//        $data = $client->get("http://localhost/visualizer/web/app_dev.php/api/catchup/by_district", [
+//        $data = $client->get("http://localhost/visualizer5/public/index.php/api/token", [
 //            'headers' => ['Authorization' => 'Bearer '.$token->token]
 //        ]);
 
@@ -116,6 +124,7 @@ class TestController extends AbstractController
         return Exporter::exportCSV($data);
         //return new JsonResponse($data);
     }
+
     /**
      * @Route("/test", name="testing")
      * @param Request $request

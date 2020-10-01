@@ -68,4 +68,6 @@ services:
     Sg\DatatablesBundle\Response\DatatableResponse:
         alias: sg_datatables.response
 
-
+    jwt_token_authenticator:
+        class: App\Security\JwtAuth
+        autowire: true

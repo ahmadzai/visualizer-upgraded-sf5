@@ -12,7 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserType extends AbstractType
+class UserEditType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -20,18 +20,6 @@ class UserType extends AbstractType
             ->add('fullName', null, [
                 'attr' => ['class' => 'form-control'],
                 'label' => 'Full Name'
-            ])
-            ->add('username', null, [
-                'attr' => ['class' => 'form-control']
-            ])
-
-            ->add('password', PasswordType::class, [
-                'attr' => ['class'=>'form-control']
-            ])
-
-            ->add('retypedPassword', PasswordType::class, [
-                'attr' => ['class'=>'form-control'],
-                'label' => 'Retype password'
             ])
 
             ->add('email', EmailType::class, [
@@ -57,7 +45,7 @@ class UserType extends AbstractType
                 'placeholder' => 'Assign Roles',
             ])
             ->add('hasApiAccess', ChoiceType::class, [
-                'choices' => ['No'=>false, 'Yes'=>true],
+                'choices' => ['Yes'=>true, 'No'=>false],
                 'attr' => ['class' => 'form-control'],
                 'label' => 'API Access'
             ])

@@ -28,7 +28,7 @@ class ApiMainController extends AbstractController
     /**
      * @Route("/admindata/by_district/{campaign}", methods={"GET"})
      * @param Settings $settings
-     * @param int $campaign
+     * @param int|null $campaign
      * @return Response
      */
     public function getAdminDataByDistricts(Settings $settings, $campaign = null) {
@@ -111,11 +111,8 @@ class ApiMainController extends AbstractController
         return new Response($data, 200);
     }
 
-
-
-
     private function jsonEncode($data) {
-        return $this->get('jms_serializer')->serialize($data, "json");
+        return $this->get('serializer')->serialize($data, "json");
     }
 
 

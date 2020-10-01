@@ -9,11 +9,14 @@
 namespace App\Controller\Api;
 
 
+use App\Entity\User;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
@@ -22,44 +25,47 @@ use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationExc
 class ApiTokenController extends AbstractController
 {
     /**
-     * @Route("/api/token", methods={"GET"})
+     * @Route("/auth/token", methods={"GET"})
      * @param Request $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param JWTEncoderInterface $encoder
      * @return JsonResponse
      */
-    public function newTokenAction(Request $request)
+    public function newTokenAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, JWTEncoderInterface $encoder)
     {
 
-
-        //return new JsonResponse($request->getPassword(), 200);
         $user = $this->getDoctrine()
-            ->getRepository('App:User')
+            ->getRepository(User::class)
             ->findOneBy(['username' => $request->getUser()]);
 
         if (!$user) {
-            throw $this->createNotFoundException();
+            return new JsonResponse(['error' => 'Username or password is incorrect!'], 403);
         }
 
-        $isValid = $this->get('security.password_encoder')
+
+        $isValid = $passwordEncoder
             ->isPasswordValid($user, $request->getPassword());
+
         if (!$isValid) {
             //throw new CustomUserMessageAuthenticationException("Your are not allowed to access Token");
-            throw new BadCredentialsException();
+            return new JsonResponse(['error' => 'Username or password is incorrect!'], 401);
         }
 
         // if user were not allowed for api access
-        if(!$user->isAllowApiAccess()) {
-            throw new CustomUserMessageAuthenticationException("Your are not allowed to access Token");
+        if(!$user->getHasApiAccess()) {
+            //throw new CustomUserMessageAuthenticationException("Your are not allowed to access Token");
+            return new JsonResponse(['error' => 'You are not allowed to access token'], 401);
         }
 
         try {
-            $token = $this->get('lexik_jwt_authentication.encoder')
+            $token = $encoder
                 ->encode(['username' => $user->getUsername()]);
         } catch (JWTEncodeFailureException $e) {
-            throw new CustomUserMessageAuthenticationException("Token can't be granted");
+            return new JsonResponse(['error' => 'Token can not be granted at this time, try again later!'], 401);
         }
 
 
-        return new JsonResponse(['token' => $token]);
+        return new JsonResponse(['token' => $token], 200);
     }
 
 }
