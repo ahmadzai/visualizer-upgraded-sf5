@@ -53,6 +53,10 @@ class BphsHealthFacilityType extends AbstractType
                 'attr' => ['class' => 'form-control'],
                 'label' => 'Facility Code'
             ])
+            ->add('facilityType', TextType::class, [
+                'attr' => ['class' => 'form-control'],
+                'label' => 'Facility Type'
+            ])
             ;
 
         $builder->addEventListener(

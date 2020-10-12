@@ -61,19 +61,6 @@ class BphsHealthFacility implements  TimestampableInterface, BlameableInterface
      */
     private $facilityType;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(referencedColumnName="id")
-     *
-    private $createdBy;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(referencedColumnName="id")
-     *
-    private $updatedBy;
-    */
-
 
     public function __construct()
     {

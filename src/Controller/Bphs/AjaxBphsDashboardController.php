@@ -62,28 +62,28 @@ class AjaxBphsDashboardController extends AbstractController
             $highCharts = [];
             $indicators = $data['indicators'];
             $chartData = $data['data'];
-            $title = " Monthly Reach";
+            $title = " Monthly Coverage";
             $counter = 1;
             foreach ($indicators as $indicator) {
                 // below conditions are static, as we already know the structure of location (1.General, 2.Province, 3.District, 4.Facility)
                 if($noLocCols <= 1) {
                     $chart = $charts->chartData1Category($category[1],
-                        [$indicator . '_totalReach' => 'Monthly Reach'],
+                        [$indicator . '_totalReach' => 'Monthly Coverage'],
                         $chartData[$indicator], false);
                 } elseif($noLocCols == 2) {
                     $chart = $charts->chartData2Categories(['column' => 'provinceName'], $category[1],
-                        [$indicator . '_totalReach' => 'Monthly Reach'],
+                        [$indicator . '_totalReach' => 'Monthly Coverage'],
                         $chartData[$indicator], false);
                 } elseif($noLocCols == 3) {
 //                    $chart = $charts->chartData3Categories(['column' => 'provinceName'], ['column'=>'districtName'], $category[1],
 //                        [$indicator . '_totalReach' => 'Monthly Reach'],
 //                        $chartData[$indicator], false);
                     $chart = $charts->chartData2Categories(['column'=>'districtName'], $category[1],
-                        [$indicator . '_totalReach' => 'Monthly Reach'],
+                        [$indicator . '_totalReach' => 'Monthly Coverage'],
                         $chartData[$indicator], false);
                 } elseif($noLocCols == 4) {
                     $chart = $charts->chartData2Categories(['column'=>'facilityName'], $category[1],
-                        [$indicator . '_totalReach' => 'Monthly Reach'],
+                        [$indicator . '_totalReach' => 'Monthly Coverage'],
                         $chartData[$indicator], false);
                 }
                 $chart['title'] = $indicator . $title;

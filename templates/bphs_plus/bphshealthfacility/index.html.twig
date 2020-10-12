@@ -32,7 +32,7 @@
                 <th>Province</th>
                 <th>District</th>
                 <th>Facility</th>
-
+                <th>Type</th>
                 <th>Created At</th>
                 <th>Actions</th>
             </tr>
@@ -45,7 +45,7 @@
                 <td>{{ bphsHealthFacility.district.province.provinceName }}</td>
                 <td>{{ bphsHealthFacility.district.districtName }}</td>
                 <td>{{ bphsHealthFacility.facilityName }}</td>
-
+                <td>{{ bphsHealthFacility.facilityType }}</td>
                 <td>{{ bphsHealthFacility.createdAt|date('d/M/Y') }}</td>
                 <td>
                     <a class="btn btn-xs btn-info" href="{{ path('bphs_hf_show', { 'id': bphsHealthFacility.id }) }}">show</a>

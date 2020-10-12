@@ -58,6 +58,11 @@
                                 {{ form_widget(form.facilityName, {'attr':{'tabindex':4}}) }}
                             </div>
 
+                            <div class="form-group {{ form_errors(form.facilityType)|length > 0 ? 'has-error' : '' }}">
+                                {{ form_label(form.facilityType) }}
+                                {{ form_widget(form.facilityType, {'attr':{'tabindex':5}}) }}
+                            </div>
+
                             <!-- /.form-group -->
                         </div>
 
@@ -65,7 +70,7 @@
                     {#{% endblock form_row %}#}
                     <div class="row">
                         <div class="col-md-9">
-                            <input type="submit" tabindex="13" class="btn btn-info" value="Create" />
+                            <input type="submit" tabindex="6" class="btn btn-info" value="Create" />
                             <a href="{{ path('bphs_hf_index') }}" class="btn btn-default">
                                 <i class="fa fa-mail-reply"></i> Go Back!
                             </a>

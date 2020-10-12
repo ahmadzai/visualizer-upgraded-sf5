@@ -81,7 +81,7 @@ class CoverageDataDatatable extends AbstractDatatable
         ));
 
         $this->ajax->set(array(
-            'type' => 'POST'
+            'method' => 'POST'
         ));
 
 //        $this->extensions->set(array(
