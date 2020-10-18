@@ -210,7 +210,8 @@ class ChartRepo extends ServiceEntityRepository
         $joinKey = "p.provinceRegion";
         $select = ""; // default select has region
         $groupBy = "p.provinceRegion";
-        $condition = "";
+        //$condition = "";
+        $condition = $this->createCondition($params);
 
         $params = $params === null ? [] : $params;
         if(array_key_exists('by', $params)) {
@@ -505,12 +506,10 @@ class ChartRepo extends ServiceEntityRepository
 
     private function checkHrVhrFocus($paramsArray) {
 
-        return (
-               $paramsArray !== null &&
-               (in_array("HR", $paramsArray) ||
-                in_array("VHR", $paramsArray) ||
-                in_array("Focus", $paramsArray))
-               ) ? true : false;
+        return $paramsArray !== null &&
+        (in_array("HR", $paramsArray) ||
+         in_array("VHR", $paramsArray) ||
+         in_array("Focus", $paramsArray));
     }
 
 
@@ -542,7 +541,7 @@ class ChartRepo extends ServiceEntityRepository
               JOIN cvr.district d JOIN d.province p 
               WHERE(cvr.campaign in (:campaign))
               GROUP BY cvr.campaign, cvr.district, cvr.subDistrict, cvr.clusterNo
-              ORDER BY cvr.subDistrict, cvr.clusterNo"
+              ORDER BY cvr.campaign DESC, p.provinceRegion, p.provinceName, cvr.district, cvr.subDistrict, cvr.clusterNo"
         );
         // setting the campaigns
         $dq -> setParameter('campaign', $campaigns);

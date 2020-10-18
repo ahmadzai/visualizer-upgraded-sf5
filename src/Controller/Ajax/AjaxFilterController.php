@@ -40,6 +40,7 @@ class AjaxFilterController extends AbstractController
         return $this->render("shared/filter-small.html.twig", ['campaigns' => $campaigns, 'regions' => $regions, 'selectedCampaign' => $selectedCampaigns]);
     }
 
+
     /**
      * @Route("/clusterFilter/{source}/{district}", name="small_filter_cluster", options={"expose"=true})
      * @param $source

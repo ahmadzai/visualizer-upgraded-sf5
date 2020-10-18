@@ -1,0 +1,12 @@
+<div class="form-group">
+    <label>Campaigns:</label>
+    <select multiple="multiple"
+            name="filterCampaign[]"
+            id="filterCampaign" class="form-control select2" required>
+        {% for campaign in campaigns %}
+
+            <option value="{{ campaign.id }}">{{ campaign.campaignName }}</option>
+
+        {% endfor %}
+    </select>
+</div>

@@ -56,13 +56,20 @@ class CoverageDataController extends AbstractController
 
     /**
      * @param Request $request
-     * @param string $type
-     * @Route("/coverage_data/download/{type}", name="coverage_data_download", options={"expose"=true})
+     * @Route("/coverage_data/download", name="coverage_data_download", options={"expose"=true})
      * @Security("is_granted('ROLE_EDITOR')")
      * @return Response
-     * @throws \Exception
      */
-    public function downloadAction(Request $request, $type='all') {
+    public function download(Request $request) {
+
+        return $this->render("pages/coverage_data/download.html.twig", [
+            'source'=>'CoverageData',
+            'url' => 'coverage_data',
+        ]);
+    }
+
+
+    public function oldDownloadAction(Request $request, $type='all') {
 
         $isAjax = $request->isXmlHttpRequest();
 

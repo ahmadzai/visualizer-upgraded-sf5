@@ -81,13 +81,19 @@ class RefusalCommitteesController extends AbstractController
 
     /**
      * @param Request $request
-     * @param $type
-     * @Route("/ref_committees/download", name="ref_committees_data_download",
-     *     options={"expose"=true}, methods={"GET"})
-     * @return Response
+     * @Route("/ref_committees/download", name="ref_committees_data_download", options={"expose"=true})
      * @Security("is_granted('ROLE_EDITOR')")
-     * @throws \Exception
+     * @return Response
      */
+    public function download(Request $request) {
+
+        return $this->render("pages/catchup_data/download.html.twig", [
+            'source'=>'RefusalComm',
+            'url' => 'ref_committees',
+        ]);
+    }
+
+
     public function downloadAction(Request $request) {
 
         $isAjax = $request->isXmlHttpRequest();

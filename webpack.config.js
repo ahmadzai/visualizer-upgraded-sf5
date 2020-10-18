@@ -36,6 +36,7 @@ Encore
     .addEntry('bphs-plus', './assets/js/bphs_plus.js')
     .addEntry('ref_committee', './assets/js/ref_committee.js')
     .addEntry('covid19', './assets/js/covid19.js')
+    .addEntry('download', './assets/js/coverage_catchup_roc_download.js')
     .addEntry('fixed-cols-table', './assets/css/fixed-cols-table.css')
     //.addEntry('page1', './assets/js/page1.js')
     //.addEntry('page2', './assets/js/page2.js')

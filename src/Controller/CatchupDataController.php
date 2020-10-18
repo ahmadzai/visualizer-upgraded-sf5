@@ -75,12 +75,19 @@ class CatchupDataController extends AbstractController
 
     /**
      * @param Request $request
-     * @param $type
-     * @Route("/catchup_data/download/{type}", name="catchup_data_download", options={"expose"=true}, methods={"GET"})
-     * @return Response
+     * @Route("/catchup_data/download", name="catchup_data_download", options={"expose"=true})
      * @Security("is_granted('ROLE_EDITOR')")
-     * @throws \Exception
+     * @return Response
      */
+    public function download(Request $request) {
+
+        return $this->render("pages/catchup_data/download.html.twig", [
+            'source'=>'CatchupData',
+            'url' => 'catchup_data_data',
+        ]);
+    }
+
+
     public function downloadAction(Request $request, $type='all') {
 
         $isAjax = $request->isXmlHttpRequest();

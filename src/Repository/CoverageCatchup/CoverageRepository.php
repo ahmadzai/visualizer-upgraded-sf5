@@ -15,8 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class CoverageRepository extends ChartRepo {
 
 
-    protected $DQL = " cvr.tallyType as Tally_Type,
-                    sum(cvr.vialsReceived) as RVials, sum(cvr.vialsUsed) as UVials,
+    protected $DQL = " sum(cvr.vialsReceived) as RVials, sum(cvr.vialsUsed) as UVials,
                    ((COALESCE(sum(cvr.vialsUsed), 0)*20 -
                    (COALESCE(sum(cvr.noChildInHouseVac), 0) +COALESCE(sum(cvr.noChildOutsideVac), 0)+
                     COALESCE(sum(cvr.noChildVacByTT), 0) + COALESCE(sum(cvr.noVacNomad), 0) +
