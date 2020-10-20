@@ -1,0 +1,113 @@
+{
+  "entrypoints": {
+    "main": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/main.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "login": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/login.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "coverage": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/coverage.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "catchup": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/catchup.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "cluster-filter": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/cluster-filter.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "ccs-sm-filter": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/ccs-sm-filter.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "bphs-plus": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/bphs-plus.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "ref_committee": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/ref_committee.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "covid19": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/covid19.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "download": {
+      "js": [
+        "/build/manifest.js",
+        "/build/layout.js",
+        "/build/download.js"
+      ],
+      "css": [
+        "/build/layout.css"
+      ]
+    },
+    "fixed-cols-table": {
+      "js": [
+        "/build/manifest.js",
+        "/build/fixed-cols-table.js"
+      ],
+      "css": [
+        "/build/fixed-cols-table.css"
+      ]
+    }
+  }
+}
