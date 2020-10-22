@@ -12,10 +12,10 @@
                 <div class="widget-user-header bg-aqua-active">
                     <!-- /.widget-user-image -->
                     <h3 class="widget-user-username">Month: {{ bphs_indicator_reach.reportMonth }} --- Reach: {{ bphs_indicator_reach.reach|number_format(0, ",") }}</h3>
-                    <h5 class="widget-user-desc">{{ bphs_indicator_reach.hfIndicator.healthFacility }} --- {{ bphs_indicator_reach.hfIndicator.indicator }}</h5>
+                    <h5 class="widget-user-desc">{{ bphs_indicator_reach.bphsHfIndicator.bphsHealthFacility }} --- {{ bphs_indicator_reach.bphsHfIndicator.bphsIndicator }}</h5>
                     <h5 class="widget-user-desc">
-                        Province: {{ bphs_indicator_reach.hfIndicator.healthFacility.district.province.provinceName }},
-                        District: {{ bphs_indicator_reach.hfIndicator.healthFacility.district.districtName }}
+                        Province: {{ bphs_indicator_reach.bphsHfIndicator.bphsHealthFacility.district.province.provinceName }},
+                        District: {{ bphs_indicator_reach.bphsHfIndicator.bphsHealthFacility.district.districtName }}
                     </h5>
 
                 </div>
@@ -24,7 +24,7 @@
                         <li>
                             <a href="#">Annual Target
                                 <span class="pull-right badge bg-maroon-active">
-                                    {{ bphs_indicator_reach.hfIndicator.annualTarget|number_format(0, ",") }}
+                                    {{ bphs_indicator_reach.bphsHfIndicator.annualTarget|number_format(0, ",") }}
                                 </span>
                             </a>
                         </li>
@@ -38,12 +38,14 @@
     </div>
     <div>
         <a href="{{ path('bphs_indicator_reach_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
-
+        {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
         <a href="{{ path('bphs_indicator_reach_edit',
             {'id': bphs_indicator_reach.id}) }}" class="btn btn-primary"><i class="fa fa-edit"></i> Edit</a>
+        {% endif %}
     </div>
-
+    {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
     <div style="margin-left: -10px">
         {{ include('bphs_plus/indicator_reach/_delete_form.html.twig') }}
     </div>
+    {% endif %}
 {% endblock %}

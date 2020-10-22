@@ -8,9 +8,11 @@
             <div class="box box-primary">
                 <div class="box-header">
                     <h3 class="box-title">Facilities' Indicators</h3>
+                    {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
                     <a href="{{ path("bphs_hf_indicator_new") }}" class="btn btn-sm btn-info pull-right">
                         <i class="fa fa-plus"></i> Assign Indicator to Facility
                     </a>
+                    {% endif %}
                 </div>
 
                 <div class="box-body">
@@ -61,9 +63,9 @@
                                 <td>{{ hfIndicator.monthlyTarget|number_format(0, ",") }}</td>
                                 <td>
                                     <a class="btn btn-xs btn-info" href="{{ path('bphs_hf_indicator_show', { 'id': hfIndicator.id }) }}">show</a>
-
+                                    {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
                                     <a class="btn btn-xs btn-warning" href="{{ path('bphs_hf_indicator_edit', { 'id': hfIndicator.id }) }}">edit</a>
-
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -71,7 +73,9 @@
                     </table>
                 </div>
             </div>
+            {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
             <a href="{{ path('bphs_hf_indicator_copy') }}" class="btn btn-danger">Copy previous/current year indicators mapping into new year!</a>
+            {% endif %}
         </div>
 
     </div>

@@ -15,7 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  * Province controller.
  *
  * @Route("province")
- * @Security("is_granted('ROLE_ADMIN')")
+ * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')")
  */
 class ProvinceController extends AbstractController
 {
@@ -134,6 +134,7 @@ class ProvinceController extends AbstractController
      * Deletes a province entity.
      *
      * @Route("/{id}", name="province_delete", methods={"DELETE"})
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function deleteAction(Request $request, Province $province)
     {

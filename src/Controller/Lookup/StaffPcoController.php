@@ -137,6 +137,6 @@ class StaffPcoController extends AbstractController
      * @return Response
      */
     public function importSmCcsDataAction(Request $request) {
-        return $this->render("staffpco/import.html.twig", []);
+        return $this->render("staff/staffpco/import.html.twig", []);
     }
 }

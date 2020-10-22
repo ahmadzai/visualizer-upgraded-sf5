@@ -279,7 +279,7 @@ class MenuBuilder
         }
 
         // TPM SM/CCS Upload Option
-        if(in_array("ROLE_EDITOR", $reachableRoles)) {
+        if(in_array("ROLE_EDITOR", $reachableRoles) || in_array("ROLE_RESTRICTED_EDITOR", $reachableRoles)) {
             $menu['BPHS Plus']->addChild("Upload", array('route' => 'import_bphs_reach_data'))
                 ->setExtra('info', 'Monthly Indicators Reach Data')
                 ->setExtra('routes', [
@@ -326,6 +326,8 @@ class MenuBuilder
                 ->setExtra('info', 'Manage Users')
                 ->setExtra('routes', []);
             $menu['User Management']->setAttribute('icon', 'fa-user');
+        }
+        if(in_array("ROLE_EDITOR", $reachableRoles)) {
             // ------------------------------------------------ Location Mgt ------------------------------------------------
             $menu->addChild("Location", array('uri' => '#'))->setExtra('info', 'Manage Locations');
             $menu['Location']->setAttribute('icon', 'fa-map');
@@ -370,7 +372,7 @@ class MenuBuilder
             $menu['Upload Mgt']['Manage Files']->setAttribute('icon', 'fa-file');
         }
 
-        if(in_array("ROLE_EDITOR", $reachableRoles)) {
+        if(in_array("ROLE_RESTRICTED_EDITOR", $reachableRoles)) {
 
             // ------------------------------------------------ External Services Mgt ------------------------------------------------
             $menu->addChild("BPHS+ Control", array('uri' => '#'))

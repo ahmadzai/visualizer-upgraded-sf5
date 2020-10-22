@@ -32,7 +32,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  * 3: createSyncViewAction is called (just to create the sync view),
  * 4: if the user click the Sync button
  * syncDataAction is called, if cancel, then cancelUploadAction() is called
- * @Security("is_granted('ROLE_EDITOR')")
+ * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
  */
 class BphsReachImportController extends AbstractController
 {

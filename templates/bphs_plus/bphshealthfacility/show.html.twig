@@ -31,16 +31,19 @@
 
         <a href="{{ path('bphs_hf_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
 
-
+        {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
         <a href="{{ path('bphs_hf_edit', { 'id': bphsHealthFacility.id }) }}" class="btn btn-info">Edit</a>
+        {% endif %}
 
     </div>
     <br>
     <div>
+        {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
         {{ form_start(delete_form) }}
         <button type="submit" value="Delete" class="btn btn-danger">
             <i class="fa fa-trash"></i> Delete
         </button>
         {{ form_end(delete_form) }}
+        {% endif %}
     </div>
 {% endblock %}

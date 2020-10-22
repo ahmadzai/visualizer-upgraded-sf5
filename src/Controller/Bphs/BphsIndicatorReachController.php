@@ -6,6 +6,7 @@ use App\Entity\BphsIndicatorReach;
 use App\Form\BphsIndicatorReachType;
 use App\Repository\BphsIndicatorReachRepository;
 use mysql_xdevapi\Exception;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class BphsIndicatorReachController extends AbstractController
 
     /**
      * @Route("/new", name="bphs_indicator_reach_new", methods={"GET","POST"})
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      */
     public function new(Request $request, SessionInterface $session): Response
     {
@@ -83,6 +85,7 @@ class BphsIndicatorReachController extends AbstractController
      * @param Request $request
      * @param BphsIndicatorReach $bphsIndicatorReach
      * @return Response
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      */
     public function edit(Request $request, BphsIndicatorReach $bphsIndicatorReach, SessionInterface $session): Response
     {
@@ -110,6 +113,7 @@ class BphsIndicatorReachController extends AbstractController
      * @param Request $request
      * @param BphsIndicatorReach $bphsIndicatorReach
      * @return Response
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      */
     public function delete(Request $request, BphsIndicatorReach $bphsIndicatorReach): Response
     {

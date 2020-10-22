@@ -288,7 +288,7 @@ class BphsIndicatorReachType extends AbstractType
                 'placeholder'=> $placeHolder,
                 'label' => 'Indicator',
                 'choice_value'=>'id',
-                'choice_label'=>'indicator',
+                'choice_label'=>'bphsIndicator',
                 'auto_initialize' => false,
                 'empty_data' => null,
                 'class' => BphsHfIndicator::class,

@@ -93,6 +93,7 @@
                 </div>
                 {{ form_end(edit_form) }}
                 <div class="row box-body">
+                    {% if is_granted("ROLE_ADMIN") %}
                     <div class="col-md-6">
                         {{ form_start(delete_form) }}
                         <button type="submit" class="btn btn-danger">
@@ -100,6 +101,7 @@
                         </button>
                         {{ form_end(delete_form) }}
                     </div>
+                    {% endif %}
                 </div>
 
             </div>

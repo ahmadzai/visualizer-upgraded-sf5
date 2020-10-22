@@ -14,7 +14,7 @@ use App\Service\Settings;
  * District controller.
  *
  * @Route("district")
- * @Security("is_granted('ROLE_ADMIN')")
+ * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')")
  */
 class DistrictController extends AbstractController
 {
@@ -109,6 +109,7 @@ class DistrictController extends AbstractController
      * Deletes a district entity.
      *
      * @Route("/{id}", name="district_delete", methods={"DELETE"})
+     * @Security("is_granted('ROLE_ADMIN')")
      */
     public function deleteAction(Request $request, District $district)
     {

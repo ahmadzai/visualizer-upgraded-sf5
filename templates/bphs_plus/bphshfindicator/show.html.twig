@@ -12,11 +12,11 @@
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-aqua-active">
                     <!-- /.widget-user-image -->
-                    <h3 class="widget-user-username">{{ bphs_hf_indicator.healthFacility }} --- {{ bphs_hf_indicator.indicator }}</h3>
+                    <h3 class="widget-user-username">{{ bphs_hf_indicator.bphsHealthFacility }} --- {{ bphs_hf_indicator.bphsIndicator.shortName }}</h3>
 
                     <h5 class="widget-user-desc">
-                        Province: {{ bphs_hf_indicator.healthFacility.district.province.provinceName }},
-                        District: {{ bphs_hf_indicator.healthFacility.district.districtName }}
+                        Province: {{ bphs_hf_indicator.bphsHealthFacility.district.province.provinceName }},
+                        District: {{ bphs_hf_indicator.bphsHealthFacility.district.districtName }}
                     </h5>
                     <h5 class="widget-user-desc">Annual Target: {{ bphs_hf_indicator.annualTarget }}</h5>
                 </div>
@@ -32,13 +32,16 @@
     </div>
     <div>
         <a href="{{ path('bphs_hf_indicator_index') }}" class="btn btn-primary"><i class="fa fa-reply"></i> Back</a>
-
+        {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
         <a href="{{ path('bphs_hf_indicator_edit',
             {'id': bphs_hf_indicator.id}) }}" class="btn btn-primary"><i class="fa fa-edit"></i> Edit</a>
+        {% endif %}
     </div>
 
+    {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
     <div style="margin-left: -10px">
         {{ include('bphs_plus/bphshfindicator/_delete_form.html.twig') }}
     </div>
+    {% endif %}
 
 {% endblock %}

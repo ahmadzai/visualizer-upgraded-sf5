@@ -8,8 +8,8 @@ security:
         ROLE_PARTNER: ROLE_COVID19_VIEWER
         ROLE_NORMAL_USER: ROLE_PARTNER, ROLE_USER
         ROLE_COVID19_EDITOR: ROLE_COVID19_VIEWER
-        ROLE_RESTRICTED_EDITOR: ROLE_NORMAL_USER
-        ROLE_EDITOR: [ROLE_COVID19_EDITOR, ROLE_RESTRICTED_EDITOR]
+        ROLE_RESTRICTED_EDITOR: ROLE_PARTNER
+        ROLE_EDITOR: [ROLE_COVID19_EDITOR, ROLE_RESTRICTED_EDITOR, ROLE_NORMAL_USER]
         ROLE_ADMIN: ROLE_EDITOR
         ROLE_SUPER_ADMIN: ROLE_ADMIN
 
@@ -33,6 +33,14 @@ security:
             security: false
         #main:
         main:
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 2592000  # 1 month in seconds
+                path: /
+                # by default, the feature is enabled by checking a
+                # checkbox in the login form (see below), uncomment the
+                # following line to always enable it.
+                always_remember_me: true
             pattern: ^/
             anonymous: lazy
             provider: app_user_provider
@@ -44,6 +52,7 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 # target: app_any_route
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication

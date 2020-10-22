@@ -3,6 +3,7 @@
 namespace App\Controller\Bphs;
 
 use App\Entity\BphsIndicator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,7 +34,7 @@ class BphsIndicatorController extends AbstractController
 
     /**
      * Creates a new bphsIndicator entity.
-     *
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      * @Route("/new", name="bphs_indicator_new", methods={"GET", "POST"})
      */
     public function newAction(Request $request)
@@ -58,7 +59,6 @@ class BphsIndicatorController extends AbstractController
 
     /**
      * Finds and displays a bphsIndicator entity.
-     *
      * @Route("/{id}", name="bphs_indicator_show", methods={"GET"})
      */
     public function showAction(BphsIndicator $bphsIndicator)
@@ -73,7 +73,7 @@ class BphsIndicatorController extends AbstractController
 
     /**
      * Displays a form to edit an existing bphsIndicator entity.
-     *
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      * @Route("/{id}/edit", name="bphs_indicator_edit", methods={"GET", "POST"})
      */
     public function editAction(Request $request, BphsIndicator $bphsIndicator)
@@ -97,7 +97,7 @@ class BphsIndicatorController extends AbstractController
 
     /**
      * Deletes a bphsIndicator entity.
-     *
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      * @Route("/{id}", name="bphs_indicator_delete", methods={"DELETE"})
      */
     public function deleteAction(Request $request, BphsIndicator $bphsIndicator)

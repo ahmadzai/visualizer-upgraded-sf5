@@ -353,7 +353,7 @@ class StaffIcn
      */
     public function setAsOfMonth($asOfMonth = null)
     {
-        $this->asOfMonth = $asOfMonth;
+        $this->asOfMonth = strtolower(strlen($asOfMonth) > 3 ? substr($asOfMonth, 0, 3) : $asOfMonth);
 
         return $this;
     }
@@ -365,7 +365,7 @@ class StaffIcn
      */
     public function getAsOfMonth()
     {
-        return $this->asOfMonth;
+        return ucfirst($this->asOfMonth);
     }
 
     /**

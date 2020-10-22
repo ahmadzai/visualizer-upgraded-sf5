@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,6 +27,7 @@ class BphsDashboardController extends AbstractController
     /**
      * @return Response
      * @Route("/upload", name="bphs_bulk_upload")
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      */
     public function upload() {
         return $this->render('bphs_plus/import.html.twig', [

@@ -7,9 +7,11 @@
             <div class="box box-primary">
                 <div class="box-header">
                     <h3 class="box-title">Indicators List</h3>
+                    {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
                     <a href="{{ path("bphs_indicator_new") }}" class="btn btn-sm btn-info pull-right">
                         <i class="fa fa-plus"></i> New Indicator
                     </a>
+                    {% endif %}
                 </div>
 
                 <div class="box-body">
@@ -44,9 +46,9 @@
                                 <td>{{ bphsIndicator.createdAt|date('d/M/Y') }}</td>
                                 <td>
                                     <a class="btn btn-xs btn-info" href="{{ path('bphs_indicator_show', { 'id': bphsIndicator.id }) }}">show</a>
-
+                                    {% if is_granted("ROLE_RESTRICTED_EDITOR") %}
                                     <a class="btn btn-xs btn-warning" href="{{ path('bphs_indicator_edit', { 'id': bphsIndicator.id }) }}">edit</a>
-
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

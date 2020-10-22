@@ -9,6 +9,7 @@ use App\Form\BphsHfIndicatorType;
 use App\Form\CopyIndicatorToHfType;
 use App\Repository\BphsHfIndicatorRepository;
 use App\Service\HfIndicatorCopyService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +33,7 @@ class BphsHfIndicatorController extends AbstractController
     }
 
     /**
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      * @Route("/new", name="bphs_hf_indicator_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
@@ -66,6 +68,7 @@ class BphsHfIndicatorController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="bphs_hf_indicator_edit", methods={"GET","POST"})
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      */
     public function edit(Request $request, BphsHfIndicator $bphsHfIndicator): Response
     {
@@ -86,6 +89,7 @@ class BphsHfIndicatorController extends AbstractController
 
     /**
      * @Route("/{id}", name="bphs_hf_indicator_delete", methods={"DELETE"})
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      */
     public function delete(Request $request, BphsHfIndicator $bphsHfIndicator): Response
     {
@@ -103,6 +107,7 @@ class BphsHfIndicatorController extends AbstractController
      * @param HfIndicatorCopyService $copyService
      * @return Response
      * @Route("/copy", name="bphs_hf_indicator_copy")
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      */
     public function copyHfIndicators(Request $request, HfIndicatorCopyService $copyService) : Response
     {

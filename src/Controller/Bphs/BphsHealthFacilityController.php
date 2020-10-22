@@ -3,6 +3,7 @@
 namespace App\Controller\Bphs;
 
 use App\Entity\BphsHealthFacility;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,7 +34,7 @@ class BphsHealthFacilityController extends AbstractController
 
     /**
      * Creates a new bphsHealthFacility entity.
-     *
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      * @Route("/new", name="bphs_hf_new", methods={"GET", "POST"})
      */
     public function newAction(Request $request)
@@ -73,7 +74,7 @@ class BphsHealthFacilityController extends AbstractController
 
     /**
      * Displays a form to edit an existing bphsHealthFacility entity.
-     *
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      * @Route("/{id}/edit", name="bphs_hf_edit", methods={"GET", "POST"})
      */
     public function editAction(Request $request, BphsHealthFacility $bphsHealthFacility)
@@ -97,7 +98,7 @@ class BphsHealthFacilityController extends AbstractController
 
     /**
      * Deletes a bphsHealthFacility entity.
-     *
+     * @Security("is_granted('ROLE_RESTRICTED_EDITOR')")
      * @Route("/{id}", name="bphs_hf_delete", methods={"DELETE"})
      */
     public function deleteAction(Request $request, BphsHealthFacility $bphsHealthFacility)
